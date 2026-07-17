@@ -38,6 +38,21 @@ cp -R .claude/knowledge/claude-agents ~/.claude/knowledge/
 
 The skill reads the knowledge base from `~/.claude/knowledge/claude-agents/` (or a repo-local `.claude/knowledge/claude-agents/` if present).
 
+## Install as a plugin (recommended — versioned updates)
+
+Packaged as a Claude Code plugin, so users install once and update with `/plugin update`
+instead of re-copying files. This repo is its own marketplace.
+
+```text
+/plugin marketplace add michalal7/plan-your-agents
+/plugin install plan-your-agents@michalal7
+```
+Then the skill is available (namespaced) as `/plan-your-agents:setup-agents`.
+
+The knowledge base travels with the plugin (bundled into the skill as a generated mirror of
+`.claude/knowledge/claude-agents/`), so there's nothing else to install. Updates ship when the
+`version` in `.claude-plugin/plugin.json` is bumped.
+
 ## Use
 
 In the project you want to set up:

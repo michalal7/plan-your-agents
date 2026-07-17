@@ -11,6 +11,11 @@ The curator no longer works as a single agent doing everything sequentially in t
 2. **Verify** via a separate `kb-verifier` subagent — safety-/API-relevant claims adversarially against the official docs, default "unverified" (verification = the #1 lever, producer≠checker).
 3. **Write** by topic (main run), **review** for compactness (<200 lines, every line decision-relevant).
 4. **State** advanced in `CHANGELOG.md` + `_state.json`; incrementally only changed parts.
+5. **Sync** the plugin's bundled KB mirror: `node scripts/sync-plugin-kb.mjs` (see below).
+
+**Generated artifacts from the canonical KB** (never hand-edited — one source, generated mirrors, like a build step):
+- `.claude/skills/setup-agents/knowledge/claude-agents/` — the KB bundled into the skill so it works when installed as a plugin. Regenerate with `node scripts/sync-plugin-kb.mjs`; verify with `--check`.
+- `mcp-server/data/index.json` — the semantic index. Regenerate with `npm run build:index` in `mcp-server/`.
 
 Invocation: slash command `/kb-update` (see `.claude/commands/kb-update.md`); subagents in `.claude/agents/kb-fetcher.md` and `.claude/agents/kb-verifier.md`.
 - `/kb-update` — incremental per `_state.json`

@@ -1,0 +1,14 @@
+{
+  "name": "michalal7",
+  "owner": { "name": "michalal7" },
+  "metadata": {
+    "description": "Plugins by michalal7 — Claude Code agent-setup tooling."
+  },
+  "plugins": [
+    {
+      "name": "plan-your-agents",
+      "source": ".",
+      "description": "Recommends and scaffolds a Claude Code agent setup for any repo (the setup-agents skill), grounded in a curated knowledge base."
+    }
+  ]
+}

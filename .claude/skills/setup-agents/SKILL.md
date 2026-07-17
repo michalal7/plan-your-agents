@@ -13,7 +13,11 @@ You advise on the agent setup of a concrete repo, relying exclusively on the "cl
 
 1. **Clarify context.** Determine the target repo and mode from the arguments.
 
-2. **Load the KB.** Read the knowledge base first — `~/.claude/knowledge/claude-agents/PLAYBOOK-agent-design.md` (installed globally) or `.claude/knowledge/claude-agents/PLAYBOOK-agent-design.md` (if present in the repo): decision tree §1, verification loops §2, minimal setup §3, patterns §4, anti-patterns §5. For details, the topic files `00`–`90` and `INDEX.md`. The KB is authoritative — claim nothing from memory about flags/settings/modes.
+2. **Load the KB.** Read the knowledge base first. Locate it in this order and use the first that exists:
+   1. `knowledge/claude-agents/` bundled next to this `SKILL.md` (the case when installed as a plugin — use `${CLAUDE_SKILL_DIR}/knowledge/claude-agents/` if you need an absolute path),
+   2. `~/.claude/knowledge/claude-agents/` (global standalone install),
+   3. `.claude/knowledge/claude-agents/` in the target repo (repo-local).
+   Start with `PLAYBOOK-agent-design.md` (decision tree §1, verification loops §2, minimal setup §3, patterns §4, anti-patterns §5); for details the topic files `00`–`90` and `INDEX.md`. The KB is authoritative — claim nothing from memory about flags/settings/modes.
 
 3. **Scan the repo (read-only).** Determine: language/stack, test/build/lint commands (package.json scripts, Makefile, pyproject, …), existing `.claude/` (CLAUDE.md, settings.json, agents, commands), repo size/monorepo, VCS, domain (backend/frontend/mobile/data/non-code).
 
