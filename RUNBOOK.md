@@ -30,14 +30,14 @@ _state.json.
 ```
 - This is the remainder noted in `_state.json` → `openItems`. After that the fan-made source is fully captured.
 
-## 3. Test the consumer — `/setup-agents`
+## 3. Test the consumers — `/setup-dev-agents` and `/setup-task-agents`
 ```text
-/setup-agents .            # advise mode (read-only) for the current repo
-/setup-agents <path>       # advise a different project
-/setup-agents <path> apply # scaffold — writes only after explicit confirmation
+/setup-dev-agents .          # dev-side advice → writes agent-dev-plan.md
+/setup-task-agents .         # workload/goal advice → writes agent-task-plan.md
+/setup-dev-agents <path> apply  # also scaffold — writes other files only after confirmation
 ```
-- **Verify:** does it read `PLAYBOOK-agent-design.md` first? Does it name an orchestration level **and** a verification loop? Does it propose a minimal setup and say what deliberately should *not* go in? Does `apply` write only after confirmation?
-- Reference expectation (validated on "Process Mining", a non-code vault): for doc/knowledge folders it recommends **a single agent + a source-fidelity loop + only CLAUDE.md**, no agent infrastructure.
+- **Verify:** does each read `PLAYBOOK-agent-design.md` first and the shared `_shared/agent-analysis.md`? Does `setup-dev-agents` name a dev verification loop + minimal `.claude/` setup (and what *not* to include)? Does `setup-task-agents` name an orchestration level + orchestrator pattern + output verification? Does each write its plan file, and `apply` scaffold only after confirmation?
+- Reference expectation (validated on "Process Mining", a non-code vault): for doc/knowledge folders `setup-dev-agents` recommends **a single agent + a source-fidelity loop + only CLAUDE.md**, no agent infrastructure.
 
 ## Portable path (any MCP client)
 Beyond the Claude-native pieces above, `mcp-server/` serves the same KB to other MCP clients with semantic search — see `mcp-server/README.md`.

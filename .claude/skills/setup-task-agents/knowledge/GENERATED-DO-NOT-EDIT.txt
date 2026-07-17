@@ -1,0 +1,8 @@
+GENERATED — do not edit.
+
+This folder is a generated copy of the canonical knowledge base at
+.claude/knowledge/claude-agents/ (the single source of truth). It is bundled
+here so the skill can read the KB when installed as a plugin.
+
+Regenerate with:  node scripts/sync-plugin-kb.mjs
+Edit the KB only under .claude/knowledge/claude-agents/, then re-run the sync.

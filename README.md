@@ -1,12 +1,16 @@
 # plan-your-agents
 
-> Plan and scaffold a Claude Code **agent setup** for any project — a distilled knowledge base plus a `/setup-agents` skill that reads it and recommends (or builds) the right setup for your repo.
+> Plan and scaffold a Claude Code **agent setup** for any project — a distilled knowledge base plus two skills (`/setup-dev-agents`, `/setup-task-agents`) that read it and recommend (or build) the right setup for your repo, each writing a markdown plan.
 
-Point the skill at a project and it tells you: single agent, subagents, worktrees, agent teams, or a dynamic workflow? Which verification loop fits your domain? What belongs in `CLAUDE.md` and `.claude/settings.json` — and what deliberately does not. In `apply` mode it scaffolds those files for you.
+Point a skill at a project and it tells you: single agent, subagents, worktrees, agent teams, or a dynamic workflow? Which verification loop fits your domain? What belongs in `CLAUDE.md` and `.claude/settings.json` — and what deliberately does not. Each run writes its analysis as a markdown **plan** file, and in `apply` mode it scaffolds the files for you.
+
+Two skills, two intents:
+- **`/setup-dev-agents`** — optimize *developing* the repo: the Claude Code config (verification loop for the dev cycle, subagent roles, `CLAUDE.md`, `.claude/settings.json`). Plan → `agent-dev-plan.md`.
+- **`/setup-task-agents`** — design an agent *system that performs the repo's own workload* (migrations, data/doc processing, research, triage, batch jobs): orchestration level, orchestrator pattern, output verification, and workflow/command/agent stubs. Plan → `agent-task-plan.md`.
 
 ## What's inside
 
-- **`.claude/skills/setup-agents/`** — the skill (invocable as `/setup-agents`, also auto-triggers on intent).
+- **`.claude/skills/setup-dev-agents/`, `.claude/skills/setup-task-agents/`** — the two skills (each invocable as `/<name>`, also auto-trigger on intent); shared analysis machinery in `.claude/skills/_shared/`.
 - **`.claude/knowledge/claude-agents/`** — the knowledge base it reads: `INDEX.md`, the decision-oriented `PLAYBOOK-agent-design.md`, and topic files `00`–`90` (principles, context/memory, parallelism, workflows, config/safety, verification, models, deprecated).
 - **`.claude/commands/kb-update.md`** + **`.claude/agents/kb-fetcher.md`, `kb-verifier.md`** — the *curator* that keeps the knowledge base current from source.
 - **`mcp-server/`** — an *additive* MCP server that exposes the same knowledge base to any MCP client (Cursor, Windsurf, other agents) with semantic search. See below.
@@ -21,22 +25,26 @@ git clone https://github.com/michalal7/plan-your-agents
 cd plan-your-agents
 ```
 
-Skills and knowledge are just files — no build step. Copy both the skill **and** the knowledge base into your user-level `~/.claude/` so `/setup-agents` works in every project:
+Skills and knowledge are just files — no build step. Copy both skills **and** the knowledge base into your user-level `~/.claude/` so the commands work in every project:
 
 **Windows (PowerShell)** — or just run `./install.ps1`:
 ```powershell
-Copy-Item -Recurse -Force ".claude\skills\setup-agents"     "$HOME\.claude\skills\setup-agents"
-Copy-Item -Recurse -Force ".claude\knowledge\claude-agents" "$HOME\.claude\knowledge\claude-agents"
+Copy-Item -Recurse -Force ".claude\skills\setup-dev-agents"  "$HOME\.claude\skills\setup-dev-agents"
+Copy-Item -Recurse -Force ".claude\skills\setup-task-agents" "$HOME\.claude\skills\setup-task-agents"
+Copy-Item -Recurse -Force ".claude\skills\_shared"           "$HOME\.claude\skills\_shared"
+Copy-Item -Recurse -Force ".claude\knowledge\claude-agents"  "$HOME\.claude\knowledge\claude-agents"
 ```
 
 **macOS / Linux:**
 ```bash
 mkdir -p ~/.claude/skills ~/.claude/knowledge
-cp -R .claude/skills/setup-agents     ~/.claude/skills/
-cp -R .claude/knowledge/claude-agents ~/.claude/knowledge/
+cp -R .claude/skills/setup-dev-agents  ~/.claude/skills/
+cp -R .claude/skills/setup-task-agents ~/.claude/skills/
+cp -R .claude/skills/_shared           ~/.claude/skills/
+cp -R .claude/knowledge/claude-agents  ~/.claude/knowledge/
 ```
 
-The skill reads the knowledge base from `~/.claude/knowledge/claude-agents/` (or a repo-local `.claude/knowledge/claude-agents/` if present).
+The skills read the knowledge base from `~/.claude/knowledge/claude-agents/` (or a repo-local `.claude/knowledge/claude-agents/` if present).
 
 ## Install as a plugin (recommended — versioned updates)
 
@@ -47,9 +55,10 @@ instead of re-copying files. This repo is its own marketplace.
 /plugin marketplace add michalal7/plan-your-agents
 /plugin install plan-your-agents@michalal7
 ```
-Then the skill is available (namespaced) as `/plan-your-agents:setup-agents`.
+Then the skills are available (namespaced) as `/plan-your-agents:setup-dev-agents` and
+`/plan-your-agents:setup-task-agents`.
 
-The knowledge base travels with the plugin (bundled into the skill as a generated mirror of
+The knowledge base travels with the plugin (bundled into each skill as a generated mirror of
 `.claude/knowledge/claude-agents/`), so there's nothing else to install. Updates ship when the
 `version` in `.claude-plugin/plugin.json` is bumped.
 
@@ -60,19 +69,20 @@ In the project you want to set up:
 cd path/to/your/project
 claude            # accept the workspace-trust prompt once
 ```
-then:
+then pick the intent:
 ```
-/setup-agents .            # advise only (read-only)
-/setup-agents . apply      # scaffold the files, after you confirm
-/setup-agents ../other-repo
+/setup-dev-agents .          # optimize developing this repo  → agent-dev-plan.md
+/setup-task-agents .         # design an agent system for the repo's workload → agent-task-plan.md
+/setup-dev-agents . apply    # also scaffold the files, after you confirm
+/setup-task-agents ../other-repo
 ```
-`/setup-agents` is a slash command, but plain language works too — e.g. “set up the agent system for this repo” — because the skill auto-triggers on intent.
+Both are slash commands, but plain language works too — e.g. “set up the agent system for developing this repo” — because the skills auto-trigger on intent. Each writes its analysis to a plan file in the target repo's root (advise is read-only otherwise; `apply` additionally scaffolds).
 
-> Note: the repo is named **plan-your-agents**; the command is **`/setup-agents`**. The command name comes from the skill's folder, not the repo.
+> Note: the repo is named **plan-your-agents**; the commands are **`/setup-dev-agents`** and **`/setup-task-agents`**. Command names come from the skill folders, not the repo.
 
 ## MCP server — same knowledge base, any client
 
-The `/setup-agents` skill is the Claude-native path. For **other MCP clients** (Cursor,
+The `/setup-dev-agents` and `/setup-task-agents` skills are the Claude-native path. For **other MCP clients** (Cursor,
 Windsurf, custom agents), `mcp-server/` serves the *same* knowledge base — no fork, the
 markdown files stay the single source of truth — with:
 

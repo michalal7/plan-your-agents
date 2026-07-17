@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-07-17 — Consumer split into two skills + plan output
+Split `setup-agents` into **`setup-dev-agents`** (optimize *developing* the repo — Claude Code config) and **`setup-task-agents`** (design an agent system for the repo's *own workload* — orchestration + pattern + verification). Shared machinery factored into `.claude/skills/_shared/agent-analysis.md`. Both now write a markdown plan to the target repo root (`agent-dev-plan.md` / `agent-task-plan.md`) in advise mode; `apply` also scaffolds. `sync-plugin-kb.mjs` now fans the generated KB mirror into both skills. Plugin bumped to 0.2.0. Updated `INDEX.md`/`MAINTENANCE.md`/`README`/`RUNBOOK`/`install.ps1`. (MCP prompt id `setup-agents` unchanged.)
+
 ## 2026-07-17 — Consumer renamed: /setup-agents
 Skill `agent-setup-advisor` → **`setup-agents`** (invocable as `/setup-agents [repo] [apply]`). Removed the redundant `kb-advise` command (skills are invocable as `/name` themselves). Made the KB path global-capable (`~/.claude/knowledge/...` or repo-local). Added args handling in the skill. Updated references in `INDEX.md`/`MAINTENANCE.md`/`RUNBOOK.md`.
 

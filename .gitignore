@@ -6,6 +6,10 @@
 _DELETE_ME_*/
 _kb_stage*/
 
+# Generated plan outputs from the setup-*-agents skills (per-run, not source)
+/agent-dev-plan.md
+/agent-task-plan.md
+
 # OS / Editor
 .DS_Store
 Thumbs.db

@@ -37,7 +37,7 @@ Current state: @.claude/knowledge/claude-agents/_state.json
 
 7. **Advance state.** Update `CHANGELOG.md` (date, added/changed/dropped, open items) and `_state.json` (seen parts/tabs, status, last run).
 
-8. **Sync the plugin mirror.** Run `node scripts/sync-plugin-kb.mjs` so the skill's bundled KB copy (`.claude/skills/setup-agents/knowledge/claude-agents/`, a generated mirror) reflects the change. Never edit that copy by hand.
+8. **Sync the plugin mirrors.** Run `node scripts/sync-plugin-kb.mjs` so each skill's bundled KB copy (`.claude/skills/setup-dev-agents/` and `setup-task-agents/knowledge/claude-agents/`, generated mirrors) reflects the change. Never edit those copies by hand.
 
 ## Orchestration choice (PLAYBOOK §1)
 Routine update = these subagents in one session are enough. Only a rare `full` run with adversarial multi-verification justifies a dynamic workflow (`~/.claude/workflows/kb-rebuild`) — no permanent panel for small deltas.

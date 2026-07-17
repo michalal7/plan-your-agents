@@ -16,7 +16,7 @@ Sources: (1) the fan-made timeline howborisusesclaudecode.com (Boris Cherny et a
 - **`PLAYBOOK-agent-design.md`** — the product: decision tree, verification loops, minimal repo setup, orchestrator patterns, anti-patterns.
 - **`CHANGELOG.md`** / **`_state.json`** — run history and the source state seen (for incremental updates).
 - **`MAINTENANCE.md`** — operations/upkeep: how the KB is maintained (meta, not domain knowledge). The curator runs as `/kb-update` with the subagents `kb-fetcher` (fetch in parallel) and `kb-verifier` (check adversarially against the docs) under `.claude/commands/` and `.claude/agents/`.
-- **Consumer side** (outside this folder): the skill `setup-agents` (`.claude/skills/setup-agents/`, invocable as `/setup-agents [repo] [apply]`) applies this KB to a concrete repo — recommend an agent setup and (on confirmation) scaffold it. Reads `PLAYBOOK-agent-design.md` first.
+- **Consumer side** (outside this folder): two skills apply this KB to a concrete repo, each invocable as `/<name> [repo] [apply]` and each writing a markdown plan — `setup-dev-agents` (optimize *developing* the repo) and `setup-task-agents` (design an agent system for the repo's *own workload*). Shared machinery in `.claude/skills/_shared/`. Both read `PLAYBOOK-agent-design.md` first.
 
 ## Quick reference: commands & concepts
 | What | Where | File |

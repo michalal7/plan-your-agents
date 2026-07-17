@@ -8,7 +8,7 @@
     {
       "name": "plan-your-agents",
       "source": ".",
-      "description": "Recommends and scaffolds a Claude Code agent setup for any repo (the setup-agents skill), grounded in a curated knowledge base."
+      "description": "Recommends and scaffolds a Claude Code agent setup for any repo, grounded in a curated knowledge base. Two skills: setup-dev-agents (developing the repo) and setup-task-agents (an agent system for the repo's own workload); each writes a markdown plan."
     }
   ]
 }

@@ -2,8 +2,8 @@
 
 Exposes the `claude-agents` knowledge base (under `.claude/knowledge/claude-agents/`)
 to any MCP client — Claude Code, Cursor, Windsurf, other agents — with **semantic
-search**. It is an *additive* companion to the `/setup-agents` skill: the skill is the
-Claude-native path, this server is the portable, hostable one.
+search**. It is an *additive* companion to the `/setup-dev-agents` and `/setup-task-agents`
+skills: the skills are the Claude-native path, this server is the portable, hostable one.
 
 The knowledge base markdown files remain the **single source of truth**. This server
 reads from them; it never forks or duplicates their content, so the KB, `/kb-update`,

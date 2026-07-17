@@ -14,7 +14,7 @@ The curator no longer works as a single agent doing everything sequentially in t
 5. **Sync** the plugin's bundled KB mirror: `node scripts/sync-plugin-kb.mjs` (see below).
 
 **Generated artifacts from the canonical KB** (never hand-edited — one source, generated mirrors, like a build step):
-- `.claude/skills/setup-agents/knowledge/claude-agents/` — the KB bundled into the skill so it works when installed as a plugin. Regenerate with `node scripts/sync-plugin-kb.mjs`; verify with `--check`.
+- `.claude/skills/setup-dev-agents/knowledge/claude-agents/` and `.claude/skills/setup-task-agents/knowledge/claude-agents/` — the KB bundled into each skill so it works when installed as a plugin. Regenerate both with `node scripts/sync-plugin-kb.mjs`; verify with `--check`.
 - `mcp-server/data/index.json` — the semantic index. Regenerate with `npm run build:index` in `mcp-server/`.
 
 Invocation: slash command `/kb-update` (see `.claude/commands/kb-update.md`); subagents in `.claude/agents/kb-fetcher.md` and `.claude/agents/kb-verifier.md`.
@@ -27,8 +27,8 @@ Routine update: subagents in one session (default). Only a rare full rebuild wit
 
 ## Consumer side (using the KB)
 Separate from the curator (which maintains the KB), the consumer side applies it:
-- **Skill** `setup-agents` (`.claude/skills/setup-agents/SKILL.md`) — triggers on intent ("agent setup for this repo") and is also invocable as the slash command `/setup-agents [repo] [apply]`. Recommends a setup based on the `PLAYBOOK` and scaffolds it on confirmation. (A separate command is unnecessary — skills are invocable as `/name` themselves.)
-Modes: `advise` (read-only, default) / `apply` (writes files after confirmation).
+- **Skills** `setup-dev-agents` and `setup-task-agents` (`.claude/skills/*/SKILL.md`, shared machinery in `_shared/agent-analysis.md`) — trigger on intent and are invocable as `/<name> [repo] [apply]`. `setup-dev-agents` optimizes *developing* the repo (Claude Code config); `setup-task-agents` designs an agent system for the repo's *own workload* (orchestration + pattern + verification). Each recommends based on the `PLAYBOOK` and writes a plan (`agent-dev-plan.md` / `agent-task-plan.md`); apply also scaffolds.
+Modes: `advise` (writes the plan, otherwise read-only, default) / `apply` (also scaffolds files after confirmation).
 Use across projects: put the skill **and** `knowledge/claude-agents/` into `~/.claude/`; the skill reads the KB from `~/.claude/knowledge/claude-agents/` (or repo-local, if present).
 - **MCP server** (`mcp-server/`) — exposes the same KB to any MCP client (resources + semantic `search_knowledge` + a `setup-agents` prompt). Reads the KB live; never forks it. See `mcp-server/README.md`.
 
