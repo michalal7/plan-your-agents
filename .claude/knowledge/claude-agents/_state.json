@@ -14,12 +14,12 @@
       "type": "official-docs",
       "authoritative": true,
       "urls": [
-        "https://code.claude.com/docs/de/sub-agents",
-        "https://code.claude.com/docs/de/agents",
-        "https://code.claude.com/docs/de/agent-view",
-        "https://code.claude.com/docs/de/agent-teams",
-        "https://code.claude.com/docs/de/workflows",
-        "https://code.claude.com/docs/de/worktrees",
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/agents",
+        "https://code.claude.com/docs/en/agent-view",
+        "https://code.claude.com/docs/en/agent-teams",
+        "https://code.claude.com/docs/en/workflows",
+        "https://code.claude.com/docs/en/worktrees",
         "https://code.claude.com/docs/en/hooks",
         "https://code.claude.com/docs/en/settings"
       ]

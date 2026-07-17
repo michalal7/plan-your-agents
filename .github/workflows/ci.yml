@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # Tests run fully offline with the deterministic hash embedder — no model
+      # download in CI. (The real semantic index is a local, gitignored artifact.)
+      EMBEDDER: hash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mcp-server/package-lock.json
+
+      # Generated skill KB mirrors must match the canonical KB (single source of truth).
+      - name: KB mirrors in sync
+        run: node scripts/sync-plugin-kb.mjs --check
+
+      - name: Install mcp-server deps
+        working-directory: mcp-server
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: mcp-server
+        run: npm run typecheck
+
+      - name: Test
+        working-directory: mcp-server
+        run: npm test

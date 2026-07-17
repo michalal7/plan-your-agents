@@ -1,0 +1,24 @@
+#!/bin/sh
+# Pre-commit guard against the drift class this repo has hit before: the generated
+# skill KB mirrors and the semantic index must match the canonical KB.
+#
+# Activate once (per clone):   git config core.hooksPath .githooks
+#
+# Note: this checks the WORKING TREE, not the staged index. With partial staging
+# (git add -p) drift could slip past, or a clean commit be blocked. Accepted here —
+# CI (.github/workflows/ci.yml) is the authoritative backstop for mirror drift.
+#
+# - sync --check is plain node (no deps) → always runs.
+# - check:fresh needs the mcp-server toolchain → runs only if its deps are installed,
+#   so the hook never blocks a commit just because you haven't set up mcp-server.
+set -e
+
+echo "[pre-commit] KB mirrors in sync (sync-plugin-kb --check)"
+node scripts/sync-plugin-kb.mjs --check
+
+if [ -d mcp-server/node_modules ]; then
+  echo "[pre-commit] semantic index freshness (check:fresh)"
+  ( cd mcp-server && npm run --silent check:fresh )
+else
+  echo "[pre-commit] skip check:fresh (mcp-server deps not installed)"
+fi

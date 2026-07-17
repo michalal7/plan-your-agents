@@ -16,6 +16,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:index": "tsx scripts/build-index.ts",
+    "check:fresh": "tsx scripts/check-fresh.ts",
     "start:stdio": "tsx src/stdio.ts",
     "start:http": "tsx src/http.ts",
     "smoke": "tsx scripts/smoke.ts",

@@ -37,4 +37,4 @@ Use across projects: put the skill **and** `knowledge/claude-agents/` into `~/.c
 - **Writing to `.claude/` from Cowork Cloud**: the bridge tool `device_commit_files` refuses `.claude` target paths. Reliable path: commit into a non-`.claude` staging folder (e.g. `_kb_stage/`), then move it to the target with `device_bash` and `mv`. `device_bash` can write into `.claude` but **not delete** (rm/rmdir fail) — empty staging folders remain and are removed manually. When the curator instead runs locally as `/kb-update` in Claude Code, it writes directly; this detour doesn't apply.
 
 ## Open items (as of 2026-07-17)
-Fully fetch parts 17–21 (Chrome); verify `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, model IDs/Fable 5 and `--tmux` on the worktree against the docs. Details in `_state.json` → `openItems`.
+Fan-made source fully captured (parts 1–21); the earlier doc-verifications (`CLAUDE_CODE_AUTO_COMPACT_WINDOW`, model IDs/Fable 5, `--tmux`) are resolved in `_state.json` → `verified`. Next run: only check for new parts. Current `openItems` live in `_state.json`.

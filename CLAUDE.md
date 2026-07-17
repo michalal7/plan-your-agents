@@ -12,6 +12,7 @@ Read the content when needed; don't pull it into context up front.
   - `node scripts/sync-plugin-kb.mjs` → then `node scripts/sync-plugin-kb.mjs --check` (must be green).
   - `cd mcp-server && npm run build:index` (rebuild the semantic index).
   Never hand-edit the generated copies: `.claude/skills/*/knowledge/claude-agents/` (both skill mirrors) and `mcp-server/data/index.json`.
+- Enforcement (so the above isn't just convention): CI (`.github/workflows/ci.yml`) runs the mirror `--check` + typecheck + tests on push/PR; a local pre-commit hook (`git config core.hooksPath .githooks`) blocks commits with a drifted mirror or stale index.
 
 ## Conventions
 - The KB is the single source of truth; the skill mirror and MCP index are generated from it.

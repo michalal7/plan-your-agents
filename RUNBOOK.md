@@ -8,8 +8,8 @@ cd path/to/plan-your-agents   # the repo root
 claude
 ```
 - On first start, **confirm the workspace-trust dialog** — needed so `.claude/settings.json` and the skill's `allowed-tools` take effect.
-- Optionally version it: `git init && git add . && git commit -m "KB + agent infrastructure"` (the `.gitignore` keeps `_DELETE_ME_*`, `_kb_stage*`, `.claude/worktrees/` out).
-- Clean up: delete the empty `_DELETE_ME_empty_kb_stage*` folders in the root.
+- Optionally version it: `git init && git add . && git commit -m "KB + agent infrastructure"` (the `.gitignore` keeps `_DELETE_ME_*`, `_kb_stage*`, `.claude/worktrees/`, and the generated `agent-*-plan.md` out).
+- **Contributors — enable the drift guard once:** `git config core.hooksPath .githooks`. The pre-commit hook then blocks a commit whose skill KB mirrors or semantic index have drifted from the canonical KB. CI (`.github/workflows/ci.yml`) enforces the mirror check + typecheck + tests on push/PR.
 
 ## 1. Test the curator — `/kb-update`
 ```text
@@ -19,18 +19,7 @@ claude
 - Full rebuild (more expensive, many tokens): `/kb-update full`.
 - **Verify:** are both subagent types invoked? Does the run update `.claude/knowledge/claude-agents/*` as well as `CHANGELOG.md`/`_state.json`? WebFetch to the doc domains is pre-allowed in `settings.json`; if another permission prompt appears → allow it or add it to the allowlist.
 
-## 2. Fill parts 17–21 (needs a browser)
-Prerequisite: the **Claude Chrome extension** installed/connected (https://claude.ai/chrome), logged in with the same account.
-```text
-Fetch parts 17–21 from howborisusesclaudecode.com via the browser: click each numbered
-tab, and per tip extract title + full text + commands/flags + links.
-Then work them into the KB by topic (not chronologically), check safety-relevant
-claims with kb-verifier against the docs, and set parts 17–21 to status "full" in
-_state.json.
-```
-- This is the remainder noted in `_state.json` → `openItems`. After that the fan-made source is fully captured.
-
-## 3. Test the consumers — `/setup-dev-agents` and `/setup-task-agents`
+## 2. Test the consumers — `/setup-dev-agents` and `/setup-task-agents`
 ```text
 /setup-dev-agents .          # dev-side advice → writes agent-dev-plan.md
 /setup-task-agents .         # workload/goal advice → writes agent-task-plan.md
