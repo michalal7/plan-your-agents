@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "lastRun": "2026-07-17",
+  "runCount": 1,
+  "sources": {
+    "primary": {
+      "url": "https://howborisusesclaudecode.com/",
+      "type": "fan-made",
+      "authoritative": false,
+      "partsTotal": 21,
+      "note": "All 21 parts fully captured; 17-21 fetched on 2026-07-17 via the Chrome extension (URL hash #part-N/M + get_page_text)."
+    },
+    "secondary": {
+      "type": "official-docs",
+      "authoritative": true,
+      "urls": [
+        "https://code.claude.com/docs/de/sub-agents",
+        "https://code.claude.com/docs/de/agents",
+        "https://code.claude.com/docs/de/agent-view",
+        "https://code.claude.com/docs/de/agent-teams",
+        "https://code.claude.com/docs/de/workflows",
+        "https://code.claude.com/docs/de/worktrees",
+        "https://code.claude.com/docs/en/hooks",
+        "https://code.claude.com/docs/en/settings"
+      ]
+    }
+  },
+  "parts": [
+    {"n": 1, "title": "Introduction", "date": "2026-01-02", "tabs": 13, "status": "full"},
+    {"n": 2, "title": "More Tips", "date": "2026-01-31", "tabs": 10, "status": "full"},
+    {"n": 3, "title": "Customize Your Claude", "date": "2026-02-11", "tabs": 12, "status": "full"},
+    {"n": 4, "title": "Built-in Worktree Support", "date": "2026-02-20", "tabs": 5, "status": "full"},
+    {"n": 5, "title": "Ship to Production", "date": "2026-02-27", "tabs": 2, "status": "full"},
+    {"n": 6, "title": "Three Features Four Days", "date": "2026-03-07", "tabs": 3, "status": "full"},
+    {"n": 7, "title": "End of Week Ships", "date": "2026-03-13", "tabs": 8, "status": "full"},
+    {"n": 8, "title": "New Superpowers", "date": "2026-03-23", "tabs": 4, "status": "full"},
+    {"n": 9, "title": "Hidden & Underutilized Features", "date": "2026-03-29", "tabs": 15, "status": "full"},
+    {"n": 10, "title": "New Feature Launches", "date": "2026-04-14", "tabs": 7, "status": "full"},
+    {"n": 11, "title": "Mastering Opus 4.7", "date": "2026-04-16", "tabs": 8, "status": "full"},
+    {"n": 12, "title": "Agent View + /goal", "date": "2026-05-11", "tabs": 4, "status": "full"},
+    {"n": 13, "title": "Opus 4.8 + Dynamic Workflows", "date": "2026-05-28", "tabs": 4, "status": "full"},
+    {"n": 14, "title": "A Harness for Every Task", "date": "2026-06-02", "tabs": 6, "status": "full"},
+    {"n": 15, "title": "Reflecting on a Year", "date": "2026-06-08", "tabs": 4, "status": "full"},
+    {"n": 16, "title": "Agents That Spawn Agents", "date": "2026-06-09", "tabs": 3, "status": "full"},
+    {"n": 17, "title": "Fable 5 - The Best Coding Model", "date": "2026-06-09", "tabs": 2, "status": "full"},
+    {"n": 18, "title": "Finding Your Unknowns", "date": "2026-07-03", "tabs": 4, "status": "full"},
+    {"n": 19, "title": "Getting Started With Loops", "date": "2026-07-06", "tabs": 4, "status": "full"},
+    {"n": 20, "title": "Give Your Setup a /checkup", "date": "2026-07-08", "tabs": 3, "status": "full"},
+    {"n": 21, "title": "Automation Is the Meta-Skill", "date": "2026-07-15", "tabs": 3, "status": "full"}
+  ],
+  "openItems": [
+    "Fan-made source fully captured (parts 1-21). Next run: only check for new parts."
+  ],
+  "verified": {
+    "date": "2026-07-17",
+    "confirmed": [
+      "CLAUDE_CODE_AUTO_COMPACT_WINDOW exists (default ~967k).",
+      "dontAsk is a valid permission mode (previously mismarked as invalid).",
+      "fable is an official alias = Claude Fable 5 (not speculative).",
+      "Effort low/medium/high/xhigh persist, max session-only; effortLevel setting only up to xhigh."
+    ],
+    "diverged": [
+      "--tmux on the worktree does not exist (belongs to Agent Teams, not worktrees).",
+      "inherit is not a model alias, only a subagent-model value."
+    ]
+  },
+  "note": "tabs = observed tab count per part; the next run compares title/count to detect new/changed content. No raw-content hashes stored (the source only partially delivers content via WebFetch)."
+}

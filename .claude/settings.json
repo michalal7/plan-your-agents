@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:docs.claude.com)",
+      "WebFetch(domain:howborisusesclaudecode.com)",
+      "Edit(.claude/knowledge/claude-agents/**)",
+      "Write(.claude/knowledge/claude-agents/**)"
+    ]
+  }
+}

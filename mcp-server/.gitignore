@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# Generated build artifact — rebuild with `npm run build:index`
+data/index.json
+# Local transformers.js model cache (if pointed here)
+.models/

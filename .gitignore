@@ -1,0 +1,11 @@
+# Claude Code
+.claude/worktrees/
+.claude/settings.local.json
+
+# Leftovers from remote delivery (Cowork Cloud → device)
+_DELETE_ME_*/
+_kb_stage*/
+
+# OS / Editor
+.DS_Store
+Thumbs.db

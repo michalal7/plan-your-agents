@@ -1,0 +1,49 @@
+# Changelog
+
+## 2026-07-17 — Consumer renamed: /setup-agents
+Skill `agent-setup-advisor` → **`setup-agents`** (invocable as `/setup-agents [repo] [apply]`). Removed the redundant `kb-advise` command (skills are invocable as `/name` themselves). Made the KB path global-capable (`~/.claude/knowledge/...` or repo-local). Added args handling in the skill. Updated references in `INDEX.md`/`MAINTENANCE.md`/`RUNBOOK.md`.
+
+## 2026-07-17 — Parts 17–21 fetched via browser (source complete)
+Fetched the JS-rendered parts 17–21 via the Chrome extension (URL hash `#part-N/M` + `get_page_text`, via browser_batch). The fan-made source is now complete (parts 1–21). Worked in:
+- **Fable 5** (Part 17): replaces Opus 4.8 as the coding default; specs `claude-fable-5`, 1M/128K, $10/$50, adaptive thinking, cutoff Jan 2026; safety classifier "trigger-happy" (`60-models.md`, `90-deprecated.md`).
+- **Plan for your unknowns** (Part 18): new principle #8 with a toolkit (blindspot pass, interview, source-code reference, implementation-notes, quiz) (`00-principles.md`).
+- **Loop taxonomy** (Part 19): turn/goal/time/proactive + a "what you hand off" table (`30-workflows.md`).
+- **/checkup** (Part 20): setup-hygiene command (`40-config-safety.md`).
+- **Automation as the meta-lever / knowledge as infra** (Part 21): #7 expanded (fleet multiplier, fix→code, REVIEW.md, "a rejected PR = a failure of automation") (`00-principles.md`).
+`_state.json`: parts 17–21 to `full`.
+
+## 2026-07-17 — Recommendation added: auto-compact threshold 40%
+Set `CLAUDE_CODE_AUTO_COMPACT_WINDOW` to ~40% of the window (1M → `=400000`) to stay below the context-rot zone (`10-context-memory.md`). User directive.
+
+## 2026-07-17 — Verification run (dogfooding the kb-verifier)
+**Checked:** open doc items via a separate verifier subagent against the official docs.
+**Corrected (the verifier found two of the KB's own errors):**
+- `CLAUDE_CODE_AUTO_COMPACT_WINDOW` does exist after all (default ~967k) — "unconfirmed" marking lifted (`10`).
+- `dontAsk` is a **valid** permission mode — the earlier deprecation was wrong, corrected (`40`, `90`).
+- `fable` is an official alias = Claude Fable 5 → no longer speculative (`60`).
+- Effort persistence clarified (`low/medium/high/xhigh` persistent, `max` session-only; `effortLevel` setting only up to `xhigh`) (`40`, `60`).
+- Added verified model aliases/IDs; `inherit` is not an alias (`60`).
+**Confirmed false:** `--tmux` on the worktree doesn't exist (belongs to Agent Teams) (`90`).
+**Open:** parts 17–21 (JS-rendered) — needs a browser; the extension wasn't connected.
+
+## 2026-07-17 — Curator workflow optimized (self-update)
+**New:** the maintenance flow is now codified instead of prompt-based. Created: `.claude/commands/kb-update.md` (slash command `/kb-update`), `.claude/agents/kb-fetcher.md` (parallel, structured fetching per source), `.claude/agents/kb-verifier.md` (separate, adversarial doc verification), `MAINTENANCE.md` (operating flow + environment pitfalls).
+**Why:** applying the KB's own principles to the curator itself — delegation/fan-out instead of sequential in the main context, producer≠checker, context minimalism. Command/agent frontmatter verified against code.claude.com/docs (sub-agents, commands).
+
+## 2026-07-17 — First run (full build)
+**New:** built the complete knowledge base — `INDEX.md`, `00-principles.md`, `10-context-memory.md`, `20-parallelism.md`, `30-workflows.md`, `40-config-safety.md`, `50-verification.md`, `60-models.md`, `90-deprecated.md`, `PLAYBOOK-agent-design.md`, `CHANGELOG.md`, `_state.json`.
+
+**Sources processed:**
+- Primary (fan-made): howborisusesclaudecode.com — 21 parts. Parts 1–16 fully extracted; parts 17–21 only at the topic/title level (detail not fetchable from the source) → marked low-confidence.
+- Secondary (authoritative, added on user request): official docs code.claude.com/docs on sub-agents, agents, agent-view, agent-teams, workflows, worktrees. Plus hooks & settings for cross-checking.
+
+**Contradictions resolved (→ `90-deprecated.md`):**
+- Plan Mode as default → replaced by Auto Mode (Opus 4.6+).
+- `--permission-mode=dontAsk` → (later corrected: it is a valid mode).
+- Workflow trigger bare "workflow" → `ultracode`/"use a workflow".
+- "Auto Mode mandatory for workflows" → clarified: workflow subagents always run `acceptEdits` + allowlist; the actual requirement is a complete tool allowlist.
+- Agent Teams tools `TeamCreate`/`TeamDelete` → gone (since v2.1.178).
+
+**Marked uncertain:** Fable 5 (speculative), the `CLAUDE_CODE_AUTO_COMPACT_WINDOW` name, `--tmux` on the worktree, memory/routines/workflows (research preview).
+
+**New topic vs. the fan source:** Agent Teams (cooperating peer sessions) added from the official docs.
