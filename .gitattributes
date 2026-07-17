@@ -1,0 +1,5 @@
+# Normalize line endings so the KB content hash (kbHash, computed over working-tree
+# bytes in mcp-server/src/kb.ts) is deterministic across checkouts and OSes.
+# Text files are stored and checked out as LF everywhere; binaries are left alone.
+* text=auto eol=lf
+*.png binary
