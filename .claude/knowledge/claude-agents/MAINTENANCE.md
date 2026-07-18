@@ -50,7 +50,7 @@ Treat this as one indivisible step whenever shipped content changes:
 
 ## Update cadence
 The KB ages against a moving target, so a run is scheduled rather than waited for:
-- **Monthly** — `/kb-update` incremental: `living` change markers, new CHANGELOG versions, new Willison chapters, new parts of the primary source. Cheap when nothing moved, which is the point of the markers.
+- **Monthly** — `/kb-update` incremental: `living` change markers, new CHANGELOG versions, new chapters in the Willison guide, new items in the `feeds` group, new parts of the primary source. Cheap when nothing moved, which is the point of the markers. Note the tension for `feeds`: a monthly cadence against a ~20-posts-a-week blog can overrun the feed window, which is why the `feed-scan` rule ends in a gap check.
 - **Ad hoc** — on a model or feature release (a new Claude generation, a new orchestration mechanism), don't wait for the monthly slot.
 - **`full`** — only when the structure changes, not for content deltas.
 

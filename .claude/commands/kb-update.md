@@ -29,16 +29,21 @@ Current state: @.claude/knowledge/claude-agents/_state.json
    | `secondary` (official docs) | check every run | authoritative for flags/settings/hooks/modes |
    | `datedPosts` (anthropic.com engineering/research) | fetch once | only entries with `status != "done"` |
    | `living` (docs pages + GitHub) | check every run | fetch, compare `changeMarker`, process only on change |
-   | `secondaryFanMade` (Willison) | **feed scan** | feed entries newer than `watermark` and not in `seenIds`, filtered by `relevance`; mark "(fan-made, Willison)" |
+   | `secondaryFanMade` (Willison guide) | check every run | a chaptered guide that changes in place: compare `chapterCount`, read only chapters whose `status` is not `ingested`; mark "(fan-made, Willison)" |
+   | `feeds` (blogs) | **feed scan** | entries `>=` `watermark` minus `seenIds`, filtered by the entry's `relevance`; see below |
    | `contextOnly` (Trends Report PDF, InfoQ) | on demand | framing only — **never** a source for a verified claim |
 
    **Two source shapes, two strategies — don't confuse them.** A source that *changes in place* (the official docs, the `living` pages) is tracked by a fixed URL plus a `changeMarker`; there is no feed for "the hooks page changed", and re-checking those is where run 3 found `/agents` and `defaultMode` wrong. A source that *publishes new items* must never be tracked by a fixed article URL — that watches one frozen corner of a live site. Use `feed-scan`:
 
-   - Fetch the **`feedUrl`** (an Atom/RSS feed, not the HTML homepage — structured entries, stable permalinks, cheaper and it survives redesigns). One fetch.
-   - Candidates = entries with a date `>` `watermark`, minus anything already in `seenIds` (that set exists only for the boundary case of several posts on the same day — it is not a full history).
-   - Apply the entry's stored **`relevance`** filter *before* fetching anything else. This is stored in `_state.json` on purpose: for a general-interest blog most items are off-topic, and leaving the judgement to the fetcher invites topic drift.
+   - **You** fetch the `feedUrl` in the main run — not a `kb-fetcher`. The feed is one cheap structured document, and the relevance call has to stay with the orchestrator; handing it to a fetcher is what the stored filter exists to prevent. Subagents come in afterwards, one per selected item.
+   - Use the **`feedUrl`** (an Atom/RSS feed, not the HTML homepage — structured entries, stable permalinks, cheaper and it survives redesigns).
+   - Candidates = entries with a date **`>=`** `watermark`, minus anything already in `seenIds`. The `>=` and the set work as a pair: the date keeps the window small, the set removes what was already handled on the boundary day. With a strict `>` the set is unreachable and a second post on the watermark date is lost forever.
+   - **First run** (no `watermark`): do not ingest the whole feed. Take only entries from the last 30 days, then seed `watermark`/`seenIds` from the newest entry as usual. Record in the entry's note that older items were never scanned.
+   - Apply the entry's stored **`relevance`** filter to title + summary *before* fetching anything else. It lives in `_state.json` on purpose: for a general-interest blog most items are off-topic, and re-deciding the topic each run invites drift.
    - Only then fetch full text, and only for what survived. A quiet run therefore costs exactly one fetch.
    - Advance `watermark` to the newest entry seen and reset `seenIds` to that date's permalinks **even when nothing was relevant** — that is what keeps the next run cheap.
+   - **Only on a successful fetch.** If the feed 404s or returns nothing parseable, leave `watermark` and `seenIds` untouched, record `incomplete` on the entry and report it. Advancing state on a failed fetch would silently skip the whole window.
+   - **Gap check.** A feed is a bounded window and the cadence here is monthly (`MAINTENANCE.md`). If the oldest entry in the feed is itself newer than `watermark`, the window was overrun and items were missed: say so in the report rather than advancing quietly. Backdated or out-of-order posts are not detectable this way — that is a known limit of the class, not an oversight.
 
    Rank on conflict: official docs > dated Anthropic posts > CHANGELOG > fan-made/context. An entry marked `urlVerified: false` must be confirmed by the first fetch (no entry currently carries it — the `claude-code` CHANGELOG raw path resolved on 2026-07-18 and was promoted to `true`); on 404 record `incomplete` and report it — do not go hunting for a replacement URL.
 
@@ -52,7 +57,7 @@ Current state: @.claude/knowledge/claude-agents/_state.json
 
 6. **Review — enforce compactness.** Check every changed file: > ~200 lines → condense instead of appending (merge redundant tips). Every line must be able to influence a decision. Keep `PLAYBOOK-agent-design.md` and `INDEX.md` consistent. Optionally hand this review to a subagent.
 
-7. **Advance state.** Update `CHANGELOG.md` (date, added/changed/dropped, open items) and `_state.json`: `lastRun`, `runCount`, seen parts/tabs — plus, for the new groups, `status`/`ingestedAt` on processed `datedPosts`, the fresh `changeMarker` + `lastChecked` on every `living` entry you fetched (also when nothing changed — that is what makes the next run cheap), the advanced `watermark` + `seenIds` on every `feed-scan` source (again: also when nothing was relevant), and `urlVerified: true` once an unconfirmed URL has resolved.
+7. **Advance state.** Update `CHANGELOG.md` (date, added/changed/dropped, open items) and `_state.json`: `lastRun`, `runCount`, seen parts/tabs — plus, for the new groups, `status`/`ingestedAt` on processed `datedPosts`, the fresh `changeMarker` + `lastChecked` on every `living` entry you fetched (also when nothing changed — that is what makes the next run cheap), the advanced `watermark` + `seenIds` on every `feeds` entry that fetched successfully (again: also when nothing was relevant), the fresh `chapterCount` and per-chapter `status` on `secondaryFanMade`, and `urlVerified: true` once an unconfirmed URL has resolved.
 
 8. **Regenerate what the KB feeds.** Two generated artifacts derive from the KB and go stale the moment you change it — the commit hook blocks on both:
    - `node scripts/sync-plugin-kb.mjs` — each skill's bundled KB copy (`.claude/skills/setup-dev-agents/` and `setup-task-agents/knowledge/claude-agents/`, generated mirrors). Verify with `--check`.

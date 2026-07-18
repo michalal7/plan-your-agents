@@ -60,23 +60,54 @@
     "secondaryFanMade": {
       "type": "fan-made",
       "authoritative": false,
-      "updateBehavior": "feed-scan",
+      "updateBehavior": "check-every-run",
       "note": "Mark anything taken from it as \"(fan-made, Willison)\"; never adopt a safety-/API-relevant claim without doc verification.",
-      "feedUrl": "https://simonwillison.net/atom/everything/",
-      "watermark": "2026-07-18",
-      "seenIds": [
-        "https://simonwillison.net/2026/Jul/18/claude-make-fable-5-permanent/",
-        "https://simonwillison.net/2026/Jul/18/quixote/"
-      ],
-      "relevance": "Claude Code, agent orchestration, subagents, hooks, skills, permissions, context management. NOT general model releases, benchmarks, or unrelated tooling — those are the bulk of this feed.",
+      "url": "https://simonwillison.net/guides/agentic-engineering-patterns/",
+      "announcementUrl": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
+      "date": "2026-02-23",
+      "discoveredVia": "search result (title + URL + announcement; \"first two chapters\")",
+      "changeMarker": {"type": "chapterCount", "value": 16},
       "lastChecked": "2026-07-18",
-      "guideUrl": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
-      "guideParts": [
-        {"n": 1, "title": "Writing code is cheap now", "status": "summary-only"},
-        {"n": 2, "title": "Red/green TDD", "status": "summary-only"}
+      "chapters": [
+        {"section": "Principles", "title": "What is agentic engineering?", "status": "not-read"},
+        {"section": "Principles", "title": "Writing code is cheap now", "status": "summary-only"},
+        {"section": "Principles", "title": "Hoard things you know how to do", "status": "not-read"},
+        {"section": "Principles", "title": "AI should help us produce better code", "status": "not-read"},
+        {"section": "Principles", "title": "Anti-patterns: things to avoid", "status": "not-read"},
+        {"section": "Working with coding agents", "title": "How coding agents work", "status": "not-read"},
+        {"section": "Working with coding agents", "title": "Using Git with coding agents", "status": "not-read"},
+        {"section": "Working with coding agents", "title": "Subagents", "status": "not-read"},
+        {"section": "Testing and QA", "title": "Red/green TDD", "status": "ingested", "targetFiles": ["50-verification.md"]},
+        {"section": "Testing and QA", "title": "First run the tests", "status": "not-read"},
+        {"section": "Testing and QA", "title": "Agentic manual testing", "status": "not-read"},
+        {"section": "Understanding code", "title": "Linear walkthroughs", "status": "not-read"},
+        {"section": "Understanding code", "title": "Interactive explanations", "status": "not-read"},
+        {"section": "Annotated prompts", "title": "GIF optimization tool using WebAssembly and Gifsicle", "status": "not-read"},
+        {"section": "Annotated prompts", "title": "Adding a new content type to my blog-to-newsletter tool", "status": "not-read"},
+        {"section": "Appendix", "title": "Prompts I use", "status": "not-read"}
       ],
-      "note2": "Repointed 2026-07-18. Until then this entry tracked ONE article ('Agentic Engineering Patterns', announced as a living guide with ~1-2 chapters weekly). It never moved past 2 chapters in ~5 months, so every run paid a fetch for a frozen URL while the author kept publishing 3-4 posts a week elsewhere on the same site. The guide URL and the one ingested pattern (red/green TDD, 50-verification.md) are kept as history; the live surface is now the feed.",
-      "note3": "Yield is expected to be low: of the 12 newest entries on 2026-07-18, zero were about Claude Code or agent configuration. That is why `relevance` is stored here rather than left to the fetcher's judgement. A quiet run still costs exactly one fetch — the feed — which is what it cost before, but with a real chance of a hit."
+      "note2": "CORRECTED 2026-07-18. Until this run the entry pointed at `announcementUrl` — the dated blog post that ANNOUNCES the guide, not the guide. A dated post is frozen by construction, so it reported \"the first two chapters\" forever and three runs concluded the guide had stalled. It had not: the guide is at 16 chapters. The earlier conclusion 'still at 2 chapters after ~5 months, consider demoting' was an artifact of polling the wrong URL, and a first repair that repointed this entry at the site's blog feed made it worse by abandoning the on-topic surface entirely. The guide has no feed and changes in place, so `check-every-run` + `chapterCount` is the right shape; the general blog feed is tracked separately under `feeds`.",
+      "note3": "14 of 16 chapters are unread. 'Subagents', 'Anti-patterns: things to avoid', 'How coding agents work', 'First run the tests' and 'Agentic manual testing' are directly on-topic. Ingesting them is a KB content change (bump + mirrors) and is deliberately queued behind the fixture campaign, not done here."
+    },
+    "feeds": {
+      "type": "fan-made",
+      "authoritative": false,
+      "updateBehavior": "feed-scan",
+      "note": "General-interest blogs that publish a stream of items. Tracked by feed, never by a fixed article URL — the mistake corrected in `secondaryFanMade` on 2026-07-18.",
+      "entries": [
+        {
+          "feedUrl": "https://simonwillison.net/atom/everything/",
+          "siteUrl": "https://simonwillison.net/",
+          "watermark": "2026-07-18",
+          "seenIds": [
+            "https://simonwillison.net/2026/Jul/18/claude-make-fable-5-permanent/",
+            "https://simonwillison.net/2026/Jul/18/quixote/"
+          ],
+          "relevance": "Claude Code, agent orchestration, subagents, hooks, skills, permissions, context management, prompt-injection/agent security. NOT general model releases, benchmarks, or unrelated tooling — those are the bulk of this feed.",
+          "lastChecked": "2026-07-18",
+          "note": "Same author as `secondaryFanMade`, different surface: ~20 posts/week, mostly off-topic for this KB. Low yield, not zero — an exfiltration/lethal-trifecta writeup sat just outside the window inspected on 2026-07-18, which is why `relevance` explicitly includes agent security. Mark anything taken from it as \"(fan-made, Willison)\"."
+        }
+      ]
     },
     "contextOnly": {
       "type": "context",
@@ -115,7 +146,7 @@
   "openItems": [
     "Fan-made source fully captured (parts 1-21). Next run: only check for new parts.",
     "UNRESOLVED (run 3): part 12's tab count read as 2 across two WebFetch passes against the stored 4. The page is JS-rendered and the same fetch was inconsistent on part numbering, so this is probably fetch noise, not a content change. Settle it with the browser tool in the main run rather than trusting WebFetch; nothing was written to the KB on the strength of it.",
-    "Willison guide still at 2 chapters after ~5 months despite the author's stated 1-2/week cadence. If it is still 2 on the next run, consider demoting it from check-every-run to on-demand — it is costing a fetch per run for no delta.",
+    "WITHDRAWN (2026-07-18): 'Willison guide still at 2 chapters after ~5 months, consider demoting it' — false, and a lesson worth keeping. The entry was polling the guide's ANNOUNCEMENT post, which is dated and therefore frozen; the guide itself is at 16 chapters. Three runs read 'no delta' off a URL that could not have shown one. Before concluding a source is quiet, check that the URL is the source's living surface and not a dated post about it. 14 chapters remain unread — queued behind the fixture campaign.",
     "`contextOnly` (Trends Report PDF, InfoQ) still `pending` — deliberately, not an omission: its `updateBehavior` is `on-demand` and it may never serve as evidence for a claim. Fetch it only when framing is actually needed; the PDF will likely require the browser fallback.",
     "The `managed-agents` docs page (platform.claude.com/docs/en/managed-agents/overview) was NOT fetched. The blog post carries no decision criteria, limits or pricing — if a managed-vs-local recommendation is ever needed, that page is the gap to close.",
     "RESOLVED (run 3): the two observation-only claims parked in 90-deprecated.md — the residual `\"Task\"` name and the Windows 8191-character limit — are now documented verbatim in agent-sdk/subagents and have been promoted to contract. Worth remembering as a pattern: a claim that looks unsourced may simply be documented on a page the run did not fetch, so park rather than drop."

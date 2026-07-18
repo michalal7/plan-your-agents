@@ -25,9 +25,10 @@ Blockiert alles Weitere. 18 modifizierte Dateien liegen im Working Tree.
 1. Verifikationssuite: `cd mcp-server && npm test && npm run typecheck && npm run smoke
    && npm run smoke:bundle && npm run check:bundle`, dazu
    `node scripts/sync-plugin-kb.mjs --check` (zuletzt grün, `2 × 10 files`).
-2. Entscheidung **Willison auf `on-demand` demoten** — gut belegt (2 Kapitel in
-   ~5 Monaten bei behaupteter 1–2/Woche-Kadenz), kostet aktuell einen Fetch pro Lauf.
-   Wenn ja, in denselben Commit; es ist eine `_state.json`-Änderung.
+2. ~~Willison auf `on-demand` demoten~~ — **hinfällig, war ein Fehlschluss.** Die
+   Quelle war nicht ruhig, der Zeiger stand auf dem Ankündigungs-Blogpost statt auf
+   dem Guide. Der Guide steht bei 16 Kapiteln. Korrigiert am 2026-07-18; 14 Kapitel
+   sind ungelesen und stehen in Phase 4 an.
 3. Commit auf einem Branch, nicht auf `main`. Pre-Commit-Hook prüft Mirror/Index/Bundle.
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
@@ -175,7 +176,7 @@ nicht handlungsleitend — und bei 126 Versionen Drift vermutlich ohnehin überh
 
 ## Was auf dem Eigentümer liegt
 
-1. Willison demoten — ja/nein.
+1. ~~Willison demoten~~ — erledigt durch Korrektur, keine Entscheidung mehr nötig.
 2. Commit + Release 0.4.3 freigeben.
 3. Die vier Fixture-Läufe starten (nur er kann eine Session außerhalb des Repos
    verwurzeln).
