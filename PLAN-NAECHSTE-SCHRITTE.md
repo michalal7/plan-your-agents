@@ -1,7 +1,7 @@
 # Plan: nächste Schritte
 
 _Stand 2026-07-18, nach kb-update Lauf 4. Plugin 0.4.3 ist ausgeliefert und
-installiert; **0.4.4 (Lauf 4) ist committet, aber noch nicht gemerged, gepusht oder
+installiert; **0.4.5 (Läufe 4+5) ist committet, aber noch nicht gemerged, gepusht oder
 installiert** — siehe Phase 1a. Sprache Deutsch wie
 `REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
 
@@ -35,8 +35,8 @@ aktualisiert, Versionsprobe gefahren. Der Ablauf zur Nachvollziehbarkeit:
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
 **Abbruchbedingung, aktualisiert:** Ein Fixture-Lauf, dessen Skill-Basispfad nicht
-`…\0.4.4\…` meldet, wird verworfen. (War `0.4.3`; Lauf 4 hat die KB-Mirrors
-geändert, also ist 0.4.4 der Stand, gegen den die Kampagne laufen muss.)
+`…\0.4.5\…` meldet, wird verworfen. (War `0.4.3`; Läufe 4 und 5 haben die KB-Mirrors
+geändert, also ist 0.4.5 der Stand, gegen den die Kampagne laufen muss.)
 
 **Die Session-Bindung ist jetzt kontrolliert nachgewiesen** (2026-07-18). Ablauf:
 `claude plugin update` meldete „updated from 0.4.2 to 0.4.3 … Restart to apply
@@ -141,17 +141,42 @@ die Skills bereitwilliger Subagenten empfehlen lassen und damit `already-good`
 beeinflussen — **ist nicht eingetreten**: das Kapitel brachte nichts, kein Satz
 daraus steht in der KB.
 
-### 4b — blakecrosley.com, zwei Guides
+### 4b — blakecrosley.com, zwei Guides — ✅ ERLEDIGT (2026-07-18, Lauf 5, Plugin 0.4.5)
 
-Vollständiger Plan: `SOURCE-INTAKE-blakecrosley.md`.
-**Blocker entfallen** — `blakecrosley.com` steht seit 2026-07-18 in
-`permissions.allow`.
+Plan war `SOURCE-INTAKE-blakecrosley.md`, neue Quellgruppe `secondaryGuides`,
+Marker `wordCount`. **Deutlich ertragreicher als 4a:** sechs Ergänzungen, alle vor
+der Aufnahme gegen die Docs verifiziert — `autoMode`-Substruktur (Klartext-Regeln
+statt Tool-Patterns), `--safe-mode`, `fallbackModel` als Array, die
+Prompt-Caching-Variablen, `disableBundledSkills`, und dass Autorität nicht über
+die Mailbox wandert.
+
+**Vier Claims haben die Verifikation nicht überlebt** — genau deshalb geht eine
+Fan-Quelle durch `kb-verifier`. Der teuerste: `CLAUDE_CODE_WORKFLOWS=1` ist
+**invertiert**; Workflows sind standardmäßig an, die echte Variable ist
+`CLAUDE_CODE_DISABLE_WORKFLOWS=1`. Ein Plan nach diesem Guide hätte eine
+nicht existierende Variable gesetzt.
+
+**Der claude-code-Guide steht auf `partial`, nicht `ingested`.** ~66.700 Wörter,
+etwa ein Drittel gelesen. Bewusst so — `ingested` hätte zwei Drittel dauerhaft
+ausgeschlossen.
+
+**Und der Review fand zwei eigene Fehler dieses Laufs:** zwei „nicht dokumentiert"-
+Urteile waren falsch, beide weil `/en/env-vars` abgeschnitten zurückkam und
+Abwesenheit-in-abgeschnittenem-Fetch als Abwesenheit-in-den-Docs notiert wurde.
+`_state.json` warnt seit Lauf 3 vor genau diesem Muster auf einer Nachbarseite.
+Jetzt als Regel festgehalten. Nebenbei korrigiert: Auto Mode ist **alle Pläne**,
+nicht „Max/Team/Enterprise".
 
 ### 4c — Paper „Dive into Claude Code" (arXiv 2604.14228v1)
 
 Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI. 14 Seiten, ~31.700 Wörter.
-Lokale Datei, **kein Allowlist-Blocker**. Konvertiert liegt sie im Scratchpad;
-für die Aufnahme neu konvertieren, der Scratchpad ist sessiongebunden.
+
+⛔ **BLOCKIERT beim Eigentümer (Stand 2026-07-18).** Das PDF war eine Anlage im
+Chat, die konvertierte Fassung lag im Scratchpad — der ist inzwischen leer. Ohne
+erneutes Anhängen des PDFs ist 4c nicht durchführbar. (Mit weg ist auch das
+Protokoll-Artefakt `already-good_agent-dev-plan_0.4.0-INVALID.md`; unschädlich,
+der Lauf war ohnehin ungültig, aber der Beleg existiert nur noch als Beschreibung
+hier.)
 
 **Quellentyp und Rang.** Third-party *Quellcode-Analyse*, kein Blogpost und keine
 offizielle Doku. Das ist ein neuer Typ für `_state.json`: unterhalb der offiziellen
@@ -222,18 +247,20 @@ nicht handlungsleitend — und bei 126 Versionen Drift vermutlich ohnehin überh
 1. ~~Willison demoten~~ — hinfällig, war ein Fehlschluss (siehe Phase 4a).
 2. ~~Commit + Release 0.4.3 freigeben~~ — erledigt 2026-07-18.
 3. ~~`blakecrosley.com` in die Allowlist~~ — erledigt 2026-07-18.
-4. **0.4.4 freigeben und installieren.** Neu, und **Voraussetzung für Punkt 5** — im
-   Review von Lauf 4 aufgefallen, weil die Abbruchbedingung auf `…\0.4.4\…`
-   verschärft wurde, ohne dass das Ausliefern je als Aufgabe dastand. So wie es
-   dastand, hätte der Eigentümer Läufe gestartet, die die eigene Abbruchbedingung
-   verwirft. Branch `kb-run4-willison-guide`, Commit steht, Suite grün, **nicht
-   gepusht**. Danach `claude plugin update` **plus** `/reload-plugins` oder eine neue
-   Session — und in jedem Fall die Versionsprobe.
+4. **0.4.5 nach `main` mergen und installieren.** **Voraussetzung für Punkt 5** — im
+   Review von Lauf 4 aufgefallen, weil die Abbruchbedingung verschärft wurde, ohne
+   dass das Ausliefern je als Aufgabe dastand. So wie es dastand, hätte der
+   Eigentümer Läufe gestartet, die die eigene Abbruchbedingung verwirft. Branch
+   `kb-run4-willison-guide` ist **gepusht** (4 Commits, Läufe 4+5), Suite grün;
+   der Merge steht aus. Danach `claude plugin update` **plus** `/reload-plugins`
+   oder eine neue Session — und in jedem Fall die Versionsprobe.
 5. **Die vier Fixture-Läufe starten.** Liegt zwingend beim Eigentümer: nur er kann
-   eine Session außerhalb dieses Repos verwurzeln. Die Session muss 0.4.4 auflösen —
+   eine Session außerhalb dieses Repos verwurzeln. Die Session muss 0.4.5 auflösen —
    entweder frisch gestartet oder per `/reload-plugins` nachgezogen.
+6. **Das arXiv-PDF erneut anhängen**, falls 4c noch gewollt ist. Ohne das kommt
+   diese Phase nicht weiter; siehe 4c.
 
-Alles Übrige (Phase 3 Urteil, restliche Phase 4) hängt an Punkt 5.
+Phase 3 (Urteil) und 4c hängen an den Punkten 5 bzw. 6.
 
 ## Nicht behoben, bewusst
 
