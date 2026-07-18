@@ -13,7 +13,8 @@ Read the content when needed; don't pull it into context up front.
   - `cd mcp-server && npm run build:index` (rebuild the semantic index).
 - After editing `mcp-server/src/`, rebuild the plugin bundle: `cd mcp-server && npm run build:bundle` (verify with `npm run check:bundle`).
 - Never hand-edit the generated artifacts: `.claude/skills/*/knowledge/claude-agents/` (both skill mirrors), `mcp-server/data/index.json`, and `mcp-server/bundle/plugin-server.mjs`.
-- Enforcement (so the above isn't just convention): CI (`.github/workflows/ci.yml`) runs the mirror `--check` + typecheck + tests + bundle checks on push/PR; a local pre-commit hook (`git config core.hooksPath .githooks`) blocks commits with a drifted mirror, stale index, or outdated bundle.
+- Enforcement (so the above isn't just convention): CI (`.github/workflows/ci.yml`) runs the mirror `--check` + typecheck + tests + bundle checks on push/PR; a local pre-commit hook (`git config core.hooksPath .githooks`) blocks commits with a drifted mirror, stale index, or outdated bundle. (`check:fresh` is hook-only: the index is gitignored, so it does not exist in CI.)
+- **Changed anything the plugin ships** — skills, `_shared/`, the KB mirrors, the bundle, `.mcp.json`? Then bump `version` in `.claude-plugin/plugin.json` **and** add a `CHANGELOG.md` entry. A bump is mandatory, not hygiene: `claude plugin update` compares the manifest version, not content, so without it the change never reaches an installed user. Rules and the tested evidence: `.claude/knowledge/claude-agents/MAINTENANCE.md` → "Releasing the plugin".
 
 ## Conventions
 - The KB is the single source of truth; the skill mirror and MCP index are generated from it.

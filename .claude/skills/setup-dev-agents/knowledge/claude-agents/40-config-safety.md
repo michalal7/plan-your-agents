@@ -41,7 +41,7 @@ Hook events verified against code.claude.com/docs/en/hooks.
 - Claude uses allowed tools autonomously. Browse/install plugins/MCPs/skills via `/plugin`.
 
 ## Sandbox
-- `/sandbox`: open-source sandbox runtime, file and network isolation. Windows "coming soon" (as of Part 3, verify).
+- `/sandbox`: open-source sandbox runtime, file and network isolation. ⚠️ Windows support was "coming soon" as of Part 3 (fan-made, Feb 2026) — unverified against the docs, so don't promise it.
 - For sandboxed runs, `dontAsk`, `auto` or `bypassPermissions` fit (all valid).
 
 ## Effort

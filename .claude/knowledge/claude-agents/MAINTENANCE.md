@@ -44,7 +44,7 @@ Treat this as one indivisible step whenever shipped content changes:
 - the generated KB mirrors `.claude/skills/*/knowledge/claude-agents/`
 - `mcp-server/bundle/plugin-server.mjs` and `.mcp.json`
 
-**Not shipped** — no bump: root docs (`README.md`, `RUNBOOK.md`, `REPO-ANALYSE.md`, `CLAUDE.md`), comments in `mcp-server/src/` that leave the built bundle byte-identical, CI/hook config.
+**Not shipped** — no bump: root docs (`README.md`, `RUNBOOK.md`, `REPO-ANALYSE.md`, `CLAUDE.md`), comments in `mcp-server/src/` that leave the built bundle byte-identical, CI/hook config, and — the least obvious case — **the curator** (`.claude/commands/kb-update.md`, `.claude/agents/kb-*.md`). The manifest declares only `skills`, so the curator is developer-side tooling and never reaches an installed user; `claude plugin details` confirms it as `Agents (0)`.
 
 **Install and update only from a clean, committed tree.** The `michalal7` marketplace is a *directory* source (`known_marketplaces.json` → `"source": "directory"`), so an install copies the **working tree**, uncommitted work included. The `gitCommitSha` in `installed_plugins.json` records only the HEAD at install time and can mislead: on 2026-07-18 it read `89be2fd` while the cache already held the BM25 bundle that was committed later as `876dad5`. Installing from a dirty tree therefore produces a cache whose recorded provenance is wrong.
 

@@ -1,6 +1,6 @@
 # Repo-Analyse: `plan-your-agents`
 
-_Stand: 2026-07-17. Bewertung, wie gut das Repo sein Ziel umsetzt, plus recherchierte Verbesserungen. Konkrete Befunde wurden unabhängig gegen Dateien und offizielle Docs verifiziert._
+_Geschichtetes Dokument: Abschnitte 1–4 sind der Befundstand vom 2026-07-17 (Plugin damals v0.2.0) und werden **nicht** rückwirkend umgeschrieben — spätere Erkenntnisse stehen als datierte Nachträge darin. Der aktuelle Endstand steht in **Abschnitt 5**. Konkrete Befunde wurden unabhängig gegen Dateien und offizielle Docs verifiziert._
 
 ## 1. Ziel des Repos
 Ein Claude-Code-**Plugin** (`plan-your-agents`, v0.2.0), das eine kuratierte Wissensbasis über Claude-Code-Agenten-Setups bereitstellt und daraus konkrete Setup-Empfehlungen ableitet. Bestandteile:
@@ -38,7 +38,30 @@ Das Ziel ist weitgehend und ungewöhnlich diszipliniert erreicht. Auffällig: da
 - **MCP-Server ins Plugin-Manifest:** die Plugin-Referenz bestätigt `mcpServers` in `plugin.json` und `${CLAUDE_PLUGIN_DATA}` (überlebt Updates) für einen vorgebauten Index → Plugin-Nutzer bekämen Semantik-Suche ohne Extra-Install und Modell-Download. Echter Mehrwert.
   > **Nachtrag 2026-07-18 — umgesetzt, aber anders:** Der Server ist jetzt Teil des Plugins, allerdings (a) **lexikalisch (BM25)** statt semantisch — Messung: Deps + Modell hätten ~1,4 GB für ~200 KB Wissen bedeutet, das Bundle wiegt ~720 KB — und (b) verdrahtet über **`.mcp.json` im Plugin-Root**, nicht über das Manifest-Feld: `mcpServers` in `plugin.json` registrierte **nicht** (weder inline noch als Pfad; `claude plugin details` meldete `MCP servers (0)`). Die obige Empfehlung, dem Manifest-Feld zu folgen, ist damit **praktisch widerlegt**. Details: `mcp-server/README.md`. (Der Kurator mitzuliefern ist schwächer begründet — Producer-Seite; und Plugin-Agenten dürfen laut Docs keine `hooks`/`mcpServers`/`permissionMode`-Frontmatter haben, was `kb-fetcher`/`kb-verifier` aber ohnehin nicht nutzen.)
 - **Consumer-only-Plugin ist Absicht,** kein Versehen: Nutzer konsumieren die gebündelte KB über die Skills; Updates kommen über Versions-Bumps.
-- Geteiltes `isKnowledge`-Modul (Schwäche 4); Versions-Zentralisierung (3); Hybrid-Retrieval (7); HTTP-Transport-Test (5); wiederkehrender `/kb-update`-Lauf (Schedule) gegen das Frische-Risiko (6).
+- Geteiltes `isKnowledge`-Modul (Schwäche 4); Versions-Zentralisierung (3); **Hybrid-Retrieval für den *semantischen* Pfad** (7 — der lexikalische Pfad ist mit BM25 ausgeliefert, siehe Nachtrag oben); HTTP-Transport-Test (5); wiederkehrender `/kb-update`-Lauf (Schedule) gegen das Frische-Risiko (6).
+- **Nachgetragen 2026-07-18:** CI-Actions auf `@v5` heben (`actions/checkout`/`setup-node` laufen auf dem deprecateten Node 20 — CI-Annotation, kein Fehler); CHANGELOG-Versions-Check als CI-Einzeiler (prüft, dass die `version` aus `plugin.json` in `CHANGELOG.md` vorkommt — fängt genau die einmal aufgetretene Drift Manifest 0.3.0 ↔ CHANGELOG-Ende 0.2.0; bewusst als flacher Grep, weil der CHANGELOG datums- statt versionsüberschrieben ist und ein strenger Parse bei reinen Doku-Commits falsch feuern würde).
 
 ## 4. Fazit
-Das Repo erreicht sein Ziel weitgehend und mit ungewöhnlicher Disziplin (Single Source of Truth, Producer≠Checker, echte Tests). Der größte verbleibende Hebel war nicht *mehr Inhalt*, sondern **Enforcement** — die eigenen Konventionen maschinell durchzusetzen, statt sie zu dokumentieren. Genau das ist jetzt (CI + Pre-Commit + `check:fresh`) geschlossen; die restlichen Punkte sind Enhancements, keine Defekte.
+Das Repo erreicht sein Ziel weitgehend und mit ungewöhnlicher Disziplin (Single Source of Truth, Producer≠Checker, echte Tests). Der größte verbleibende Hebel war nicht *mehr Inhalt*, sondern **Enforcement** — die eigenen Konventionen maschinell durchzusetzen, statt sie zu dokumentieren. Genau das ist jetzt geschlossen: CI + Pre-Commit sichern alle **drei** generierten Artefakte (Skill-Mirrors, semantischer Index, Plugin-Bundle); die restlichen Punkte sind Enhancements, keine Defekte.
+
+## 5. Abschluss (Stand 2026-07-18, v0.3.1)
+Das Repo liefert eine kuratierte Wissensbasis über Claude-Code-Agenten-Setups als Claude-Code-Plugin: zwei Skills, die daraus einen Markdown-Plan für ein konkretes Repo ableiten, plus einen MCP-Server, der dieselbe KB an beliebige Clients ausliefert. Die KB ist die einzige Wahrheitsquelle; alles Abgeleitete ist generiert und maschinell gegen Drift gesichert. Der Server existiert in zwei Builds aus **einer** Codebasis — semantisch standalone (Modell + Index), lexikalisch im Plugin (BM25, ~720 KB, dependency-frei, Index im Speicher).
+
+**Drei Enforcement-Ebenen**
+1. **Deterministische Basis** — `.gitattributes` (LF), `--check`-Skripte ohne Seiteneffekte.
+2. **Pre-Commit-Hook** (`git config core.hooksPath .githooks`) — Skill-Mirrors, semantischer Index, Plugin-Bundle.
+3. **CI** (`.github/workflows/ci.yml`) — Mirrors, Typecheck, Tests, Bundle-Byte-Vergleich, Bundle-Subprozess-Smoke. `check:fresh` fehlt hier bewusst: der Index ist gitignored und existiert in CI nicht.
+
+Dazu die Release-Regel (`MAINTENANCE.md` → „Releasing the plugin"): shipped Content geändert → `version` bumpen → CHANGELOG-Eintrag. Getestet, nicht vermutet — `claude plugin update` vergleicht die Manifest-Version, nicht den Inhalt.
+
+**Konsolidierter Backlog** (eine Liste, sonst nirgends)
+
+| Punkt | Aufwand |
+|---|---|
+| Geteiltes `isKnowledge`-Modul (letzte Doppel-Definition) | ~1 h |
+| CHANGELOG-Versions-Check als CI-Einzeiler | ~30 min |
+| Versions-Zentralisierung (`package.json` ↔ `server.ts`) | ~30 min |
+| CI-Actions auf `@v5` (Node-20-Deprecation) | ~10 min |
+| HTTP-Transport-Test | ~2 h |
+| Hybrid-Retrieval für den semantischen Pfad | ~4 h |
+| Wiederkehrender `/kb-update` (Frische-Risiko, `runCount: 1`) | organisatorisch |

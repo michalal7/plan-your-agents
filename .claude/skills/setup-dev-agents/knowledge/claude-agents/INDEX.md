@@ -37,3 +37,5 @@ Sources: (1) the fan-made timeline howborisusesclaudecode.com (Boris Cherny et a
 | Setup decision | decision tree | `PLAYBOOK` |
 
 Convention in the files: ⚠️ marks uncertain/to-be-checked-against-docs items; "(fan-made)" marks the non-official; "(verified)" = checked against the official docs.
+
+The `verified` ledger in `_state.json` is **not** an inventory of every verified line — it records only the *contested* claims a run had to settle (confirmed corrections and refuted assertions), so it stays short and reviewable. A "(verified)" marker on a section therefore means "checked during the run dated in that ledger", not "each line has its own ledger entry".
