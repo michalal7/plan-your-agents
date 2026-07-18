@@ -9,6 +9,12 @@ been run.
 Grade the **output, not the path**: a plan that reaches the right answer by different
 reasoning passes. What must not happen is the wrong answer stated confidently.
 
+**Observations are allowed; recommended work fails.** A plan may note an inconsistency it
+finds in a fixture — reporting a real defect is not inventing work, it is the behaviour we
+want. It fails only when it turns the observation into recommended setup changes that the
+fixture's signals don't warrant. This is the mirror of "a plan that invents work here
+fails", and the two must not be confused when grading.
+
 ## How to run
 
 From this repo, point the skill at a fixture:
@@ -45,11 +51,16 @@ the self-assessment loop these fixtures exist to break. Confirm or correct them 
 using them to judge a run.
 
 ### `already-good/` — a TypeScript invoice API with a proportionate setup
-Signals: `npm test` (vitest), lint, build, a formatter; `CLAUDE.md` with verification
-commands, real conventions and a corrections section; `settings.json` with a scoped
-allowlist and one `PostToolUse` format hook; tests covering the money logic.
+Signals: `npm test` (vitest), lint, build, a formatter; `CLAUDE.md` **at the repo root**
+with verification commands, real conventions and a corrections section; `settings.json`
+with a scoped allowlist and one `PostToolUse` format hook; tests covering the money logic.
+Every declared command resolves: `tsconfig.json` and `eslint.config.js` (ESLint 9 flat
+config) both exist. That matters — the first draft of this fixture declared `tsc -p
+tsconfig.json` and `eslint src test` with neither file present, and put `CLAUDE.md` under
+`.claude/` where the KB places it at the root. A run against that version would have
+measured fixture defects instead of skill quality.
 
-*Proposed expected answer:* **change nothing.** The setup already matches PLAYBOOK §3.
+*Proposed expected answer (dev lens):* **change nothing.** The setup already matches PLAYBOOK §3.
 This is the false-positive trap: the tempting-but-wrong moves are a code-reviewer agent
 (CI and `/code-review` cover it), worktrees (no colliding parallel edits), or Agent Teams
 (nothing to disagree about). A plan that invents work here fails, however well argued.
@@ -57,22 +68,35 @@ This is the false-positive trap: the tempting-but-wrong moves are a code-reviewe
 ### `code-service/` — a plain Node service with tests and no `.claude/` at all
 Signals: `npm test` via `node --test`, three real tests, no lint, no formatter, no config.
 
-*Proposed expected answer:* **single agent plus the test loop.** Add a short `CLAUDE.md`
-(the test command, the "tests are the contract" convention already stated in
+*Proposed expected answer (dev lens):* **single agent plus the test loop.** Add a short
+`CLAUDE.md` (the test command, the "tests are the contract" convention already stated in
 `planner.js`), and a permissions allowlist for `npm test`. Failing here means recommending
 a formatter hook where no formatter exists — the KB says hook a formatter *if one exists*,
 it does not say add one.
+
+**Proposing new tooling counts as invented work.** ESLint, Prettier, a CI pipeline: the
+absence of a linter is not a pain signal, and this skill advises on the *agent* setup, not
+on the project's toolchain. A plan that dodges the formatter trap and then offers a linter
+has made the same mistake one door down.
 
 ### `doc-vault/` — research notes, no code
 Signals: two markdown files, no `src`, no tests, no build. Content is interview synthesis
 and a dated decision log, including one explicitly unresolved contradiction and one
 "n=0, unsupported" note.
 
-*Proposed expected answer:* **source fidelity as the verification loop, and almost no
-infrastructure.** No test loop exists or can exist; the check is whether statements stay
-bound to their sources and dates. `CLAUDE.md` conventions only — no agents, no commands,
-no hooks. Failing here means forcing a code setup onto a non-code repo, which
-`_shared/agent-analysis.md` §3 explicitly warns against.
+*Proposed expected answer (dev lens):* **source fidelity as the verification loop, and
+almost no infrastructure.** No test loop exists or can exist; the check is whether
+statements stay bound to their sources and dates — the fixture gives concrete material to
+anchor that on (the unresolved nightly-vs-weekly contradiction, the `n=0` note).
+`CLAUDE.md` conventions only — no agents, no commands, no hooks. Failing here means forcing
+a code setup onto a non-code repo, which `_shared/agent-analysis.md` §3 warns against.
+
+*Proposed expected answer (task lens):* **no agent system is warranted.** Two markdown
+files are not a recurring workload; there is nothing to orchestrate. The honest output is a
+"change nothing" verdict plus, at most, a note on what would change that (a real ingestion
+cadence, many sources, a repeatable synthesis step). This is the only "do nothing" case the
+**task** skill has — the other two fixtures exercise the dev skill — so it carries the
+whole weight of testing whether `setup-task-agents` can decline to build something.
 
 ## What a failing run should produce
 
