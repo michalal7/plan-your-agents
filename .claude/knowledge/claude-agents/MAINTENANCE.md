@@ -56,6 +56,13 @@ The KB ages against a moving target, so a run is scheduled rather than waited fo
 
 The freshness risk is real and recorded: `runCount` in `_state.json` counts the actual runs. A KB whose counter stays at 1 while its sources keep publishing is stale no matter how disciplined its provenance markers are.
 
+**Deliberately not automated (decided 2026-07-18, after run 2).** The cadence above is a documented mechanism, not a scheduled job, and that is the intended end state — not a gap waiting to be closed. Three reasons, so this doesn't get re-litigated:
+1. **The run needs this machine.** It depends on the local ~465 MB model cache (without it `build:index` degrades to `hash-256`), the npm toolchain and the pre-commit hook. A cloud routine has none of them.
+2. **Ingestion is judgement, not mechanics.** Sorting in, condensing, deciding what gets deprecated. In run 2 the value came precisely from the supervised steps: a browser re-check that cleared two self-suspected items *and* caught a real error on the way (a custom harness flag about to be filed as a Claude Code flag), and a verifier pass that stopped six claims. A job that commits and pushes unattended removes exactly that control.
+3. **Monthly cadence buys almost nothing.** A ~15-minute run every four weeks does not justify persistent infrastructure holding push rights.
+
+If a nudge is ever wanted, the acceptable forms are a **notify-only** reminder, or a **report-only** run (fetch → verify → report a proposed diff, no commit). Ingestion stays a human-started `/kb-update`. Anything that commits or pushes unattended is out of scope by decision, not by omission.
+
 ## Known environment pitfalls
 - **JS-rendered sources** (e.g. parts 17–21 of the fan-made site): WebFetch doesn't deliver the tab contents. Fetch them in the main run via the Chrome/browser tool — subagents have no browser access.
 - **Writing to `.claude/` from Cowork Cloud**: the bridge tool `device_commit_files` refuses `.claude` target paths. Reliable path: commit into a non-`.claude` staging folder (e.g. `_kb_stage/`), then move it to the target with `device_bash` and `mv`. `device_bash` can write into `.claude` but **not delete** (rm/rmdir fail) — empty staging folders remain and are removed manually. When the curator instead runs locally as `/kb-update` in Claude Code, it writes directly; this detour doesn't apply.
