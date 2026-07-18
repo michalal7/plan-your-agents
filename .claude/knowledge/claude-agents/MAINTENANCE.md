@@ -33,6 +33,21 @@ Modes: `advise` (writes the plan, otherwise read-only, default) / `apply` (also 
 Use across projects: put the skill **and** `knowledge/claude-agents/` into `~/.claude/`; the skill reads the KB from `~/.claude/knowledge/claude-agents/` (or repo-local, if present).
 - **MCP server** (`mcp-server/`) — exposes the same KB to any MCP client (resources + semantic `search_knowledge` + a `setup-agents` prompt). Reads the KB live; never forks it. See `mcp-server/README.md`.
 
+## Releasing the plugin (version bumps)
+The plugin cache is keyed by version, and `claude plugin update` compares the **manifest version** against the installed version — it does not compare content. Verified 2026-07-18: with a marker planted in the cached `SKILL.md` and `version` left at 0.3.0, `claude plugin update plan-your-agents@michalal7` reported *"already at the latest version (0.3.0)"*, the marker survived, the file hash was unchanged and `installed_plugins.json` → `lastUpdated` was not touched. A bump is therefore **mandatory, not hygiene**: shipped content changed without a bump never reaches an installed user, silently. (Forcing a refresh at an unchanged version — uninstall + reinstall — was not tested.)
+
+Treat this as one indivisible step whenever shipped content changes:
+**(1)** change shipped content → **(2)** bump `version` in `.claude-plugin/plugin.json` → **(3)** add a `CHANGELOG.md` entry naming the new version. Step 3 is part of the unit because manifest and changelog have already drifted apart once (manifest at 0.3.0 while the changelog still ended at 0.2.0); coupling them lets a consistency sweep catch it mechanically.
+
+**Shipped content** — a change here requires a bump:
+- `.claude/skills/*/SKILL.md` and `.claude/skills/_shared/`
+- the generated KB mirrors `.claude/skills/*/knowledge/claude-agents/`
+- `mcp-server/bundle/plugin-server.mjs` and `.mcp.json`
+
+**Not shipped** — no bump: root docs (`README.md`, `RUNBOOK.md`, `REPO-ANALYSE.md`, `CLAUDE.md`), comments in `mcp-server/src/` that leave the built bundle byte-identical, CI/hook config.
+
+**Install and update only from a clean, committed tree.** The `michalal7` marketplace is a *directory* source (`known_marketplaces.json` → `"source": "directory"`), so an install copies the **working tree**, uncommitted work included. The `gitCommitSha` in `installed_plugins.json` records only the HEAD at install time and can mislead: on 2026-07-18 it read `89be2fd` while the cache already held the BM25 bundle that was committed later as `876dad5`. Installing from a dirty tree therefore produces a cache whose recorded provenance is wrong.
+
 ## Known environment pitfalls
 - **JS-rendered sources** (e.g. parts 17–21 of the fan-made site): WebFetch doesn't deliver the tab contents. Fetch them in the main run via the Chrome/browser tool — subagents have no browser access.
 - **Writing to `.claude/` from Cowork Cloud**: the bridge tool `device_commit_files` refuses `.claude` target paths. Reliable path: commit into a non-`.claude` staging folder (e.g. `_kb_stage/`), then move it to the target with `device_bash` and `mv`. `device_bash` can write into `.claude` but **not delete** (rm/rmdir fail) — empty staging folders remain and are removed manually. When the curator instead runs locally as `/kb-update` in Claude Code, it writes directly; this detour doesn't apply.
