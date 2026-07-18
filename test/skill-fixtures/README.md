@@ -17,15 +17,35 @@ fails", and the two must not be confused when grading.
 
 ## How to run
 
-From this repo, point the skill at a fixture:
+**Copy the fixture out of this repo and run rooted there.** Do not run it in place.
 
 ```
-/plan-your-agents:setup-dev-agents test/skill-fixtures/already-good
-/plan-your-agents:setup-task-agents test/skill-fixtures/doc-vault
+cp -r test/skill-fixtures/already-good <somewhere outside this repo>/already-good
+# then start a session whose working directory is that copy, and run:
+/plan-your-agents:setup-dev-agents .
 ```
 
 Use **advise** mode. The plan lands in the fixture root as `agent-dev-plan.md` /
-`agent-task-plan.md`; both are gitignored so a run leaves no trace to clean up.
+`agent-task-plan.md`.
+
+The relocation is not fussiness. A run started inside this repo inherits the repo's own
+`CLAUDE.md` through a system reminder — automatically, before the agent does anything, and
+no instruction not to read a file can prevent it. An early version of that `CLAUDE.md`
+stated one fixture's expected answer verbatim, so the first `already-good` run had the
+answer in context before it saw the fixture, and its output proved nothing. The root
+`agent-dev-plan.md` names all three expected answers as well.
+
+Beyond the answer key, a run inside this repo also inherits its subject matter — the KB,
+the plugin, the conventions — none of which a real target repo would supply. Running from
+a copy elsewhere is simply what an actual user's situation looks like. The skill reads its
+KB from the installed plugin, so it works anywhere.
+
+**Before scanning, the run must report the absolute path it read
+`_shared/agent-analysis.md` from.** If that path is not the currently installed plugin
+version, abort and discard the plan even if it looks good — a plausible plan built from
+the wrong template is more dangerous than none, because it appears to satisfy criteria it
+never knew about. This has already happened once: a run silently used the previously
+installed version.
 
 The fixtures' own `.claude/` directories are inert — Claude Code reads project config from
 the working directory upward, never downward — so `already-good/.claude/settings.json`

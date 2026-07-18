@@ -24,7 +24,9 @@ Read the content when needed; don't pull it into context up front.
 ## Plan-template freeze (since 2026-07-18, 0.4.2)
 The advisory surfaces — `.claude/skills/_shared/agent-analysis.md` (the plan skeleton and rules) and the `setup-agents` prompt in `mcp-server/src/server.ts` — are **frozen for content changes** until skill-output fixtures exist. They have now been reworked twice, validated only against this repo, which is the one repo whose history the generated plans can narrate. That is the situation principle #1 in the KB warns about: no feedback loop, no recommendation.
 
-The loop that lifts the freeze is three fixture repos (`agent-dev-plan.md` §4): a code repo, a non-code vault, and a repo whose correct answer is "change nothing" — the last one matters because the empty-§4 path was only just repaired. Until they exist and have been run, iterate the template only with fixture evidence, not with introspection. Bug fixes and broken cross-references are of course exempt.
+The loop that lifts the freeze is the three fixture repos under `test/skill-fixtures/`. Until they have been run, iterate the template only with fixture evidence, not with introspection. Bug fixes and broken cross-references are of course exempt.
+
+**This file is auto-loaded into every agent's context, so it must not name the fixtures' expected answers** — an earlier version did, which contaminated a run before it started. The expected answers and the run protocol live in `test/skill-fixtures/README.md`, which fixture runs are forbidden to read. For the same reason a fixture run must not be started from inside this repo at all: copy the fixture elsewhere and run rooted there, so no part of this repo's context reaches the agent.
 
 ## Guardrails
 - If a guardrail blocks an edit — especially to permission/config files like `.claude/settings.json` — stop and ask. Never route the same change through another channel (shell append, rename, temp file, etc.), even when the change looks trivial. The block is a signal about the file's sensitivity, not an obstacle to work around. Disclosing the workaround afterwards does not make it acceptable.
