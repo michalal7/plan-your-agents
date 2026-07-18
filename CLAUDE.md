@@ -21,5 +21,10 @@ Read the content when needed; don't pull it into context up front.
 - The KB is English-only — content, `CHANGELOG.md`, `_state.json` notes.
 - `overview.png` is rendered from `scripts/overview.html` — edit the source, re-render, never patch the image alone.
 
+## Plan-template freeze (since 2026-07-18, 0.4.2)
+The advisory surfaces — `.claude/skills/_shared/agent-analysis.md` (the plan skeleton and rules) and the `setup-agents` prompt in `mcp-server/src/server.ts` — are **frozen for content changes** until skill-output fixtures exist. They have now been reworked twice, validated only against this repo, which is the one repo whose history the generated plans can narrate. That is the situation principle #1 in the KB warns about: no feedback loop, no recommendation.
+
+The loop that lifts the freeze is three fixture repos (`agent-dev-plan.md` §4): a code repo, a non-code vault, and a repo whose correct answer is "change nothing" — the last one matters because the empty-§4 path was only just repaired. Until they exist and have been run, iterate the template only with fixture evidence, not with introspection. Bug fixes and broken cross-references are of course exempt.
+
 ## Guardrails
 - If a guardrail blocks an edit — especially to permission/config files like `.claude/settings.json` — stop and ask. Never route the same change through another channel (shell append, rename, temp file, etc.), even when the change looks trivial. The block is a signal about the file's sensitivity, not an obstacle to work around. Disclosing the workaround afterwards does not make it acceptable.

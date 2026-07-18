@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-18 — Align the MCP advisory surface + freeze the template (plugin 0.4.2)
+The `setup-agents` prompt in `mcp-server/src/server.ts` is a second advisory surface, and 0.4.1 left it behind. Ported the **substance**, not the formatting:
+- **Verdict first** — step 5 now opens with the one-sentence answer plus an effort class, before the reasoning.
+- **The unconditional §5 sweep** — the lesson from the 0.4.1 review, which was missing here exactly as it had been missing from the skeleton: a recommendation to change nothing still has to show it checked.
+- **The widened precision rule** — the prompt previously guarded only flags and settings ("claim nothing from memory"); it now covers every number and attribution, with declared estimates explicitly exempt.
+
+Deliberately **not** ported: the section skeleton, the ~120-line cap and the plain-language companion lines. Those are conventions for a plan *file*, and an MCP client may not be writing one — a mechanical copy would bloat the prompt without improving the flow. The prompt now says so, so the boundary is explicit rather than inferred.
+
+Also clarified a genuine ambiguity in `_shared`: inside the fenced skeleton, "the rule in §5" could be read as the plan's §5 (Next steps) instead of the machinery's §5 (Rules).
+
+**Template freeze** recorded in `CLAUDE.md`: both advisory surfaces are closed to content changes until skill-output fixtures exist. They have been reworked twice now, validated only against this repo — the one repo whose history the generated plans can narrate. That is precisely the no-feedback-loop situation KB principle #1 warns about, so the next iteration waits for evidence instead of introspection.
+
 ## 2026-07-18 — Plan template: verdict first, less redundancy (plugin 0.4.1)
 Both skills were run against this repo and the two resulting plans were reviewed. They were factually sound (88 tracked files, the test-coverage gap, and a sharp catch: `github.com` is not in the WebFetch allowlist, so the note redirecting the fetcher to `raw.githubusercontent.com` is load-bearing). The weaknesses were in the **template**, not the execution — the skills filled it correctly.
 
