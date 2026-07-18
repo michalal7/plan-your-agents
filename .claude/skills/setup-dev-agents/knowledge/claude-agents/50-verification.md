@@ -21,7 +21,7 @@ Red/green TDD works as a *steering* pattern, not just a testing one: have the ag
 ## No automated test surface? Drive it and capture evidence
 When the work has no test suite to run — UI, content, a fresh script — the loop is still "run it", never "read it". Shape: **start the thing → drive it programmatically → capture observable output → have the agent inspect that output.**
 - API/CLI work: start a dev server or run the binary, exercise it (`curl`, a throwaway script), read the real response. Keep scratch files out of the repo.
-- Browser/UI work: drive it with a browser-automation layer and take screenshots; the agent judges the screenshot with its own vision ("confirm the menu is where it should be"). Claude Code ships browser tooling for exactly this (`30-workflows.md`).
+- Browser/UI work: drive it with a browser-automation layer and take screenshots; the agent judges the screenshot with its own vision ("confirm the menu is where it should be"). Claude Code ships browser tooling for exactly this — see the Chrome-extension row in the table above and `PLAYBOOK-agent-design.md`.
 - **Record commands and their real output**, not the agent's account of them. A transcript of executed commands is the difference between a result that was shown and one that was merely asserted — the same producer≠checker logic as below, applied to evidence.
 - Convert anything a manual pass finds into a permanent test (red/green above), so the loop tightens over time.
 (fan-made, Willison, [agentic-manual-testing](https://simonwillison.net/guides/agentic-engineering-patterns/agentic-manual-testing/); the third-party tools it names are not Anthropic-endorsed and are deliberately not listed here)

@@ -23,9 +23,16 @@ Caching matches on the **prefix**, exactly: a change anywhere in the prefix reco
 - Editing a file Claude already read does **not** rewrite the earlier read. A `<system-reminder>` is appended instead.
 - Skills and commands inject their instructions **at the point of invocation**; nothing earlier changes.
 - `/recap` appends; `/compact` replaces. `/rewind` truncates back to an already-cached prefix.
-- **`CLAUDE.md` edits do not take effect mid-session** — the prefix was fixed when the session started. Restart the session after changing it. (Same mechanism binds a plugin's skill path at session start: `claude plugin update` alone does not move a running session.)
+- **`CLAUDE.md` edits do not take effect mid-session** — the prefix was fixed when the session started. Restart the session after changing it.
 Design rule: prefer appending over mutating history, and expect anything loaded at session start to stay put until the next one.
 Source: code.claude.com/docs/en/prompt-caching + platform.claude.com prompt-caching (verified 2026-07-18).
+
+## Plugin changes mid-session — a different mechanism, and `/reload-plugins`
+Do **not** explain a stale plugin by prompt caching: skills, commands, agents, hooks and themes are *appended*, so they never invalidate the cache. A plugin that looks stale is stale for a separate reason — marketplace plugins are copied into a per-version directory under `~/.claude/plugins/cache`, and an updated-away version is kept for a 7-day grace period so running sessions don't break mid-flight.
+- `claude plugin update` therefore does **not** move a running session; it keeps the version it loaded at launch.
+- **`/reload-plugins` is the documented in-session fix** — it reloads plugins, skills, agents, hooks and plugin MCP/LSP servers without a restart. Since v2.1.163 it warns and declines when the reload would force a full cache re-read (a plugin providing non-deferred MCP tools); `--force` applies it anyway.
+- Consequence for testing a plugin you are developing: a new session is one way to pick up a build, not the only one, and "I updated it" is not the same as "the session is running it" — check the resolved path either way.
+Source: code.claude.com/docs/en/plugins-reference (plugin caching and file resolution), /en/discover-plugins, /en/prompt-caching (verified 2026-07-18).
 
 ## Memory (`/memory`) — newer, partly preview
 - Auto-memory stores preferences/patterns between sessions.

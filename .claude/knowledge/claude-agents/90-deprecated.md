@@ -57,7 +57,8 @@ Both were parked as "observed, unsourced". Both are now documented verbatim on `
 - **Residual `"Task"` after the v2.1.63 rename** — "Current SDK releases emit `"Agent"` in `tool_use` blocks but still use `"Task"` in the `system:init` tools list and in `result.permission_denials[].tool_name`." Note the spelling is `system:init` with a **colon**; an earlier KB entry had it with a slash. Check both values in `block.name` for cross-version compatibility.
 - **Windows 8191-character command-line limit** — documented under Troubleshooting → "Long prompt failures on Windows": subagents with very long prompts may fail at that limit; keep prompts concise or use filesystem-based agents. Directly relevant on this platform.
 
-## Divergences found in the Willison guide (run 4, 2026-07-18)
+## Divergences recorded in run 4 (2026-07-18)
+Three from the Willison guide; the fourth is a *fetcher's* error against it, kept deliberately.
 - **"Quality degrades above ~200,000 tokens"** — the *direction* is documented ("context rot"), the **number is not**. No Anthropic benchmark curve is published, and 200k appears in the docs as a *context-window size* (Haiku 4.5, Sonnet 4.5), so the guide plausibly conflated a window size with a quality cliff. Cite the effect, never the figure. → `10-context-memory.md`.
 - **"Claude Code for web"** — the surface is real but is called **Claude Code on the web** (claude.ai/code, research preview; `--cloud` / `--teleport` move sessions between web and terminal).
 - **Claude Opus 4.6** — a valid model ID (`claude-opus-4-6`) but **legacy**. Current: Fable 5, Opus 4.8, Sonnet 5, Haiku 4.5. Guide examples naming it are dated, not wrong.

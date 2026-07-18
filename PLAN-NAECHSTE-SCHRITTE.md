@@ -1,7 +1,8 @@
 # Plan: nächste Schritte
 
-_Stand 2026-07-18, nach kb-update Lauf 3. Plugin 0.4.3 ist ausgeliefert, gemerged
-und installiert; `main` und `origin/main` stehen gleich. Sprache Deutsch wie
+_Stand 2026-07-18, nach kb-update Lauf 4. Plugin 0.4.3 ist ausgeliefert und
+installiert; **0.4.4 (Lauf 4) ist committet, aber noch nicht gemerged, gepusht oder
+installiert** — siehe Phase 1a. Sprache Deutsch wie
 `REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
 
 ## Die Reihenfolge und warum sie so ist
@@ -45,10 +46,24 @@ die korrigierten Inhalte — und eine Probe **in derselben Session** löste weit
 `40-config-safety.md` mit „Hook events verified against code.claude.com/docs/en/hooks."
 **ohne** Datum, in 0.4.3 mit „(2026-07-18)". Die Probe las die datumslose Fassung.
 
-Folge: **Ein Plugin-Update genügt nie. Die Fixture-Läufe brauchen eine nach dem
-Update neu gestartete Session** — zusätzlich zur Verwurzelung außerhalb dieses Repos.
-Beide Bedingungen zusammen sind der Grund, warum Phase 2 nicht aus einer laufenden
-Repo-Session heraus erledigt werden kann.
+**KORRIGIERT im Review von Lauf 4 (2026-07-18).** Die Beobachtung oben ist echt und
+reproduzierbar — die Erklärung, die ich daran gehängt hatte, war erfunden. Sie lautete
+„Prompt-Caching bindet den Skill-Pfad an den Session-Start". Laut Docs gilt das
+Gegenteil: Plugin-Skills werden **angehängt** und invalidieren den Cache nie. Der
+wirkliche Grund ist der **versionierte Plugin-Cache** (`~/.claude/plugins/cache/…`)
+mit ~7 Tagen Schonfrist für die abgelöste Version, damit laufende Sessions nicht
+brechen.
+
+Und die praktische Folge fällt damit anders aus als hier bisher stand:
+**`/reload-plugins` übernimmt Plugin-Änderungen in die laufende Session** — ohne
+Neustart. Das hatte ich nie ausprobiert. Eine frisch gestartete Session ist also
+**ein** Weg, nicht der einzige.
+
+Was bleibt: **Ein `claude plugin update` allein genügt nicht.** Entweder
+`/reload-plugins` oder eine neue Session — und in beiden Fällen wird die
+Versionsprobe gefahren, denn „aktualisiert" ist nicht „läuft damit". Die
+Verwurzelung außerhalb dieses Repos bleibt davon unberührt und ist weiterhin
+zwingend.
 
 ## Phase 2 — Die Fixture-Kampagne
 
@@ -106,8 +121,11 @@ Entdeckungsdatum.
 übersprungen, dokumentiert in `_state.json`.
 
 **Der Ertrag lag weit unter der Erwartung dieses Plans.** Oben standen fünf Kapitel
-als „direkt im Thema". Vier davon brachten nichts — „Subagents" waren 350 Wörter,
-die `20-parallelism.md` bereits ausführlicher und mit Doc-Beleg trägt. Bilanz:
+als „direkt im Thema". **Drei** davon brachten nichts — „Subagents" waren 350 Wörter,
+die `20-parallelism.md` bereits ausführlicher und mit Doc-Beleg trägt. (Erste Fassung
+dieses Absatzes schrieb „vier" und nannte einen „Faktor fünf"; beides im Review
+widerlegt. Die Zahl steht jetzt gezählt da, der Faktor ist ersatzlos gestrichen.)
+Bilanz:
 **eine echte Ergänzung** (Agentic manual testing → `50-verification.md`), **eine
 Korrektur** (die Red/green-TDD-Zeile war aus der Ankündigungs-Zusammenfassung
 geschrieben und ausgeschmückt), elf Kapitel ohne Ertrag. Das ist der belegte
@@ -204,11 +222,18 @@ nicht handlungsleitend — und bei 126 Versionen Drift vermutlich ohnehin überh
 1. ~~Willison demoten~~ — hinfällig, war ein Fehlschluss (siehe Phase 4a).
 2. ~~Commit + Release 0.4.3 freigeben~~ — erledigt 2026-07-18.
 3. ~~`blakecrosley.com` in die Allowlist~~ — erledigt 2026-07-18.
-4. **Die vier Fixture-Läufe starten.** Der einzige verbliebene Punkt, und der einzige,
-   der zwingend beim Eigentümer liegt: nur er kann eine Session außerhalb des Repos
-   verwurzeln, und sie muss nach dem Plugin-Update gestartet worden sein.
+4. **0.4.4 freigeben und installieren.** Neu, und **Voraussetzung für Punkt 5** — im
+   Review von Lauf 4 aufgefallen, weil die Abbruchbedingung auf `…\0.4.4\…`
+   verschärft wurde, ohne dass das Ausliefern je als Aufgabe dastand. So wie es
+   dastand, hätte der Eigentümer Läufe gestartet, die die eigene Abbruchbedingung
+   verwirft. Branch `kb-run4-willison-guide`, Commit steht, Suite grün, **nicht
+   gepusht**. Danach `claude plugin update` **plus** `/reload-plugins` oder eine neue
+   Session — und in jedem Fall die Versionsprobe.
+5. **Die vier Fixture-Läufe starten.** Liegt zwingend beim Eigentümer: nur er kann
+   eine Session außerhalb dieses Repos verwurzeln. Die Session muss 0.4.4 auflösen —
+   entweder frisch gestartet oder per `/reload-plugins` nachgezogen.
 
-Alles Übrige (Phase 3 Urteil, Phase 4 Aufnahme) hängt an Punkt 4.
+Alles Übrige (Phase 3 Urteil, restliche Phase 4) hängt an Punkt 5.
 
 ## Nicht behoben, bewusst
 
