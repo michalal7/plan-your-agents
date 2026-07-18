@@ -9,6 +9,8 @@ Controlling what the model knows, retains and forgets. Guiding principle: contex
 - Tag `@.claude` on PRs → Claude updates CLAUDE.md automatically (via GitHub Action, `/install-github-action` — verify the command name against the docs).
 - Keep a notes folder per project/task for longer-lived context.
 - Surfaced on load via the `InstructionsLoaded` hook (see `40-config-safety.md`).
+- **Nearest file loads last, and last means most attention.** The hierarchy is assembled in reverse order of specificity, so a subfolder `CLAUDE.md` lands closer to the model than the global one. Put the instructions that must actually bite nearest to where the work happens; a global file is the *weakest* position, not the strongest. (third-party source analysis, v2.1.88)
+- **An instruction file is guidance, not enforcement.** Compliance is probabilistic — that is what an instruction is. Anything that must hold every time belongs in a permission rule or a hook, which are deterministic. Splitting the two on purpose is better than writing ever-firmer prose and hoping. (third-party source analysis, v2.1.88; the deterministic half is doc-backed in `40-config-safety.md`)
 Source: Part 1 (2026-01-02), Part 2 (2026-01-31), Part 15.
 
 ## Skills & Commands — encapsulate repetition

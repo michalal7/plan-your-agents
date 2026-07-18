@@ -23,6 +23,24 @@ Details: `20-parallelism.md`, `30-workflows.md`.
 
 ---
 
+## 1b. Which extension mechanism? Order by context cost
+There are four, and they are not interchangeable — they sit at different points on a **context-cost curve**, which is the reason there are four rather than one general API. Cheapest first; take the cheapest that does the job:
+
+| Mechanism | Resident context cost | Use it for |
+|---|---|---|
+| **Hook** | **Zero** until it fires | Cross-cutting policy and automation: gates, formatting, logging, stop conditions |
+| **Skill** | Only the frontmatter `description` | Shaping *how the agent works* — procedures, checklists, house style |
+| **Plugin** | A packaging layer, not a runtime primitive | Distributing a bundle of the other three |
+| **MCP server** | **Highest — tool schemas are loaded and stay loaded** | Genuinely new callable tools reaching an external system |
+
+- **The MCP cost is paid every request, whether or not the tool is used.** That makes "just add an MCP server" the most expensive reflex in agent setup. Reach for it only when you actually need a new callable tool.
+- **A skill's `description` is the only part you pay for continuously** — the body loads on invocation. So keep descriptions short and high-signal, and put the detail in the body. (Matches the doc-backed skill limits in `10-context-memory.md`.)
+- **"Should this be a plugin?" is a distribution question**, separate from which mechanism provides the capability. A plugin can bundle all of the above.
+- **Subagents are not on this list on purpose.** They do not extend the current context — they open a *new, isolated* one. Reason about them as independent workers (§1 above), not as a capability you bolt on.
+(third-party source analysis, v2.1.88 — the ordering is a design rationale that survives version drift; the per-mechanism API details in that source do not.)
+
+---
+
 ## 2. Verification loop per project type (the most important lever)
 Fix the loop first, then everything else — without a verification means the model guesses (`00-principles.md` #1, `50-verification.md`).
 

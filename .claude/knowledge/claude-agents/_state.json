@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "lastRun": "2026-07-18",
-  "runCount": 5,
+  "runCount": 6,
   "sources": {
     "primary": {
       "url": "https://howborisusesclaudecode.com/",
@@ -123,6 +123,15 @@
         }
       ]
     },
+    "literature": {
+      "type": "third-party-source-analysis",
+      "authoritative": false,
+      "updateBehavior": "fetch-once",
+      "note": "Rank: BELOW the official docs, but usable as a sole source for ARCHITECTURE AND DESIGN RATIONALE the docs do not explain — never for a flag, key, mode, event name, tool name, path or numeric limit. Mark everything \"(third-party source analysis, <version>)\". A preprint v2 is a NEW entry, not an update to this one.",
+      "entries": [
+        {"url": "https://arxiv.org/abs/2604.14228", "title": "Dive into Claude Code", "authors": "Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI", "analyzedVersion": "v2.1.88", "words": 31694, "status": "ingested", "ingestedAt": "2026-07-18", "targetFiles": ["00-principles.md", "10-context-memory.md", "PLAYBOOK-agent-design.md", "90-deprecated.md"], "localFile": "owner-supplied PDF attachment; the converted copy lives in the session scratchpad and does NOT persist — re-attach and re-convert for any future pass", "note": "VERSION DRIFT IS THE DEFINING CONSTRAINT: v2.1.88 against a KB tracking ~2.1.214, roughly 126 releases. The extraction ran under an explicit instruction to treat every concrete surface as presumed stale and return reasoning only, and the fetcher listed what it skipped (function names, feature flags, numeric limits, permission-mode lists, tool counts, file paths, CVE IDs) so the filter is auditable rather than asserted. Highest-value find: the context-cost ordering of the four extension mechanisms (hook < skill < plugin < MCP), now PLAYBOOK section 1b — a question the KB had no answer to at all. The paper's pre-trust-window CVE argument is SUPERSEDED (fixed by deferring hook execution; see 90-deprecated.md)."}
+      ]
+    },
     "contextOnly": {
       "type": "context",
       "authoritative": false,
@@ -164,6 +173,8 @@
     "NEW (run 4): chapterCount detects new chapters but NOT edits to existing ones, and this guide revises chapters. Per-chapter lastModified is now stored on read; the next run must diff those, not just the count. Chapters whose lastModified moved need re-reading even at status ingested.",
     "NEW (run 4): 10-context-memory.md carried `fork: true` as an experimental skill field while 90-deprecated.md had already refuted it in run 3 — a contradiction inside the KB that survived a run. Corrected to `context: fork`. Worth a consistency sweep for other claims refuted in one file but still asserted in another.",
     "NEW (run 4): the ~300-400k context-rot figure in 10-context-memory.md is fan-made; the docs give the effect without any number. Left in place but marked, since the ~40% compaction recommendation rests on the effect rather than the figure.",
+    "NEW (run 6): the arXiv paper is ingested for design rationale ONLY, and the one-off nature of it is the point — a v2 preprint would be a new entry, not an update. The source PDF is an owner attachment with no durable local copy, so any future pass needs it re-supplied. Nothing surface-level from it entered the KB; if a later run wants a concrete claim from that paper, the answer is to check the current docs instead.",
+    "PROCESS (runs 4 and 6, same self-inflicted defect twice): editing this file with a Python json.dump(indent=2) re-serializes it and destroys the deliberate compact one-line-per-entry style — 199 to 758 lines in run 4, 242 to 846 in run 6, burying the actual content change in a reformat diff. Both were caught and reverted. Edit this file with targeted text edits only. Never round-trip it through a JSON serializer.",
     "NEW (run 5, found in review): TWO 'not documented' verdicts in this run were false, both caused by a truncated /en/env-vars fetch. This file has warned since run 3 that /en/settings renders truncated and does not list every key it owns — the lesson was recorded and then not applied one page over. Make it mechanical: a 'not documented' verdict requires either a complete fetch (state that it was complete) or confirmation from a second surface. Absence in a truncated page is not evidence.",
     "NEW (run 5): the blakecrosley claude-code guide is only ~1/3 read and is marked `partial`, NOT done. The unfetched section list is in its `_state.json` note; continue from there rather than re-reading. This is the first source in this KB deliberately left half-ingested — the alternative was pretending a 66.7k-word page had been covered.",
     "NEW (run 5): the second blakecrosley guide is mostly the AUTHOR'S OWN architecture (deliberation patterns, dissent-forcing, spawn budgets, two-gate validation). Nothing was ingested from that class this run. Open question for a later run: whether any of it is worth carrying as an explicitly-labelled pattern, given the KB already has producer!=checker and fan-out guidance from doc-backed sources. Do not ingest it as fact under any circumstances.",

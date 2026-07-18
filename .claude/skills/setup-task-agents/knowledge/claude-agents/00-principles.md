@@ -57,5 +57,12 @@ Anthropic analysed ~400,000 Claude Code sessions from ~235,000 users (Oct 2025 �
 Practical read: the lever is a sharper brief plus an explicit acceptance criterion (#5, #1) — then get out of the way.
 Source: anthropic.com/research/claude-code-expertise (2026-06-16).
 
+## 10. Build the harness, not a planner
+A reverse-engineering analysis of Claude Code's own source found the overwhelming majority of it is *operational harness* — permission gates, tool routing, context management, recovery paths — with only a sliver of explicit decision logic; the model is invoked as a largely stateless completion endpoint inside that harness.
+- The design bet: a capable model gains more from a rich, reliable operating environment than from a framework that constrains its choices. That is the opposite of state-graph orchestration, where the scaffolding makes the decisions.
+- **Practical read:** when a setup underperforms, the fix is almost always a harness fix — a real verification loop (#1), a tighter context (#2), a working recovery path — not a more elaborate planner or a longer prompt telling the model how to think.
+- ⚠️ The exact split is specific to the analysed version and is not a durable metric; only the direction is.
+Source: arXiv 2604.14228v1, "Dive into Claude Code" (third-party source analysis, v2.1.88 — not authoritative for any flag, key or mode).
+
 ---
 Note: principle 8 from earlier threads — "start every complex task in Plan Mode" — was replaced by Auto Mode as of Opus 4.6. See `90-deprecated.md`.

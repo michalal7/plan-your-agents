@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-07-18 — Run 6: the arXiv paper, read for reasoning and nothing else (plugin 0.4.6)
+"Dive into Claude Code" (arXiv 2604.14228v1) is a third-party reverse-engineering analysis of Claude Code's source — **at v2.1.88, against a KB tracking ~2.1.214**. About 126 releases of drift, which decides how the source can be used at all: every concrete surface in it (flag names, event counts, permission-mode lists, tool counts, file paths, numeric limits) is presumed stale and **none of it was ingested**. New source group `literature`, ranked below the official docs but usable *alone* for design rationale the docs never explain.
+
+The extraction ran with that filter built in, and the fetcher was asked to list what it deliberately skipped — so the filter is auditable rather than merely claimed.
+
+**The find that justifies the whole source** (`PLAYBOOK` §1b, new): there are four extension mechanisms rather than one general API because they sit at different points on a **context-cost curve** — hooks cost **zero** until they fire, a skill costs only its frontmatter `description`, a plugin is a packaging layer, and an **MCP server's tool schemas load and stay loaded**. Take the cheapest mechanism that does the job. That makes "just add an MCP server" the most expensive reflex in agent setup, and it explains why a skill's description should be short and high-signal while its body carries the detail. The KB had **no** answer to "which mechanism should I use" before this.
+
+**Also added:**
+- **Build the harness, not a planner** (`00`, principle 10): the paper's central finding is that the overwhelming bulk of the codebase is operational harness — permission gates, tool routing, context management, recovery — with the model as a largely stateless endpoint inside it. Practical read: when a setup underperforms, the fix is a harness fix, not a more elaborate planner. The exact split is version-specific and is marked as not durable; only the direction is.
+- **Nearest instruction file loads last, and last means most attention** (`10`). A global `CLAUDE.md` is the *weakest* position, not the strongest.
+- **An instruction file is guidance, not enforcement** (`10`): compliance is probabilistic by nature. Anything that must hold every time belongs in a permission rule or a hook.
+
+**Superseded on arrival** (`90`): the paper builds a security argument on an initialization-order gap — hooks and MCP connections running before the trust dialog. `40-config-safety.md` already carries that finding from Anthropic's own write-up, *including that it was fixed*. The general lesson stands; the CVE framing must not be cited as current.
+
+⚠️ Process note, recorded because it happened **twice**: editing `_state.json` through a Python JSON serializer reformats the whole file (199→758 lines in run 4, 242→846 here) and buries the real change. Both caught and reverted. That file takes targeted text edits only.
+
 ## 2026-07-18 — Run 5: the blakecrosley guides, and four claims that did not survive (plugin 0.4.5)
 Two long-form fan-made guides, new source group `secondaryGuides` tracked by `wordCount`. Much better yield than run 4 — and the first source this KB records as **half-read on purpose**.
 
