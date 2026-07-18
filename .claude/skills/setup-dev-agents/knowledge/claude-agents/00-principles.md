@@ -47,5 +47,15 @@ Four types (Rumsfeld): known knowns (in the prompt) · known unknowns (questions
 Tools: **blindspot pass** ("do a blindspot pass for my unknown unknowns"), **interview** (one question at a time, prioritized by architecture impact), **reference = source code** (not a screenshot), **prototypes/HTML variants** for "know it when I see it", **implementation-notes.md** with a "Deviations" log, **quiz** before the merge.
 Source: Part 18.
 
+## 9. Expertise = precise instruction + demanded verification, not tighter control
+Anthropic analysed ~400,000 Claude Code sessions from ~235,000 users (Oct 2025 – Apr 2026). What separates experts from novices is *not* that they supervise more — it's that they instruct more precisely, ask for specific verification, and then hand execution over.
+- Experts trigger ~12 actions per prompt (novices ~5) and produce ~3,200 words of output per prompt (novices ~600).
+- Across all users, humans make ~70% of *planning* decisions while Claude makes ~80% of *execution* decisions. Experts push execution autonomy further, not less far.
+- Verified success: experts 28–33%, novices 15%. When a session hits errors, experts still reach 15% vs. 4% — the gap is largest in *recovery*, not in the happy path. Novices abandon troubled sessions at 19%, experts at 5–7%.
+- Controlled for work mode, task value, month, occupation and model family, each expertise level adds ~9% actions and ~13% output per prompt (p < 0.001).
+- ⚠️ Caveats stated by the study itself: correlational and preliminary; success is inferred from transcripts (confirmation, tests passing, git activity), not from real-world outcomes; users self-select; experts may simply pick different tasks.
+Practical read: the lever is a sharper brief plus an explicit acceptance criterion (#5, #1) — then get out of the way.
+Source: anthropic.com/research/claude-code-expertise (2026-06-16).
+
 ---
 Note: principle 8 from earlier threads — "start every complex task in Plan Mode" — was replaced by Auto Mode as of Opus 4.6. See `90-deprecated.md`.

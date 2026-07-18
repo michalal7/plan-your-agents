@@ -40,6 +40,17 @@ Newer statements beat older ones. Here are pieces of advice the source itself wa
 - **`CLAUDE_CODE_AUTO_COMPACT_WINDOW`**: does exist after all (model-config doc), default ~967k. Earlier "unconfirmed" marking lifted → `10-context-memory.md`.
 - **Fable 5**: `fable` is an official alias = Claude Fable 5. No longer speculative → `60-models.md`.
 
+## CHANGELOG-only claims — shipped, but not documented (checked 2026-07-18)
+The `anthropics/claude-code` CHANGELOG is authoritative for *when* something shipped, never for *how* it is used. These entries appear there but could not be found in the docs — do not present them as documented API:
+- **`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`** (allegedly default 200) — not in the docs. Its sibling `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (default 200, v2.1.212+) *is* documented; don't infer the one from the other.
+- **`CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH`** — not documented. The 60 KB truncation of OTEL content attributes is real but presented as a **fixed** limit; the documented escape hatch is `OTEL_LOG_RAW_API_BODIES=file:<dir>`.
+- **`EndConversation`** — absent from the tools reference table, so it cannot be used in permission rules, subagent `tools` lists or hook matchers.
+
+## Other divergences found on doc-check (2026-07-18)
+- **"Stop hooks are overridden after 8 consecutive blocks"** — no such threshold is documented. Stop-hook blocking exists; the override limit does not appear on `/hooks`. The only documented block counters (3 consecutive / 20 total) belong to **Auto Mode's classifier fallback**, a different mechanism. Likely a conflation.
+- **Task → Agent rename (v2.1.63)** — the rename and the `Task(...)` alias are documented. The further claim that `system/init` (spelled with a slash, not a colon) and `result.permission_denials[].tool_name` still emit `"Task"` is **not** documented — treat as observed behaviour, not contract.
+- **Windows 8191-character command-line limit on subagent prompts** — not findable in the docs. Plausible as an OS limit, but unsourced; the documented Windows specifics are the PowerShell tool, `shell: powershell` hooks, and the absence of sandboxing.
+
 ## Still uncertain (don't present as best practice)
 - **Memory/auto-dream** (Part 8), **routines** (Part 10), **dynamic workflows** (Part 13/14): research preview — surfaces may change.
 - **Parts 17–21** of the fan-made source: only topic-level extracted (JS-rendered), detailed tips unverified.

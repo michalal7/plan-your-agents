@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-07-18 — First ingestion of the 2026 sources (run 2, plugin 0.4.0)
+The source model added earlier today was actually exercised: all 7 `datedPosts` and all 5 `living` entries fetched, verified and ingested; `runCount` 1 → 2. Plugin bumped to **0.4.0** because the KB mirrors are shipped content — without the bump `claude plugin update` compares only the manifest version and this never reaches an installed user (`MAINTENANCE.md` → "Releasing the plugin").
+
+**Added:**
+- **Auto Mode mechanism** (`40-config-safety.md`): two-layer defense (input probe + transcript classifier), the classifier deliberately blind to Claude's reasoning, three decision tiers, denial escalation at 3 consecutive / 20 total with headless termination, and the measured error rates (~0.4% FP, ~17% FN on genuinely overeager actions).
+- **Containment model** (`40-config-safety.md`): the three isolation layers, the 24-of-25 successful credential-exfiltration phishing test, hooks that ran before the trust dialog, and symlink-before-path-validation. Settles the `/sandbox` Windows question: still no Windows sandboxing.
+- **Evals** (`50-verification.md`): 20–50 tasks to start, the two-expert solvability test, grade-the-output-not-the-path, capability vs. regression suites, and `pass@k` vs `pass^k`.
+- **Expertise study** (`00-principles.md`, new principle #9): experts instruct more precisely and hand over *more* execution autonomy, not less; the gap is largest in recovery from failure. Carries the study's own caveats — correlational, preliminary, transcript-inferred success.
+- **16-agent case study** (`20-parallelism.md`): git-lock coordination with no orchestrator and no inter-agent messaging; and the failure that matters — when the task stopped decomposing, all 16 agents hit the same bug and overwrote each other.
+- **Harness design** (`30-workflows.md`): write the harness for the model (greppable logs, pre-computed aggregates, a fast sampling path against time blindness), generator/evaluator split, and the cost ladder. Plus the rule that scaffolding encodes a model's weaknesses and must be re-checked on upgrade.
+- **Brain/hands decoupling** (`PLAYBOOK` §4b) and **skill authoring limits** (`40-config-safety.md`).
+
+**Corrected:** subagents run in the background by default and inherit extended thinking since v2.1.198 — the previous "thinking weights don't propagate" line was fan-made and is now disproven. Nesting depth 5 is fixed, not a starting value.
+
+**Rejected — the point of the separate verifier:** six claims did not survive the doc check and went to `90-deprecated.md` instead of into the KB. Four are changelog-only (`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`, `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH`, `EndConversation`, and the residual `"Task"` tool name), one is a conflation ("Stop hooks are overridden after 8 blocks" — those counters belong to Auto Mode), one is unsourced (the Windows 8191-character limit). A fetcher also self-flagged two C-compiler items as possible reconstructions; a verbatim browser check showed both were genuine — including a `claude-opus-X-Y` placeholder that really is in the original. Noted there too: that post's `--fast` is the author's own harness option, not a Claude Code flag.
+
+**Not done, deliberately:** `contextOnly` (Trends Report PDF, InfoQ) stays `pending` — its behaviour is `on-demand` and it may never back a claim. The `managed-agents` docs page was not fetched, so there is still no managed-vs-local decision matrix; recorded in `openItems`.
+
 ## 2026-07-18 — Provenance wording + LF normalization (0.3.1)
 Clarified in `INDEX.md` that the `verified` ledger in `_state.json` records only *contested* claims a run had to settle, not every verified line — a "(verified)" section marker means "checked during the run dated in that ledger". Without that, the marker promised a traceability the 6-entry ledger cannot provide. Marked the `/sandbox` Windows claim with ⚠️ (fan-made, unverified) instead of carrying "verify" in prose. Normalized the three `INDEX.md` files to LF on disk: `.gitattributes` makes every *fresh* checkout LF, but this working copy predated it and still held CRLF, so `kbHash` — which hashes bytes from disk — differed between checkouts. Version bumped because the KB mirrors are shipped content.
 

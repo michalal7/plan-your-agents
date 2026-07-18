@@ -72,6 +72,17 @@ Optional per project: `.mcp.json` (Slack/DB/Sentry, if used), `.worktreeinclude`
 
 ---
 
+## 4b. If you build your own harness: decouple the brain from the hands
+Relevant once agents run longer than a session and you're writing the scaffolding yourself. Anthropic's Managed Agents service is built on three separations worth copying regardless of whether you use the hosted product:
+- **Brain (model + harness loop) vs. hands (sandbox + tools).** Tying a harness to one long-lived container makes that container a pet: fragile, irreplaceable. Keep the harness *stateless* so any brain can attach to any sandbox, either side can fail and be replaced, and sandboxes stay disposable.
+- **Session vs. context window.** Store the session as a durable, append-only event log *outside* the model's context. Then the harness can retrieve selectively and transform before passing anything in — instead of making irreversible context decisions as it goes.
+- **Provision lazily.** Spin a sandbox up when a tool call actually needs one; a session that starts with reasoning shouldn't wait on container setup. Reported effect: p50 time-to-first-token down ~60%, p95 down >90%.
+- **Credentials must be unreachable from the sandbox where generated code runs.** Two workable patterns: bundle a scoped token at initialization (e.g. for git), or keep credentials in a vault and relay calls through an MCP proxy holding the session's tokens. Never hand the sandbox the secret itself.
+⚠️ The source is an architecture narrative — it publishes no pricing, quotas, concurrency caps or a managed-vs-local decision matrix. Hosted service: `platform.claude.com/docs/en/managed-agents/overview` (beta, requires the `managed-agents-2026-04-01` header).
+Source: anthropic.com/engineering/managed-agents (2026-04-08).
+
+---
+
 ## 5. Anti-patterns / when you DON'T need it
 - **Workflow/team for routine coding.** A 5-reviewer panel for a bugfix is token waste. First a single agent + verification loop.
 - **Parallelism without isolation.** Multiple agents editing the same file → overwrites. Worktrees or disjoint file sets.
@@ -81,6 +92,8 @@ Optional per project: `.mcp.json` (Slack/DB/Sentry, if used), `.worktreeinclude`
 - **Re-prompting instead of writing down.** Recurring mistakes belong in CLAUDE.md/skill/rule, not in the next chat aside.
 - **Teammates/subagents without a separate verifier.** Self-assessment is lenient — always hand checking to other agents.
 - **Missing feedback loop.** The most expensive anti-pattern: building without a verification means. Always settle section 2 first.
+- **Adding agents to a task that doesn't decompose.** If parallel agents keep converging on the same blocking bug and overwriting each other, the answer is a better split (an oracle, a bisect, disjoint file sets), not more agents (`20-parallelism.md`).
+- **Scaffolding that outlives its reason.** Harness constructs built around a model's weakness become dead weight once the model improves — re-check them on every upgrade instead of inheriting them (`30-workflows.md`).
 
 ---
 For evidence/details follow the respective topic file. This guide is a template — adapt to project X, don't run it off verbatim.

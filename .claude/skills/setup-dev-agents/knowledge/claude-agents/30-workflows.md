@@ -66,6 +66,20 @@ Every loop is one of four forms; the more autonomous, the more you hand off.
 | **Proactive** | Event/schedule, no human | the *prompt* | recurring, well-defined streams |
 Progression: check → stop condition → trigger → prompt. Not every task needs a complex loop — take the simplest one. Keep quality high (clean code, self-verify skills, a second agent to review); manage tokens (right primitive+model, clear stop criteria, pilot on a slice first, don't over-schedule).
 
+## Designing the harness around the agent
+When an agent runs unattended, most of the engineering goes into the *environment*, not the prompt. Two Anthropic write-ups converge on the same lessons:
+
+**Write the harness for the model, not for yourself.**
+- **Context-window pollution:** a test harness must print a few lines, not thousands of bytes. Log detail to a file, and make it greppable — write `ERROR` with the reason *on the same line*. Pre-compute aggregate statistics so the agent doesn't burn a turn recomputing them.
+- **Time blindness:** the model cannot feel elapsed time and will happily spend hours running a full test suite. Give it a fast path — the C-compiler harness had its own `--fast` option sampling 1% or 10% of tests, deterministic per agent but different across agents, so each still catches regressions while covering everything collectively. (This is a *custom harness* flag, not a Claude Code flag.)
+- **Fresh containers have no context.** Instruct agents to maintain READMEs and progress files, because the next agent starts from zero.
+- **The verifier must be near-perfect.** An agent optimizes against whatever you measure — a weak test means it confidently solves the wrong problem.
+
+**Split generation from evaluation.** A GAN-inspired split (generator + evaluator) addresses the two dominant failure modes: *context anxiety* (the agent rushes as context fills) and *weak self-evaluation*. The reference three-agent pipeline paired implementation with a Playwright-MCP evaluator plus explicit sprint contracts, and handled context limits by resetting with a file-based handoff instead of compaction.
+- Cost ladder from that experiment: solo agent ~20 min / ~$9 · harness v1 ~6 h / ~$200 · harness v2 ~3 h 50 min / ~$124.70. Orchestration buys reliability and costs an order of magnitude.
+- ⚠️ **Harness components encode the limitations of the model they were built for, and go stale.** The sprint constructs above were *removed* on the upgrade to Opus 4.6 — they had been scaffolding for a weakness that no longer existed. Re-check your scaffolding on every model upgrade; it is a maintenance liability, not an asset.
+Source: anthropic.com/engineering/harness-design-long-running-apps (2026-03-24), anthropic.com/engineering/building-c-compiler (2026-02-05).
+
 ## /goal & /loop (fan-made; supplementary)
 - `/goal <condition>` — runs until the condition is true (e.g. "all tests in test/auth pass and lint clean"). "Ralph loop, built in."
 - `/loop [interval] /<cmd>` — recurring, local, up to ~3 days: `/loop 5m /babysit`, `/loop 1h /pr-pruner`.

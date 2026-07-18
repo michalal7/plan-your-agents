@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "lastRun": "2026-07-17",
-  "runCount": 1,
+  "lastRun": "2026-07-18",
+  "runCount": 2,
   "sources": {
     "primary": {
       "url": "https://howborisusesclaudecode.com/",
@@ -30,13 +30,13 @@
       "updateBehavior": "fetch-once",
       "note": "Dated posts. Fetch once, then only track status. Rank: official docs > these > fan-made. `discoveredVia` records how the URL was established, not what it says.",
       "entries": [
-        {"url": "https://www.anthropic.com/engineering/claude-code-auto-mode", "date": "2026-03-25", "status": "pending", "ingestedAt": null, "targetFiles": ["40-config-safety.md"], "discoveredVia": "href read from the engineering index"},
-        {"url": "https://www.anthropic.com/engineering/building-c-compiler", "date": "2026-02-05", "status": "pending", "ingestedAt": null, "targetFiles": ["20-parallelism.md", "PLAYBOOK-agent-design.md"], "discoveredVia": "href read from the engineering index"},
-        {"url": "https://www.anthropic.com/engineering/harness-design-long-running-apps", "date": "2026-03-24", "status": "pending", "ingestedAt": null, "targetFiles": ["30-workflows.md"], "discoveredVia": "href read from the engineering index"},
-        {"url": "https://www.anthropic.com/engineering/how-we-contain-claude", "date": null, "status": "pending", "ingestedAt": null, "targetFiles": ["40-config-safety.md"], "discoveredVia": "href read from the engineering index (featured, no date shown)"},
-        {"url": "https://www.anthropic.com/engineering/managed-agents", "date": "2026-04-08", "status": "pending", "ingestedAt": null, "targetFiles": ["PLAYBOOK-agent-design.md"], "discoveredVia": "href read from the engineering index"},
-        {"url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents", "date": "2026-01-09", "status": "pending", "ingestedAt": null, "targetFiles": ["50-verification.md"], "discoveredVia": "href read from the engineering index"},
-        {"url": "https://www.anthropic.com/research/claude-code-expertise", "date": "2026-06-16", "status": "pending", "ingestedAt": null, "targetFiles": ["00-principles.md"], "discoveredVia": "search result (title + URL, repeated); date from the result"}
+        {"url": "https://www.anthropic.com/engineering/claude-code-auto-mode", "date": "2026-03-25", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["40-config-safety.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/engineering/building-c-compiler", "date": "2026-02-05", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["20-parallelism.md", "30-workflows.md", "PLAYBOOK-agent-design.md"], "discoveredVia": "href read from the engineering index", "note": "The fetcher self-flagged two items as possible summarizer reconstructions (the CLI block with a `claude-opus-X-Y` placeholder, and the '99% pass rate' / `--fast` claims). Both were checked verbatim in the browser on 2026-07-18 and are genuine: the placeholder is in the original post, and `--fast` is an option of the author's own test harness, NOT a Claude Code flag."},
+        {"url": "https://www.anthropic.com/engineering/harness-design-long-running-apps", "date": "2026-03-24", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["30-workflows.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/engineering/how-we-contain-claude", "date": "2026-05-25", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["40-config-safety.md"], "discoveredVia": "href read from the engineering index (featured, no date shown); date established by the fetch"},
+        {"url": "https://www.anthropic.com/engineering/managed-agents", "date": "2026-04-08", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["PLAYBOOK-agent-design.md"], "discoveredVia": "href read from the engineering index", "note": "Architecture narrative only — contains no managed-vs-local decision matrix, no pricing, quotas or concurrency caps. The linked docs page was not fetched."},
+        {"url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents", "date": "2026-01-09", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["50-verification.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/research/claude-code-expertise", "date": "2026-06-16", "status": "done", "ingestedAt": "2026-07-18", "targetFiles": ["00-principles.md"], "discoveredVia": "search result (title + URL, repeated); date from the result"}
       ]
     },
     "living": {
@@ -45,11 +45,11 @@
       "updateBehavior": "check-every-run",
       "note": "Re-check each run. Change detection uses a stable `changeMarker`, never a content hash: WebFetch returns processed text that is not byte-stable, so a hash would fire on every run (same reason the primary source stores no raw hashes).",
       "entries": [
-        {"url": "https://code.claude.com/docs/en/best-practices", "status": "pending", "lastChecked": null, "changeMarker": {"type": "headings", "value": null}},
-        {"url": "https://code.claude.com/docs/en/agent-sdk/subagents", "status": "pending", "lastChecked": null, "changeMarker": {"type": "headings", "value": null}},
-        {"url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices", "status": "pending", "lastChecked": null, "changeMarker": {"type": "headings", "value": null}},
-        {"url": "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md", "status": "pending", "lastChecked": null, "urlVerified": false, "note": "URL not yet confirmed — the repo is search-confirmed, this raw path is inferred. The first fetch must confirm it; on 404 record `incomplete` and report.", "changeMarker": {"type": "topVersion", "value": null}},
-        {"url": "https://github.com/anthropics/skills", "status": "pending", "lastChecked": null, "note": "Fetch the raw README (raw.githubusercontent.com/anthropics/skills/main/README.md) rather than the HTML page.", "changeMarker": {"type": "headings", "value": null}}
+        {"url": "https://code.claude.com/docs/en/best-practices", "status": "done", "lastChecked": "2026-07-18", "changeMarker": {"type": "headings", "value": ["Give Claude a way to verify its work", "Explore first, then plan, then code", "Provide specific context in your prompts", "Configure your environment", "Communicate effectively", "Manage your session", "Automate and scale", "Avoid common failure patterns", "Develop your intuition", "Related resources"]}},
+        {"url": "https://code.claude.com/docs/en/agent-sdk/subagents", "status": "done", "lastChecked": "2026-07-18", "changeMarker": {"type": "headings", "value": ["Overview", "Benefits of using subagents", "Create subagents", "What subagents inherit", "Invoke subagents", "Scale up with dynamic workflows", "Troubleshooting", "Related documentation"]}},
+        {"url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices", "status": "done", "lastChecked": "2026-07-18", "changeMarker": {"type": "headings", "value": ["Core principles", "Skill structure", "Workflows and feedback loops", "Content guidelines", "Common patterns", "Evaluation and iteration", "Anti-patterns to avoid", "Advanced: Skills with executable code", "Technical notes", "Checklist for effective Skills", "Next steps"]}},
+        {"url": "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md", "status": "done", "lastChecked": "2026-07-18", "urlVerified": true, "note": "URL confirmed by the 2026-07-18 fetch (resolved, 51 bullet entries under the top version). Authoritative for WHEN something shipped, never for HOW it is used — entries not found in the docs go to 90-deprecated.md as changelog-only.", "changeMarker": {"type": "topVersion", "value": "2.1.214"}},
+        {"url": "https://github.com/anthropics/skills", "status": "done", "lastChecked": "2026-07-18", "note": "Fetch the raw README (raw.githubusercontent.com/anthropics/skills/main/README.md) rather than the HTML page. Content is a skill catalogue (docx/pdf/pptx/xlsx plus spec/template), not guidance — nothing ingested this run beyond confirming what it is.", "changeMarker": {"type": "headings", "value": ["Skills", "About This Repository", "Disclaimer", "Skill Sets", "Try in Claude Code, Claude.ai, and the API", "Claude Code", "Claude.ai", "Claude API", "Creating a Basic Skill", "Partner Skills"]}}
       ]
     },
     "secondaryFanMade": {
@@ -60,8 +60,13 @@
       "url": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
       "date": "2026-02-23",
       "discoveredVia": "search result (title + URL + announcement; \"first two chapters\")",
-      "changeMarker": {"type": "chapterCount", "value": null},
-      "parts": []
+      "changeMarker": {"type": "chapterCount", "value": 2},
+      "lastChecked": "2026-07-18",
+      "parts": [
+        {"n": 1, "title": "Writing code is cheap now", "status": "summary-only"},
+        {"n": 2, "title": "Red/green TDD", "status": "summary-only"}
+      ],
+      "note2": "Published as a living 'Guide' (chapters, not posts) with ~1-2 new chapters weekly — so the chapter count really will move. Only the red/green-TDD pattern was ingested (50-verification.md, marked fan-made)."
     },
     "contextOnly": {
       "type": "context",
@@ -99,20 +104,34 @@
   ],
   "openItems": [
     "Fan-made source fully captured (parts 1-21). Next run: only check for new parts.",
-    "2026 sources declared but NOT yet ingested: 7 datedPosts, 5 living, 1 secondaryFanMade, 2 contextOnly — all `status: pending`. The source model is in place; the first ingestion run still has to happen.",
-    "The claude-code CHANGELOG raw URL is `urlVerified: false` — the first fetch must confirm or correct it."
+    "`contextOnly` (Trends Report PDF, InfoQ) still `pending` — deliberately, not an omission: its `updateBehavior` is `on-demand` and it may never serve as evidence for a claim. Fetch it only when framing is actually needed; the PDF will likely require the browser fallback.",
+    "The `managed-agents` docs page (platform.claude.com/docs/en/managed-agents/overview) was NOT fetched. The blog post carries no decision criteria, limits or pricing — if a managed-vs-local recommendation is ever needed, that page is the gap to close.",
+    "Two claims rest on observation, not documentation, and were parked in 90-deprecated.md rather than dropped: the residual `\"Task\"` tool name after the v2.1.63 rename, and the Windows 8191-character command-line limit."
   ],
   "verified": {
-    "date": "2026-07-17",
+    "date": "2026-07-18",
+    "note": "Not an inventory of every verified line — only the contested claims a run had to settle. See INDEX.md.",
     "confirmed": [
       "CLAUDE_CODE_AUTO_COMPACT_WINDOW exists (default ~967k).",
       "dontAsk is a valid permission mode (previously mismarked as invalid).",
       "fable is an official alias = Claude Fable 5 (not speculative).",
-      "Effort low/medium/high/xhigh persist, max session-only; effortLevel setting only up to xhigh."
+      "Effort low/medium/high/xhigh persist, max session-only; effortLevel setting only up to xhigh.",
+      "`claude --permission-mode auto` exists; `defaultMode: \"auto\"` is ignored from project/local settings.",
+      "Subagents run in the BACKGROUND by default since v2.1.198, and inherit the main session's extended thinking config — correcting the earlier fan-made claim that thinking weights do not propagate.",
+      "Nesting depth is fixed at 5 and not configurable (v2.1.172+); at depth 5 the Agent tool is simply withheld.",
+      "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION (default 200, v2.1.212+).",
+      "Subagent output scanning v2.1.210+: backslash insertion into control-tag / `Human:` / `Assistant:` imitations, plus a `[harness: ...]` marker.",
+      "Skill limits: name <=64 chars (no 'anthropic'/'claude'), description <=1024, SKILL.md body <500 lines, `disable-model-invocation: true`.",
+      "cleanupPeriodDays defaults to 30 days; `--disable-slash-commands`, `--forward-subagent-text`, `claude auto-mode reset` all exist.",
+      "No Windows sandboxing — settling the fan-made 'coming soon' from Part 3 (Feb 2026) as still not shipped."
     ],
     "diverged": [
       "--tmux on the worktree does not exist (belongs to Agent Teams, not worktrees).",
-      "inherit is not a model alias, only a subagent-model value."
+      "inherit is not a model alias, only a subagent-model value.",
+      "No documented '8 consecutive Stop-hook blocks' override — the 3-consecutive/20-total counters belong to Auto Mode's classifier fallback.",
+      "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION: changelog-only, not documented.",
+      "CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH: changelog-only; the 60 KB OTEL truncation is documented as fixed, with OTEL_LOG_RAW_API_BODIES as the escape hatch.",
+      "EndConversation: absent from the tools reference, so unusable in permission rules, tool lists or hook matchers."
     ]
   },
   "note": "tabs = observed tab count per part; the next run compares title/count to detect new/changed content. No raw-content hashes stored (the source only partially delivers content via WebFetch)."

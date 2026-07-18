@@ -16,6 +16,8 @@ In the brief, define *acceptance criteria* + the verification means before build
 | **Refactor/Migration** | Tests green *before* the PR | `/batch` agents test per worktree before the PR |
 | **Documents/Knowledge (non-code)** | Ground statements against the source document/script; check consistency across files | Note/doc vaults: no tests/CI — the check is source fidelity |
 
+Red/green TDD works as a *steering* pattern, not just a testing one: have the agent write the failing test first, then implement until it passes. Cheap to prompt, and it fixes the acceptance criterion before any code exists. (fan-made, Willison, 2026-02-23)
+
 ## Automate
 - `/go` (skill): test (bash/browser/computer-use) → simplify → PR. Many of the source's prompts end with "… /go".
 - `Stop`/`SubagentStop` hook: deterministic done-check before the turn ends.
@@ -25,5 +27,18 @@ In the brief, define *acceptance criteria* + the verification means before build
 
 ## Why separate verifiers
 An agent that grades its own work is lenient (self-preferential bias) and stops too early (agentic laziness). Checking by *separate* agents with a focused goal — ideally several trying to refute — is more reliable. At scale: orchestrator/workflow patterns (`30-workflows.md`), or agent teams with competing hypotheses (`20-parallelism.md`).
+
+## Evals — when the loop itself needs measuring
+A test says "this case works". An eval says "the agent handles this *class* of case at rate X". Build one as soon as an agent runs unattended.
+- **Start at 20–50 tasks** drawn from real failures (bug tracker, support queue, manual checks) — not hundreds. Early effect sizes are large, so small samples suffice.
+- **Solvability test:** would two domain experts independently reach the same pass/fail verdict? If not, the task is ambiguous, not hard. Write a reference solution to prove it's solvable at all.
+- **Balance the set.** Include cases where the behaviour should *not* fire. One-sided sets train the agent toward a single behaviour.
+- **Grade the output, not the path** — checking for a specific step sequence penalizes valid alternative solutions. Prefer deterministic graders; use LLM-as-judge only for open-ended output, calibrated against human verdicts, and always give the judge an explicit "Unknown" option.
+- **Two suites, different targets:** *capability* evals start at a low pass rate and probe hard tasks; *regression* evals should sit near 100%. When a capability task saturates, graduate it into the regression suite.
+- **Read transcripts.** You cannot tell whether a grader works without reading its grades on real runs.
+- **Diagnostics:** 100% pass rate = saturated, no signal left. 0% at `pass@100` = almost always a broken task, not an incapable agent.
+- **`pass@k` vs `pass^k`:** `pass@k` = at least one of k attempts succeeds (rises with k); `pass^k` = *all* k succeed (falls with k). For anything user-facing, `pass^k` is the honest metric — 75% per trial is only ~42% across three.
+- Isolate runs: fresh state per trial, no shared state. A leftover git history from a previous trial silently hands the agent the answer.
+Source: anthropic.com/engineering/demystifying-evals-for-ai-agents (2026-01-09, verified).
 
 Source: Part 1/2/5/6/9/11/14.
