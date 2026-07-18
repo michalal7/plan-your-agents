@@ -22,11 +22,13 @@ Check into the repo what the team should share; keep private things in `settings
 Note: `dontAsk` is a **valid** mode (permission-modes doc) — the fan-made mention `--permission-mode=dontAsk` was correct. `auto` uses the classifier, `bypassPermissions` skips everything.
 
 ## Auto Mode — safely skip prompts
-- Enable: `claude --enable-auto-mode` or shift+tab to Auto Mode. For Max/Team/Enterprise.
+- Availability (verified 2026-07-18, **corrected** — the KB said "Max/Team/Enterprise"): **all plans**. On Team/Enterprise an Owner must enable it in admin settings first, and `permissions.disableAutoMode: "disable"` in managed settings turns it off. Model and provider requirements also apply (Opus 4.6+/Sonnet 4.6+/Fable 5 on the Anthropic API; a narrower list on Bedrock/Vertex/Foundry).
 - A classifier grades every action: safe ones are auto-approved, risky ones flagged/blocked (events `PermissionRequest`/`PermissionDenied`).
 - Safety argument (source): red-teamed on thousands of transcripts; safer than rubber-stamping hundreds of prompts ("eyes glaze over"). Practically required for many parallel Claudes/workflows, so one prompt doesn't freeze everything.
 - CLI: `claude --permission-mode auto` (verified). `claude auto-mode reset` restores the default config by removing the `autoMode` section (v2.1.212+). `defaultMode: "auto"` is **ignored** from project/local settings — it must come from the user level or the CLI.
-Source: Part 8/11/15.
+- **You steer the classifier in prose, not in patterns** (verified): `autoMode` holds `environment`, `allow`, `soft_deny` and `hard_deny` — arrays of plain-language rules, e.g. `{"soft_deny": ["$defaults", "Never run terraform apply"]}`. `$defaults` keeps the built-in set while you add to it. This is the lever for "autonomous except for these few things", and it is separate from `permissions.allow/deny`, which match tool patterns.
+- `autoMode.classifyAllShell` (default `false`): when `true`, **suspends every Bash and PowerShell allow rule** so the classifier sees each one. The setting to reach for when an allowlist has grown untrustworthy.
+Source: Part 8/11/15; `autoMode` substructure verified against /en/settings + /en/auto-mode-config (2026-07-18).
 
 ### How Auto Mode actually decides (mechanism)
 Two independent layers, because either alone is bypassable:
@@ -37,6 +39,16 @@ Three outcomes: auto-approve · ask the user · block outright. Block rules cove
 - **Escalation:** 3 consecutive or 20 total denials end the autonomous run. In headless (`-p`) mode there is no user to fall back to, so the session terminates instead of prompting.
 - Measured: ~0.4% false-positive rate end to end; ~17% false negatives on genuinely overeager actions. Read that second number as: Auto Mode reduces the prompt burden, it does not remove the need for a sandbox and a clean allowlist.
 Source: anthropic.com/engineering/claude-code-auto-mode (2026-03-25).
+
+## `--safe-mode` — the clean room for "is it me or the tool?" (verified, v2.1.169+)
+Starts with **all customizations off**: CLAUDE.md, skills, plugins, hooks, MCP servers, custom commands and agents, output styles, workflows, themes, keybindings, status line, LSP servers, auto-memory. Auth, model selection, built-in tools and permissions keep working — that is the difference from `--bare`. Sets `CLAUDE_CODE_SAFE_MODE`.
+- The first move when a setup misbehaves: it separates model-native behaviour from behaviour your own config caused.
+- **Not a full clean room:** managed settings policy still applies, *including policy-configured hooks*, status line and file-suggestion commands. On a managed machine, "safe mode" does not mean "nothing of ours is running".
+Source: /en/cli-reference (verified 2026-07-18).
+
+## Turning off what ships in the box (verified)
+`disableBundledSkills: true` (env equivalent `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1`) disables the bundled skills and workflows — among them `/doctor`, `/code-review`, `/batch`, `/debug`, `/loop`, `/claude-api`, `/run`, `/verify`. The docs say "including", so treat any such list as a sample, not the full set. Governance lever when a team wants only its own surface.
+- Exception worth knowing: since v2.1.205 `/doctor` stays typable despite the setting. Hide it with `DISABLE_DOCTOR_COMMAND` or `skillOverrides: {"doctor": "off"}`.
 
 ## Containment — what the sandbox is actually for
 Anthropic's own layered model, useful as a template for how much isolation a project needs:
@@ -52,7 +64,7 @@ Source: anthropic.com/engineering/how-we-contain-claude (2026-05-25).
 
 ## Hooks — deterministic lifecycle logic
 - Configured in `settings.json` under `hooks`. Three levels: event → `matcher` (filter, e.g. `"Edit|Write"`, `"Bash"`) → handler array.
-- Handler `type`: `command` · `http` · `mcp_tool` · `prompt` · `agent`. Useful fields: `if` (permission-rule filter, e.g. `Bash(git *)`), `timeout`, `statusMessage`, `once`, `async`.
+- Handler `type`: `command` · `http` · `mcp_tool` · `prompt` · `agent`. Useful fields: `if` (permission-rule filter, e.g. `Bash(git *)`), `timeout`, `statusMessage`, `once`, `async`. `agent` hooks are flagged **experimental** in the docs.
 - Format example (auto-format after edits, Part 1):
   ```json
   { "hooks": { "PostToolUse": [ { "matcher": "Write|Edit",

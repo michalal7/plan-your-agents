@@ -23,6 +23,26 @@ Details: `20-parallelism.md`, `30-workflows.md`.
 
 ---
 
+## 1b. Which extension mechanism? Order by context cost (verified)
+The mechanisms are not interchangeable: each has its own loading strategy, so the real question is *what stays resident in every request*. Cheapest first — take the cheapest that does the job:
+
+| Mechanism | When it loads / what stays resident | Cost | Use it for |
+|---|---|---|---|
+| **Hook** | Runs externally; loads nothing | **Zero**, unless it returns output | Cross-cutting automation and guardrails: gates, formatting, logging |
+| **Skill**, `disable-model-invocation: true` | Nothing until *you* invoke it | **Zero** | Side-effecting workflows only you should trigger |
+| **Skill** (default) | Name + description at session start; body on use | Low | Procedures, checklists, reference material |
+| **MCP server** | Tool *names* at session start; **full schemas deferred** | Low until a tool is used | New callable tools reaching an external system |
+| **CLAUDE.md** / `.claude/rules/` | **Full content, every request** | **Highest** | Only what must be true in *every* session |
+
+- **The expensive one is CLAUDE.md, not MCP.** It is the single feature the docs mark "Full content / Every request". Keep it under ~200 lines and move reference material into skills; use `.claude/rules/` with `paths` frontmatter so directory-specific guidance loads only when relevant.
+- **MCP is cheap by default because tool search defers the schemas** — only tools Claude actually uses enter context. Two things undo that: `ENABLE_TOOL_SEARCH=false`, and `alwaysLoad: true` on a server. If you turn either on, MCP becomes the expensive one. Still: reach for MCP only when you need a *callable tool*, since a schema you never call is pure overhead.
+- **A skill's description is what you pay for continuously** — keep it short and high-signal, put the detail in the body. `disable-model-invocation: true` drops it to zero for skills you always trigger yourself. (Authoring limits: `40-config-safety.md`.)
+- **"Should this be a plugin?" is a distribution question**, separate from which mechanism provides the capability. A plugin bundles the others.
+- **Subagents are deliberately not on this curve.** They do not extend the current context — they open a *new, isolated* one. Reason about them as independent workers (§1), not as a capability you bolt on.
+Source: code.claude.com/docs/en/features-overview ("Context cost by feature") + /en/mcp#scale-with-mcp-tool-search (verified 2026-07-18).
+
+---
+
 ## 2. Verification loop per project type (the most important lever)
 Fix the loop first, then everything else — without a verification means the model guesses (`00-principles.md` #1, `50-verification.md`).
 

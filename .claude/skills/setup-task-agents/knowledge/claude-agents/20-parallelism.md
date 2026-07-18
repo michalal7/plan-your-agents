@@ -20,7 +20,7 @@ Token cost scales with the number of parallel contexts — the more parallelism,
 - Precedence (high→low): managed → `--agents` (session JSON) → project → user → plugin. Project dirs are walked up from cwd; on a duplicate `name` the definition closest to cwd wins (v2.1.178+). Identity comes from `name` only, not the file path. Plugin agents ignore `hooks`/`mcpServers`/`permissionMode` for security.
 - Model resolution order: `CLAUDE_CODE_SUBAGENT_MODEL` → per-invocation `model` → frontmatter `model` → main conversation model. Default `inherit`. An org `availableModels` allowlist filters all three.
 - **Cost trap:** since v2.1.198 the built-in `Explore` inherits the main model instead of always Haiku (capped at Opus on the Claude API). To keep exploration cheap, override it with a project agent named `Explore` carrying `model: haiku`.
-- `Explore`/`Plan` skip CLAUDE.md and the git-status snapshot to stay fast; every other subagent loads both. Suppress the snapshot elsewhere with `includeGitInstructions: false`.
+- `Explore`/`Plan` skip CLAUDE.md and the git-status snapshot to stay fast; every other subagent loads both. Suppress the snapshot elsewhere with `includeGitInstructions: false`. Remove both built-ins entirely with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`; a project agent named `Explore` overrides the built-in rather than adding to it.
 - Tool restriction: `tools` is an allowlist, `disallowedTools` a denylist applied first. Common sets — read-only `Read, Grep, Glob`; tests `Bash, Read, Grep`; edits `Read, Edit, Write, Grep, Glob`. If nothing in `tools` resolves, the subagent refuses to launch (v2.1.208+). `AskUserQuestion`, `EnterPlanMode`, `ScheduleWakeup` are never available to a subagent.
 - `skills: [...]` preloads full skill content at startup (can't preload `disable-model-invocation: true` skills). `memory: user|project|local` gives a persistent `MEMORY.md` dir with Read/Write auto-enabled.
 - **Permission modes don't nest downward:** a parent in `bypassPermissions`/`acceptEdits`/`auto` overrides the subagent's own `permissionMode`. A restrictive subagent mode cannot tighten a permissive parent.
@@ -72,7 +72,7 @@ Token cost scales with the number of parallel contexts — the more parallelism,
 - Tasks: the lead assigns or teammates claim them (file lock against races); dependencies unlock automatically.
 - Quality gates via hooks: `TeammateIdle`, `TaskCreated`, `TaskCompleted` — exit code 2 sends feedback / blocks.
 - Storage: `~/.claude/teams/{team}/config.json` (removed at session end), `~/.claude/tasks/{team}/` (persists, never uploaded). One team per session; no nested teams; the lead is fixed.
-- Permissions: teammates start in the lead's mode; a teammate can't approve a prompt on your behalf; in Auto Mode a forwarded approval counts as *untrusted*.
+- Permissions: teammates start in the lead's mode; a teammate can't approve a prompt on your behalf; in Auto Mode a forwarded approval counts as *untrusted*. A message arriving over `SendMessage` is labelled as coming from **another Claude session, not from you** — and a teammate that was **denied** an action cannot relay it to a second teammate to get it through. Design multi-agent setups on that assumption: authority does not travel over the mailbox.
 - ⚠️ Limits: `/resume`+`/rewind` don't restore in-process teammates; task status can get stuck.
 - Best practice: 3–5 teammates, ~5–6 tasks per teammate, each owning different files (avoid conflicts), start with research/review tasks, have it wait on teammates.
 

@@ -1,7 +1,7 @@
 {
   "name": "plan-your-agents",
   "description": "Recommends and scaffolds a Claude Code agent setup for any repo, from a curated knowledge base. Two skills: setup-dev-agents (optimize developing the repo) and setup-task-agents (design an agent system for the repo's own workload), each writing a markdown plan. Also ships an MCP server exposing the knowledge base as resources plus keyword search.",
-  "version": "0.4.3",
+  "version": "0.4.6",
   "author": {
     "name": "michalal7"
   },

@@ -1,5 +1,67 @@
 # Changelog
 
+## 2026-07-18 — Run 6: the arXiv paper, read for reasoning and nothing else (plugin 0.4.6)
+"Dive into Claude Code" (arXiv 2604.14228v1) is a third-party reverse-engineering analysis of Claude Code's source — **at v2.1.88, against a KB tracking ~2.1.214**. About 126 releases of drift, which decides how the source can be used at all: every concrete surface in it (flag names, event counts, permission-mode lists, tool counts, file paths, numeric limits) is presumed stale and **none of it was ingested**. New source group `literature`, ranked below the official docs but usable *alone* for design rationale the docs never explain.
+
+The extraction ran with that filter built in, and the fetcher was asked to list what it deliberately skipped — so the filter is auditable rather than merely claimed.
+
+**`PLAYBOOK` §1b is new and answers a question the KB could not answer before — "which extension mechanism should I use?" — but it is *not* from the paper.** The first draft was, and the review caught it as wrong: the paper puts MCP servers at the expensive end ("schemas always loaded"), which is false today. **Tool search defers MCP schemas by default**, so idle MCP tools cost little; the genuinely always-resident feature is **CLAUDE.md** ("Full content / Every request"), which the paper's curve omitted entirely. The section was rewritten from `/en/features-overview`, which explains the whole topic better than the paper — so the premise that justified reaching for an unauthoritative source was itself false.
+
+That is the run's real lesson, now in `90-` and `_state.json`: the filter screened *surface* detail (flags, counts, paths) and had no rule for **mechanism** claims, which is where 126 releases of drift bite hardest. A mechanism claim from a drifted source needs doc verification exactly like a flag name does — and "the docs don't cover this" is a claim to check, not a premise to build on.
+
+**Also added:**
+- **Build the harness, not a planner** (`00`, principle 10): the paper's central finding is that the overwhelming bulk of the codebase is operational harness — permission gates, tool routing, context management, recovery — with the model as a largely stateless endpoint inside it. Practical read: when a setup underperforms, the fix is a harness fix, not a more elaborate planner. The exact split is version-specific and is marked as not durable; only the direction is.
+- **Instruction-file load order and its limits** (`10`, now doc-sourced, not paper-sourced): files load root-down so the nearest is read last, and subdirectory files below cwd load on demand rather than at launch. But the docs promise **no positional precedence** — conflicts are reconciled by judgment, with more *specific* instructions typically winning. The first draft claimed "last means most attention"; that inference is not documented and was removed.
+- **An instruction file is guidance, not enforcement** (`10`) — and this one turned out to be **fully documented**, not merely the paper's reasoning: CLAUDE.md is delivered as a user message after the system prompt, with "no guarantee of strict compliance". Anything that must hold belongs in a `PreToolUse` hook.
+
+**Superseded, partly** (`90`): the paper builds a security argument on an initialization-order gap — hooks, settings *and MCP connections* running before the trust dialog. Anthropic's own write-up confirms the gap and the fix **for hooks and project-local settings**; it says nothing about MCP connections, so that half stays unverified rather than being waved through as also-fixed.
+
+**Also corrected:** `INDEX.md` still described the KB as having two source classes. It has five, ranked — runs 5 and 6 added `secondaryGuides` and `literature` without the index ever noticing.
+
+⚠️ Process note, recorded because it happened **twice**: editing `_state.json` through a Python JSON serializer reformats the whole file (199→758 lines in run 4, 242→846 here) and buries the real change. Both caught and reverted. That file takes targeted text edits only.
+
+## 2026-07-18 — Run 5: the blakecrosley guides, and four claims that did not survive (plugin 0.4.5)
+Two long-form fan-made guides, new source group `secondaryGuides` tracked by `wordCount`. Much better yield than run 4 — and the first source this KB records as **half-read on purpose**.
+
+**Added, all doc-verified before entry:**
+- **Auto Mode is steered in prose, not patterns** (`40`): `autoMode` holds `environment` / `allow` / `soft_deny` / `hard_deny` as arrays of plain-language rules, with `$defaults` to extend the built-in set. This is the actual lever for "autonomous except for these few things", and it is a different mechanism from `permissions.allow/deny`. Plus `autoMode.classifyAllShell`, which suspends every shell allow rule when an allowlist has stopped being trustworthy.
+- **`--safe-mode`** (`40`, new section, v2.1.169+): all customizations off, auth and permissions still working — the first move when a setup misbehaves, because it separates model-native behaviour from your own config. With the caveat the guide omits: **managed settings policy still applies, including policy-configured hooks**, so on a managed machine it is not a clean room.
+- **`fallbackModel` is an array** (`60`, new section): tried in order, capped at three, lasting the current turn only — and `/status` does not show it, so a run can be on a fallback invisibly. Worth knowing before blaming a prompt for a quality drop.
+- **Prompt-caching knobs** (`10`): `DISABLE_PROMPT_CACHING` plus per-model variants, `ENABLE_PROMPT_CACHING_1H`, `FORCE_PROMPT_CACHING_5M`.
+- **`disableBundledSkills`** (`40`) with the `/doctor` exception since v2.1.205.
+- **Authority does not travel over the mailbox** (`20`): a `SendMessage` relay is labelled as coming from another Claude session, and a teammate **denied** an action cannot relay it to a second teammate to get it through.
+
+**Four claims refuted or unverified** (`90`) — the reason a fan-made source never enters unchecked:
+- **`CLAUDE_CODE_WORKFLOWS=1` is inverted.** Workflows are *on* by default on paid plans; the real variable is `CLAUDE_CODE_DISABLE_WORKFLOWS=1`, which this KB already carried. Version wrong too (v2.1.154, not v2.1.147). A plan following the guide would have set a nonexistent variable and concluded workflows were unavailable.
+- **Permission mode `delegate` does not exist** — the documented set of six is exhaustive.
+- **"v2.1.166"** on the cross-session authority rule — behaviour documented, version not. Same defect shape as run 4's own plugin-caching error: a correct claim carrying an invented number.
+
+**And the review caught this run doing the same thing twice.** Two "not documented" verdicts — `SLASH_COMMAND_TOOL_CHAR_BUDGET`, and a claim that the prompt-caching variables were absent from `/en/env-vars` — were **both wrong**, and wrong for the same reason: that page came back **truncated**, and absence in a truncated fetch was written down as absence in the docs. `SLASH_COMMAND_TOOL_CHAR_BUDGET` is real (skill-metadata char budget, 1% of the context window, 8,000-char fallback). The guide was right and this run was wrong. `_state.json` has warned since run 3 that `/en/settings` renders truncated and does not list every key it owns — the lesson was recorded, then not applied one page over. It is now a rule: a "not documented" verdict needs a fetch you can state was complete, or a second surface. The withdrawn entry stays visible in `90-deprecated.md` rather than being deleted.
+
+**Also corrected while checking:** Auto Mode availability was listed as "Max/Team/Enterprise". The docs say **all plans** (Team/Enterprise additionally need Owner enablement). Stale, and the kind of line that would have sent someone on Pro looking for a feature they already have.
+
+⚠️ **The claude-code guide is `partial`, not done.** ~66,700 words; roughly a third was read. The unfetched sections are listed in `_state.json` so the next run continues rather than re-reads. Marking it `ingested` would have permanently excluded two thirds of it — the exact trap run 4 hit with a chapter promoted on summary evidence.
+
+Deliberately **not** ingested: the architecture guide is mostly the author's own setup (deliberation patterns, dissent-forcing, spawn budgets, two-gate validation). Those are patterns, not product facts, and the KB already carries producer≠checker and fan-out guidance from doc-backed sources. Logged as an open question rather than absorbed.
+
+## 2026-07-18 — Incremental run 4: the Willison guide, actually read (plugin 0.4.4)
+Run 3's correction established that the guide had 16 chapters, not 2. This run read 14 of them (the two annotated-prompt walkthroughs were deliberately skipped and say so in `_state.json`). The honest accounting matters more than the additions:
+
+**Yield: 1 addition sourced from the guide, 1 correction, 11 chapters that gave nothing.** The pre-run expectation named five "directly on-topic" chapters. Three of those five yielded nothing — including *Subagents*, which turned out to be 350 words restating what `20-parallelism.md` already carries with doc backing. A chaptered fan-made guide should be priced accordingly next time. (Two figures in the first draft of this entry were wrong and caught in review: "four of five", and a "factor of about five" that was simply invented. Counted properly, three of five gave nothing and only one of the remaining two produced an addition.)
+
+- **Added — the loop for work with no test surface** (`50`, new section): start the thing → drive it programmatically → capture observable output → have the agent inspect *that output*. Plus: record commands and their real output, not the agent's account of them. The KB had nothing on this, and it is the case most setup plans hand-wave.
+- **Corrected — the red/green TDD line** (`50`): the existing line was written from the announcement post's one-sentence summary and had embellished it. "Cheap to prompt" and "fixes the acceptance criterion before any code exists" appear nowhere in the chapter. Rewritten to what it does say.
+
+**A contradiction inside the KB survived a whole run.** `10-context-memory.md` still carried `fork: true` as an experimental skill field while `90-deprecated.md` had refuted it in run 3. Corrected to `context: fork`, and logged as an open item: a claim refuted in one file can stay asserted in another, so refutations need a consistency sweep, not just a `90-` entry.
+
+**Verified separately, and worth having** (`10`, new section): prompt caching matches the prefix *exactly*, so a change anywhere in the prefix recomputes everything after it. That single constraint explains why the transcript is append-only — file re-reads append a `<system-reminder>`, `/recap` appends where `/compact` replaces, and **`CLAUDE.md` edits do not take effect mid-session**. This came out of *How coding agents work*, which is why that chapter is logged as an indirect yield rather than a zero.
+
+**And the review of this very run refuted one of our own claims.** The draft attached a parenthetical to that section: "same mechanism binds a plugin's skill path at session start". It does not. Plugin skills are **appended** and never invalidate the cache; a running session keeps an old plugin because marketplace plugins live in **per-version directories under `~/.claude/plugins/cache`**, with an orphan grace period of ~7 days so in-flight sessions don't break. The observation this repo made was real — the mechanism attached to it was invented. Worse, **`/reload-plugins` applies plugin changes to a running session without a restart** and was never tried. `10-context-memory.md` now carries the correct mechanism plus the escape hatch, and `90-`/`_state.json` record the refutation, because a right observation with a wrong cause reads exactly like a verified fact.
+
+**Three divergences recorded** (`90`): the fan-made "~200,000 tokens" quality cliff (the *effect* is documented, the number is not — 200k is a context-*window* size in the docs), "Claude Code for web" (documented name: **on** the web), and Opus 4.6 as current (valid ID, but legacy). The ~300–400k context-rot figure already in `10` is now marked fan-made too; the ~40% compaction recommendation rests on the effect, not the figure.
+
+⚠️ **`chapterCount` is the wrong marker alone.** It detects new chapters but never an edit to an existing one, and this guide revises chapters. Per-chapter `lastModified` is now captured on read; the next run must diff those, not just the count.
+
 ## 2026-07-18 — Incremental run 3: the `secondary` docs, read properly for the first time (plugin 0.4.3)
 Runs 1–2 had never given the eight `secondary` doc URLs a real extraction pass — they were listed as "check every run" but the KB's subagent and hooks material still rested largely on the fan-made source. This run fetched all eight. Everything else was quiet: CHANGELOG still at 2.1.214, both best-practices pages unchanged, no part 22, ~~no third Willison chapter~~, all 7 `datedPosts` already done.
 

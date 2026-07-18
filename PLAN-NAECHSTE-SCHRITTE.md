@@ -1,7 +1,8 @@
 # Plan: nächste Schritte
 
-_Stand 2026-07-18, nach kb-update Lauf 3. Plugin 0.4.3 ist ausgeliefert, gemerged
-und installiert; `main` und `origin/main` stehen gleich. Sprache Deutsch wie
+_Stand 2026-07-18, nach kb-update Lauf 6. Plugin 0.4.3 ist ausgeliefert und
+installiert; **0.4.6 (Läufe 4-6) ist committet, aber noch nicht gemerged, gepusht oder
+installiert** — siehe Phase 1a. Sprache Deutsch wie
 `REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
 
 ## Die Reihenfolge und warum sie so ist
@@ -34,7 +35,8 @@ aktualisiert, Versionsprobe gefahren. Der Ablauf zur Nachvollziehbarkeit:
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
 **Abbruchbedingung, aktualisiert:** Ein Fixture-Lauf, dessen Skill-Basispfad nicht
-`…\0.4.3\…` meldet, wird verworfen.
+`…\0.4.6\…` meldet, wird verworfen. (War `0.4.3`; Läufe 4-6 haben die KB-Mirrors
+geändert, also ist 0.4.6 der Stand, gegen den die Kampagne laufen muss.)
 
 **Die Session-Bindung ist jetzt kontrolliert nachgewiesen** (2026-07-18). Ablauf:
 `claude plugin update` meldete „updated from 0.4.2 to 0.4.3 … Restart to apply
@@ -44,10 +46,24 @@ die korrigierten Inhalte — und eine Probe **in derselben Session** löste weit
 `40-config-safety.md` mit „Hook events verified against code.claude.com/docs/en/hooks."
 **ohne** Datum, in 0.4.3 mit „(2026-07-18)". Die Probe las die datumslose Fassung.
 
-Folge: **Ein Plugin-Update genügt nie. Die Fixture-Läufe brauchen eine nach dem
-Update neu gestartete Session** — zusätzlich zur Verwurzelung außerhalb dieses Repos.
-Beide Bedingungen zusammen sind der Grund, warum Phase 2 nicht aus einer laufenden
-Repo-Session heraus erledigt werden kann.
+**KORRIGIERT im Review von Lauf 4 (2026-07-18).** Die Beobachtung oben ist echt und
+reproduzierbar — die Erklärung, die ich daran gehängt hatte, war erfunden. Sie lautete
+„Prompt-Caching bindet den Skill-Pfad an den Session-Start". Laut Docs gilt das
+Gegenteil: Plugin-Skills werden **angehängt** und invalidieren den Cache nie. Der
+wirkliche Grund ist der **versionierte Plugin-Cache** (`~/.claude/plugins/cache/…`)
+mit ~7 Tagen Schonfrist für die abgelöste Version, damit laufende Sessions nicht
+brechen.
+
+Und die praktische Folge fällt damit anders aus als hier bisher stand:
+**`/reload-plugins` übernimmt Plugin-Änderungen in die laufende Session** — ohne
+Neustart. Das hatte ich nie ausprobiert. Eine frisch gestartete Session ist also
+**ein** Weg, nicht der einzige.
+
+Was bleibt: **Ein `claude plugin update` allein genügt nicht.** Entweder
+`/reload-plugins` oder eine neue Session — und in beiden Fällen wird die
+Versionsprobe gefahren, denn „aktualisiert" ist nicht „läuft damit". Die
+Verwurzelung außerhalb dieses Repos bleibt davon unberührt und ist weiterhin
+zwingend.
 
 ## Phase 2 — Die Fixture-Kampagne
 
@@ -93,34 +109,99 @@ Fixtures bestätigt oder verworfen werden muss:
   das Etikett nicht. Kandidat für eine Ergänzung der Präzisionsregel.
 - **Zeilendeckel gerissen.** 127 bzw. 134 Prosazeilen gegen ~120.
 
-## Phase 4 — Quellenaufnahme
+## Phase 4 — Quellenaufnahme — ✅ VOLLSTÄNDIG (2026-07-18, Läufe 4–6)
 
-Nach der Freeze-Entscheidung, damit die KB während der Kampagne stillsteht.
-**Drei** Quellen, unterschiedlicher Typ. Reihenfolge nach Ertrag, nicht nach
-Entdeckungsdatum.
+Alle drei Quellen aufgenommen, jede mit unabhängigem Review. **Damit ist die KB
+für die Kampagne eingefroren** — ab hier kein `/kb-update` mehr, bis die vier
+Fixture-Läufe vorliegen.
 
-### 4a — Willison-Guide, 16 Kapitel (neu, höchste Priorität)
+**Die Bilanz über alle drei ist ernüchternd und gehört so protokolliert:** Die
+Reihenfolge war „nach Ertrag" geschätzt — sie war fast exakt verkehrt. 4a stand
+vorn und brachte am wenigsten; 4b stand in der Mitte und brachte am meisten; 4c
+brachte einen einzigen tragfähigen Satz. Und in **jedem** der drei Läufe fand der
+Review einen Fehler von mir, den ich selbst nicht gesehen hatte — zweimal davon
+eine erfundene Begründung zu einer korrekten Beobachtung. Für die nächste
+Quellenaufnahme heißt das: die Ertragsschätzung vorab ist wertlos, der Review
+danach ist es nicht.
 
-Kein Zugriffsblocker, Quelle korrekt getrackt seit 2026-07-18. **Kein einziges der
-16 Kapitel wurde je vollständig gelesen** — 14 `not-read`, 2 `summary-only` aus dem
-Ankündigungs-Post. Direkt im Thema: „Subagents", „Anti-patterns: things to avoid",
-„How coding agents work", „First run the tests", „Agentic manual testing".
+### 4a — Willison-Guide, 16 Kapitel — ✅ ERLEDIGT (2026-07-18, Lauf 4, Plugin 0.4.4)
 
-Steht vorn, weil die Quelle näher am Zweck dieser KB liegt als die beiden anderen
-und weil sie drei Läufe lang fälschlich als tot galt. Details und Kapitelstatus:
-`_state.json` → `sources.secondaryFanMade.chapters`.
+14 von 16 Kapiteln gelesen; die zwei Annotated-Prompt-Walkthroughs bewusst
+übersprungen, dokumentiert in `_state.json`.
 
-### 4b — blakecrosley.com, zwei Guides
+**Der Ertrag lag weit unter der Erwartung dieses Plans.** Oben standen fünf Kapitel
+als „direkt im Thema". **Drei** davon brachten nichts — „Subagents" waren 350 Wörter,
+die `20-parallelism.md` bereits ausführlicher und mit Doc-Beleg trägt. (Erste Fassung
+dieses Absatzes schrieb „vier" und nannte einen „Faktor fünf"; beides im Review
+widerlegt. Die Zahl steht jetzt gezählt da, der Faktor ist ersatzlos gestrichen.)
+Bilanz:
+**eine echte Ergänzung** (Agentic manual testing → `50-verification.md`), **eine
+Korrektur** (die Red/green-TDD-Zeile war aus der Ankündigungs-Zusammenfassung
+geschrieben und ausgeschmückt), elf Kapitel ohne Ertrag. Das ist der belegte
+Preis eines gekapitelten Fan-Guides und gehört in die Kalkulation des nächsten.
 
-Vollständiger Plan: `SOURCE-INTAKE-blakecrosley.md`.
-**Blocker entfallen** — `blakecrosley.com` steht seit 2026-07-18 in
-`permissions.allow`.
+Nebenbefunde: ein Widerspruch **innerhalb** der KB überlebte einen ganzen Lauf
+(`fork: true` in `10-` gegen die Widerlegung in `90-`), drei Divergenzen in `90-`,
+und `chapterCount` allein ist der falsche Marker — er sieht neue Kapitel, nie
+Änderungen an bestehenden. Ab jetzt `lastModified` pro Kapitel.
+
+Das Risiko, das ich vor dem Lauf gemeldet hatte — das Subagents-Kapitel könnte
+die Skills bereitwilliger Subagenten empfehlen lassen und damit `already-good`
+beeinflussen — **ist nicht eingetreten**: das Kapitel brachte nichts, kein Satz
+daraus steht in der KB.
+
+### 4b — blakecrosley.com, zwei Guides — ✅ ERLEDIGT (2026-07-18, Lauf 5, Plugin 0.4.5)
+
+Plan war `SOURCE-INTAKE-blakecrosley.md`, neue Quellgruppe `secondaryGuides`,
+Marker `wordCount`. **Deutlich ertragreicher als 4a:** sechs Ergänzungen, alle vor
+der Aufnahme gegen die Docs verifiziert — `autoMode`-Substruktur (Klartext-Regeln
+statt Tool-Patterns), `--safe-mode`, `fallbackModel` als Array, die
+Prompt-Caching-Variablen, `disableBundledSkills`, und dass Autorität nicht über
+die Mailbox wandert.
+
+**Vier Claims haben die Verifikation nicht überlebt** — genau deshalb geht eine
+Fan-Quelle durch `kb-verifier`. Der teuerste: `CLAUDE_CODE_WORKFLOWS=1` ist
+**invertiert**; Workflows sind standardmäßig an, die echte Variable ist
+`CLAUDE_CODE_DISABLE_WORKFLOWS=1`. Ein Plan nach diesem Guide hätte eine
+nicht existierende Variable gesetzt.
+
+**Der claude-code-Guide steht auf `partial`, nicht `ingested`.** ~66.700 Wörter,
+etwa ein Drittel gelesen. Bewusst so — `ingested` hätte zwei Drittel dauerhaft
+ausgeschlossen.
+
+**Und der Review fand zwei eigene Fehler dieses Laufs:** zwei „nicht dokumentiert"-
+Urteile waren falsch, beide weil `/en/env-vars` abgeschnitten zurückkam und
+Abwesenheit-in-abgeschnittenem-Fetch als Abwesenheit-in-den-Docs notiert wurde.
+`_state.json` warnt seit Lauf 3 vor genau diesem Muster auf einer Nachbarseite.
+Jetzt als Regel festgehalten. Nebenbei korrigiert: Auto Mode ist **alle Pläne**,
+nicht „Max/Team/Enterprise".
 
 ### 4c — Paper „Dive into Claude Code" (arXiv 2604.14228v1)
 
-Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI. 14 Seiten, ~31.700 Wörter.
-Lokale Datei, **kein Allowlist-Blocker**. Konvertiert liegt sie im Scratchpad;
-für die Aufnahme neu konvertieren, der Scratchpad ist sessiongebunden.
+— ✅ **ERLEDIGT (2026-07-18, Lauf 6, Plugin 0.4.6).** PDF vom Eigentümer erneut
+angehängt, damit entblockt.
+
+Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI. 14 Seiten, 31.694 Wörter, neue
+Quellgruppe `literature`. Kein einziges konkretes Detail aufgenommen — bei ~126
+Versionen Drift ist jede Flag, jede Zahl, jeder Pfad als veraltet anzunehmen.
+
+**Der Ertrag ist der kleinste aller drei Quellen, und das ist die ehrliche
+Bilanz.** Was blieb: Prinzip 10 (Harness statt Planer, nur die Richtung). Der
+angebliche Hauptfund — die Kostenordnung der Erweiterungsmechanismen — war
+**falsch**: das Paper stellt MCP ans teure Ende, tatsächlich verschiebt Tool
+Search die Schemas standardmäßig, und das dauerhaft Teuerste ist `CLAUDE.md`,
+das in der Kurve des Papers gar nicht vorkam. `PLAYBOOK` §1b steht jetzt aus
+`/en/features-overview` — einer Doc-Seite, die das Thema besser erklärt.
+
+**Zwei Lehren, beide in `_state.json`:** Mein Filter siebte *Oberfläche* (Flags,
+Zahlen, Pfade) und hatte keine Regel für **Mechanismus-Claims** — genau dort
+schlägt Versionsdrift am härtesten zu. Und „die Docs erklären das nicht", womit
+ich den Griff zur unautoritativen Quelle überhaupt begründet hatte, war selbst
+eine ungeprüfte Behauptung. Ein Fetch hätte gereicht.
+
+Das Protokoll-Artefakt `already-good_agent-dev-plan_0.4.0-INVALID.md` ist mit dem
+Scratchpad verloren; unschädlich, der Lauf war ohnehin ungültig, aber der Beleg
+existiert nur noch als Beschreibung hier.
 
 **Quellentyp und Rang.** Third-party *Quellcode-Analyse*, kein Blogpost und keine
 offizielle Doku. Das ist ein neuer Typ für `_state.json`: unterhalb der offiziellen
@@ -182,20 +263,30 @@ nicht handlungsleitend — und bei 126 Versionen Drift vermutlich ohnehin überh
 - **Part 12 Tab-Count** ungelöst in `_state.json` (2 gelesen gegen 4 gespeichert,
   zweimal). Braucht das Browser-Tool, nicht den Fetcher.
 - **`managed-agents`-Docs-Seite** weiterhin ungefetcht.
-- **Protokoll-Artefakt in Gefahr:** der 0.4.0-Plan liegt unter
+- ~~**Protokoll-Artefakt in Gefahr**~~ — **eingetreten, verloren.** Der 0.4.0-Plan lag unter
   `…\scratchpad\artifacts\already-good_agent-dev-plan_0.4.0-INVALID.md`. Der
-  Scratchpad ist sessiongebunden. Wenn er Bestand haben soll, muss er woandershin.
+  Scratchpad wurde geleert. Unschädlich (der Lauf war ungültig), aber der Beleg
+  existiert nur noch als Beschreibung in 4c.
 
 ## Was auf dem Eigentümer liegt
 
 1. ~~Willison demoten~~ — hinfällig, war ein Fehlschluss (siehe Phase 4a).
 2. ~~Commit + Release 0.4.3 freigeben~~ — erledigt 2026-07-18.
 3. ~~`blakecrosley.com` in die Allowlist~~ — erledigt 2026-07-18.
-4. **Die vier Fixture-Läufe starten.** Der einzige verbliebene Punkt, und der einzige,
-   der zwingend beim Eigentümer liegt: nur er kann eine Session außerhalb des Repos
-   verwurzeln, und sie muss nach dem Plugin-Update gestartet worden sein.
+4. **0.4.6 nach `main` mergen und installieren.** **Voraussetzung für Punkt 5** — im
+   Review von Lauf 4 aufgefallen, weil die Abbruchbedingung verschärft wurde, ohne
+   dass das Ausliefern je als Aufgabe dastand. So wie es dastand, hätte der
+   Eigentümer Läufe gestartet, die die eigene Abbruchbedingung verwirft. Branch
+   `kb-run4-willison-guide` ist **gepusht** (6 Commits, Läufe 4–6), Suite grün;
+   der Merge steht aus. Danach `claude plugin update` **plus** `/reload-plugins`
+   oder eine neue Session — und in jedem Fall die Versionsprobe.
+5. **Die vier Fixture-Läufe starten.** Liegt zwingend beim Eigentümer: nur er kann
+   eine Session außerhalb dieses Repos verwurzeln. Die Session muss 0.4.6 auflösen —
+   entweder frisch gestartet oder per `/reload-plugins` nachgezogen.
+6. ~~Das arXiv-PDF erneut anhängen~~ — erledigt 2026-07-18, 4c ist durch.
 
-Alles Übrige (Phase 3 Urteil, Phase 4 Aufnahme) hängt an Punkt 4.
+
+Phase 3 (Urteil) hängt an Punkt 5. Phase 4 ist damit vollständig: 4a, 4b und 4c sind alle aufgenommen.
 
 ## Nicht behoben, bewusst
 
