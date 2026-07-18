@@ -1,8 +1,8 @@
 # Plan: nächste Schritte
 
-_Stand 2026-07-18, nach kb-update Lauf 3 (Plugin 0.4.3, committet auf
-`release/0.4.3`, ungepusht). Sprache Deutsch
-wie `REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
+_Stand 2026-07-18, nach kb-update Lauf 3. Plugin 0.4.3 ist ausgeliefert, gemerged
+und installiert; `main` und `origin/main` stehen gleich. Sprache Deutsch wie
+`REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
 
 ## Die Reihenfolge und warum sie so ist
 
@@ -18,17 +18,18 @@ misst man gegen ein bewegliches Ziel.
 
 ---
 
-## Phase 1 — 0.4.3 ausliefern
+## Phase 1 — 0.4.3 ausliefern — ✅ ERLEDIGT (2026-07-18)
 
-Blockiert alles Weitere. 18 modifizierte Dateien liegen im Working Tree.
+Suite grün, committet, nach `main` gemerged und gepusht, Plugin auf 0.4.3
+aktualisiert, Versionsprobe gefahren. Der Ablauf zur Nachvollziehbarkeit:
 
 1. Verifikationssuite: `cd mcp-server && npm test && npm run typecheck && npm run smoke
    && npm run smoke:bundle && npm run check:bundle`, dazu
    `node scripts/sync-plugin-kb.mjs --check` (zuletzt grün, `2 × 10 files`).
 2. ~~Willison auf `on-demand` demoten~~ — **hinfällig, war ein Fehlschluss.** Die
    Quelle war nicht ruhig, der Zeiger stand auf dem Ankündigungs-Blogpost statt auf
-   dem Guide. Der Guide steht bei 16 Kapiteln. Korrigiert am 2026-07-18; 14 Kapitel
-   sind ungelesen und stehen in Phase 4 an.
+   dem Guide. Der Guide steht bei 16 Kapiteln. Korrigiert am 2026-07-18; **kein
+   einziges** Kapitel wurde je vollständig gelesen — siehe Phase 4a.
 3. Commit auf einem Branch, nicht auf `main`. Pre-Commit-Hook prüft Mirror/Index/Bundle.
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
@@ -95,16 +96,27 @@ Fixtures bestätigt oder verworfen werden muss:
 ## Phase 4 — Quellenaufnahme
 
 Nach der Freeze-Entscheidung, damit die KB während der Kampagne stillsteht.
-Zwei Quellen, unterschiedlicher Typ, unterschiedliche Blocker.
+**Drei** Quellen, unterschiedlicher Typ. Reihenfolge nach Ertrag, nicht nach
+Entdeckungsdatum.
 
-### 4a — blakecrosley.com, zwei Guides
+### 4a — Willison-Guide, 16 Kapitel (neu, höchste Priorität)
+
+Kein Zugriffsblocker, Quelle korrekt getrackt seit 2026-07-18. **Kein einziges der
+16 Kapitel wurde je vollständig gelesen** — 14 `not-read`, 2 `summary-only` aus dem
+Ankündigungs-Post. Direkt im Thema: „Subagents", „Anti-patterns: things to avoid",
+„How coding agents work", „First run the tests", „Agentic manual testing".
+
+Steht vorn, weil die Quelle näher am Zweck dieser KB liegt als die beiden anderen
+und weil sie drei Läufe lang fälschlich als tot galt. Details und Kapitelstatus:
+`_state.json` → `sources.secondaryFanMade.chapters`.
+
+### 4b — blakecrosley.com, zwei Guides
 
 Vollständiger Plan: `SOURCE-INTAKE-blakecrosley.md`.
+**Blocker entfallen** — `blakecrosley.com` steht seit 2026-07-18 in
+`permissions.allow`.
 
-**Blockiert auf eine Entscheidung:** `blakecrosley.com` in `permissions.allow` in
-`.claude/settings.json`. Permission-Datei, Guardrail — der Eigentümer editiert sie.
-
-### 4b — Paper „Dive into Claude Code" (arXiv 2604.14228v1)
+### 4c — Paper „Dive into Claude Code" (arXiv 2604.14228v1)
 
 Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI. 14 Seiten, ~31.700 Wörter.
 Lokale Datei, **kein Allowlist-Blocker**. Konvertiert liegt sie im Scratchpad;
@@ -176,8 +188,20 @@ nicht handlungsleitend — und bei 126 Versionen Drift vermutlich ohnehin überh
 
 ## Was auf dem Eigentümer liegt
 
-1. ~~Willison demoten~~ — erledigt durch Korrektur, keine Entscheidung mehr nötig.
-2. Commit + Release 0.4.3 freigeben.
-3. Die vier Fixture-Läufe starten (nur er kann eine Session außerhalb des Repos
-   verwurzeln).
-4. `blakecrosley.com` in die Allowlist — ja/nein.
+1. ~~Willison demoten~~ — hinfällig, war ein Fehlschluss (siehe Phase 4a).
+2. ~~Commit + Release 0.4.3 freigeben~~ — erledigt 2026-07-18.
+3. ~~`blakecrosley.com` in die Allowlist~~ — erledigt 2026-07-18.
+4. **Die vier Fixture-Läufe starten.** Der einzige verbliebene Punkt, und der einzige,
+   der zwingend beim Eigentümer liegt: nur er kann eine Session außerhalb des Repos
+   verwurzeln, und sie muss nach dem Plugin-Update gestartet worden sein.
+
+Alles Übrige (Phase 3 Urteil, Phase 4 Aufnahme) hängt an Punkt 4.
+
+## Nicht behoben, bewusst
+
+- **Erfundene Zahl in einer Commit-Message.** `d0d46c9` behauptet 22 korrigierte
+  Datumsvorkommen in `_state.json`; es waren 21. Gefunden im Review, nicht korrigiert:
+  der Branch war beim Fund schon gepusht, und History umzuschreiben wiegt schwerer als
+  die falsche Zahl. Bleibt als Protokoll stehen.
+- **`agent-task-plan.md`** beschreibt Willison noch als chapter-tracked. Gitignoriertes,
+  generiertes Artefakt — generierte Dateien werden nicht von Hand nachgepflegt.
