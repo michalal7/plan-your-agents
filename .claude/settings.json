@@ -12,6 +12,7 @@
       "WebFetch(domain:platform.claude.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:simonwillison.net)",
+      "WebFetch(domain:blakecrosley.com)",
       "WebFetch(domain:www.infoq.com)",
       "Edit(.claude/knowledge/claude-agents/**)",
       "Write(.claude/knowledge/claude-agents/**)",
