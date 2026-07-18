@@ -1,6 +1,7 @@
 # Plan: nächste Schritte
 
-_Stand 2026-07-18, nach kb-update Lauf 3 (Plugin 0.4.3, uncommitted). Sprache Deutsch
+_Stand 2026-07-18, nach kb-update Lauf 3 (Plugin 0.4.3, committet auf
+`release/0.4.3`, ungepusht). Sprache Deutsch
 wie `REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
 
 ## Die Reihenfolge und warum sie so ist
