@@ -6,9 +6,10 @@
 _DELETE_ME_*/
 _kb_stage*/
 
-# Generated plan outputs from the setup-*-agents skills (per-run, not source)
-/agent-dev-plan.md
-/agent-task-plan.md
+# Generated plan outputs from the setup-*-agents skills (per-run, not source).
+# Unanchored on purpose: runs against test/skill-fixtures/* drop plans there too.
+agent-dev-plan.md
+agent-task-plan.md
 
 # OS / Editor
 .DS_Store
