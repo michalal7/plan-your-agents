@@ -22,7 +22,7 @@ Check into the repo what the team should share; keep private things in `settings
 Note: `dontAsk` is a **valid** mode (permission-modes doc) — the fan-made mention `--permission-mode=dontAsk` was correct. `auto` uses the classifier, `bypassPermissions` skips everything.
 
 ## Auto Mode — safely skip prompts
-- Enable: `claude --enable-auto-mode` or shift+tab to Auto Mode. For Max/Team/Enterprise.
+- Availability (verified 2026-07-18, **corrected** — the KB said "Max/Team/Enterprise"): **all plans**. On Team/Enterprise an Owner must enable it in admin settings first, and `permissions.disableAutoMode: "disable"` in managed settings turns it off. Model and provider requirements also apply (Opus 4.6+/Sonnet 4.6+/Fable 5 on the Anthropic API; a narrower list on Bedrock/Vertex/Foundry).
 - A classifier grades every action: safe ones are auto-approved, risky ones flagged/blocked (events `PermissionRequest`/`PermissionDenied`).
 - Safety argument (source): red-teamed on thousands of transcripts; safer than rubber-stamping hundreds of prompts ("eyes glaze over"). Practically required for many parallel Claudes/workflows, so one prompt doesn't freeze everything.
 - CLI: `claude --permission-mode auto` (verified). `claude auto-mode reset` restores the default config by removing the `autoMode` section (v2.1.212+). `defaultMode: "auto"` is **ignored** from project/local settings — it must come from the user level or the CLI.
@@ -47,7 +47,7 @@ Starts with **all customizations off**: CLAUDE.md, skills, plugins, hooks, MCP s
 Source: /en/cli-reference (verified 2026-07-18).
 
 ## Turning off what ships in the box (verified)
-`disableBundledSkills: true` (env equivalent `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1`) disables the bundled skills and workflows — `/doctor`, `/code-review`, `/batch`, `/debug`, `/loop`, `/claude-api`. Governance lever when a team wants only its own surface.
+`disableBundledSkills: true` (env equivalent `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1`) disables the bundled skills and workflows — among them `/doctor`, `/code-review`, `/batch`, `/debug`, `/loop`, `/claude-api`, `/run`, `/verify`. The docs say "including", so treat any such list as a sample, not the full set. Governance lever when a team wants only its own surface.
 - Exception worth knowing: since v2.1.205 `/doctor` stays typable despite the setting. Hide it with `DISABLE_DOCTOR_COMMAND` or `skillOverrides: {"doctor": "off"}`.
 
 ## Containment — what the sandbox is actually for
@@ -64,7 +64,7 @@ Source: anthropic.com/engineering/how-we-contain-claude (2026-05-25).
 
 ## Hooks — deterministic lifecycle logic
 - Configured in `settings.json` under `hooks`. Three levels: event → `matcher` (filter, e.g. `"Edit|Write"`, `"Bash"`) → handler array.
-- Handler `type`: `command` · `http` · `mcp_tool` · `prompt` · `agent`. Useful fields: `if` (permission-rule filter, e.g. `Bash(git *)`), `timeout`, `statusMessage`, `once`, `async`. `agent` hooks are flagged **experimental** in the docs. `http` hooks POST to a URL — gate them with the `allowedHttpHookUrls` setting, or a hook config becomes an egress channel.
+- Handler `type`: `command` · `http` · `mcp_tool` · `prompt` · `agent`. Useful fields: `if` (permission-rule filter, e.g. `Bash(git *)`), `timeout`, `statusMessage`, `once`, `async`. `agent` hooks are flagged **experimental** in the docs.
 - Format example (auto-format after edits, Part 1):
   ```json
   { "hooks": { "PostToolUse": [ { "matcher": "Write|Edit",
