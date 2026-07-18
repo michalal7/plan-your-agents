@@ -28,6 +28,16 @@ Steps:
   "incomplete": ["<section that was not/only partially fetchable>"]
 }
 
+Per source type:
+- **GitHub** — always fetch the raw file, never the HTML page: `raw.githubusercontent.com/<owner>/<repo>/main/<path>`. The rendered page buries the content in navigation chrome.
+- **`claude-code` CHANGELOG** — do NOT summarize the whole file. You are given a `lastChecked` version; report only entries **newer** than it, and return the topmost version string as `changeMarker`. Without a `lastChecked`, return only the topmost version and its entries.
+- **Living doc pages** — besides the content, return the list of `##` headings as `changeMarker`; the next run compares it to detect change. Never return a content hash: the fetched text is not byte-stable and would signal a change every run.
+- **PDF** — WebFetch often cannot read PDFs. On failure put the source in `incomplete` with the reason; the main run then fetches it via the browser tool. Do not paraphrase a PDF you could not read.
+- **Unconfirmed URL** — if you are told a URL is unverified and it 404s, report it in `incomplete` with the status code. Do not go hunting for a replacement URL on your own; that decision belongs to the main run.
+
+When a `changeMarker` is requested, add it to the returned JSON:
+`"changeMarker": {"type": "headings|topVersion|chapterCount", "value": <list or string>}`
+
 Rules:
 - Signal over completeness; no long verbatim lifts. Verbatim only for commands/flags/settings.
 - Invent nothing. What wasn't fetchable goes to `incomplete` — don't guess.

@@ -21,11 +21,20 @@ Current state: @.claude/knowledge/claude-agents/_state.json
 
 ## Flow
 
-1. **Determine scope.** Read `_state.json`. On an empty argument, process only sources/parts whose state changed; on `full`, everything. Sources at minimum:
-   - fan-made: howborisusesclaudecode.com (practical tips, NOT authoritative)
-   - official (authoritative): code.claude.com/docs/en on sub-agents, agents, agent-view, agent-teams, workflows, worktrees, hooks, settings, commands, permission-modes
+1. **Determine scope.** Read `_state.json` (`schemaVersion` 2). On an empty argument process only what changed; on `full`, everything. Each source group has its own `updateBehavior` — follow it, don't refetch everything:
 
-2. **Fetch — delegate in parallel.** For each source to fetch, start a `kb-fetcher` subagent (several at once, one message with multiple Agent tool calls). Each returns structured JSON; raw HTML stays out of your context. JS-rendered parts that come back as `incomplete` should be fetched here in the main run via the Chrome/browser tool (subagents have no browser access).
+   | Group | Behaviour | Scope rule |
+   |---|---|---|
+   | `primary` (fan-made timeline) | part tracking | parts whose title/tab count changed, plus new parts |
+   | `secondary` (official docs) | check every run | authoritative for flags/settings/hooks/modes |
+   | `datedPosts` (anthropic.com engineering/research) | fetch once | only entries with `status != "done"` |
+   | `living` (docs pages + GitHub) | check every run | fetch, compare `changeMarker`, process only on change |
+   | `secondaryFanMade` (Willison) | chapter tracking | new chapters only; mark "(fan-made, Willison)" |
+   | `contextOnly` (Trends Report PDF, InfoQ) | on demand | framing only — **never** a source for a verified claim |
+
+   Rank on conflict: official docs > dated Anthropic posts > CHANGELOG > fan-made/context. An entry marked `urlVerified: false` (currently the `claude-code` CHANGELOG raw path) must be confirmed by the first fetch; on 404 record `incomplete` and report it — do not go hunting for a replacement URL.
+
+2. **Fetch — delegate in parallel.** For each source to fetch, start a `kb-fetcher` subagent (several at once, one message with multiple Agent tool calls; the fan-out sweet spot is 3–5). Each returns structured JSON; raw HTML stays out of your context. Pass the fetcher what it needs for change detection: for `living` entries the stored `changeMarker` (and for the CHANGELOG the `lastChecked` version, so it reports only newer entries). Anything that comes back `incomplete` — JS-rendered tabs, PDFs — is fetched here in the main run via the Chrome/browser tool (subagents have no browser access).
 
 3. **Verify — separately.** Collect all `claimsToVerify` from the fetch results, dedupe them, and hand them to a `kb-verifier` subagent. Result: verdicts + divergences. The verifier is NOT the writer.
 
@@ -35,7 +44,7 @@ Current state: @.claude/knowledge/claude-agents/_state.json
 
 6. **Review — enforce compactness.** Check every changed file: > ~200 lines → condense instead of appending (merge redundant tips). Every line must be able to influence a decision. Keep `PLAYBOOK-agent-design.md` and `INDEX.md` consistent. Optionally hand this review to a subagent.
 
-7. **Advance state.** Update `CHANGELOG.md` (date, added/changed/dropped, open items) and `_state.json` (seen parts/tabs, status, last run).
+7. **Advance state.** Update `CHANGELOG.md` (date, added/changed/dropped, open items) and `_state.json`: `lastRun`, `runCount`, seen parts/tabs — plus, for the new groups, `status`/`ingestedAt` on processed `datedPosts`, the fresh `changeMarker` + `lastChecked` on every `living` entry you fetched (also when nothing changed — that is what makes the next run cheap), new `parts` for `secondaryFanMade`, and `urlVerified: true` once an unconfirmed URL has resolved.
 
 8. **Regenerate what the KB feeds.** Two generated artifacts derive from the KB and go stale the moment you change it — the commit hook blocks on both:
    - `node scripts/sync-plugin-kb.mjs` — each skill's bundled KB copy (`.claude/skills/setup-dev-agents/` and `setup-task-agents/knowledge/claude-agents/`, generated mirrors). Verify with `--check`.

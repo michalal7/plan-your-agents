@@ -48,6 +48,14 @@ Treat this as one indivisible step whenever shipped content changes:
 
 **Install and update only from a clean, committed tree.** The `michalal7` marketplace is a *directory* source (`known_marketplaces.json` → `"source": "directory"`), so an install copies the **working tree**, uncommitted work included. The `gitCommitSha` in `installed_plugins.json` records only the HEAD at install time and can mislead: on 2026-07-18 it read `89be2fd` while the cache already held the BM25 bundle that was committed later as `876dad5`. Installing from a dirty tree therefore produces a cache whose recorded provenance is wrong.
 
+## Update cadence
+The KB ages against a moving target, so a run is scheduled rather than waited for:
+- **Monthly** — `/kb-update` incremental: `living` change markers, new CHANGELOG versions, new Willison chapters, new parts of the primary source. Cheap when nothing moved, which is the point of the markers.
+- **Ad hoc** — on a model or feature release (a new Claude generation, a new orchestration mechanism), don't wait for the monthly slot.
+- **`full`** — only when the structure changes, not for content deltas.
+
+The freshness risk is real and recorded: `runCount` in `_state.json` counts the actual runs. A KB whose counter stays at 1 while its sources keep publishing is stale no matter how disciplined its provenance markers are.
+
 ## Known environment pitfalls
 - **JS-rendered sources** (e.g. parts 17–21 of the fan-made site): WebFetch doesn't deliver the tab contents. Fetch them in the main run via the Chrome/browser tool — subagents have no browser access.
 - **Writing to `.claude/` from Cowork Cloud**: the bridge tool `device_commit_files` refuses `.claude` target paths. Reliable path: commit into a non-`.claude` staging folder (e.g. `_kb_stage/`), then move it to the target with `device_bash` and `mv`. `device_bash` can write into `.claude` but **not delete** (rm/rmdir fail) — empty staging folders remain and are removed manually. When the curator instead runs locally as `/kb-update` in Claude Code, it writes directly; this detour doesn't apply.

@@ -7,6 +7,12 @@
       "WebFetch(domain:code.claude.com)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:howborisusesclaudecode.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:resources.anthropic.com)",
+      "WebFetch(domain:platform.claude.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:simonwillison.net)",
+      "WebFetch(domain:www.infoq.com)",
       "Edit(.claude/knowledge/claude-agents/**)",
       "Write(.claude/knowledge/claude-agents/**)",
       "Bash(node scripts/sync-plugin-kb.mjs*)"

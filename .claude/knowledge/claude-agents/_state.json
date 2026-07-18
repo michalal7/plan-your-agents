@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "lastRun": "2026-07-17",
   "runCount": 1,
   "sources": {
@@ -22,6 +22,55 @@
         "https://code.claude.com/docs/en/worktrees",
         "https://code.claude.com/docs/en/hooks",
         "https://code.claude.com/docs/en/settings"
+      ]
+    },
+    "datedPosts": {
+      "type": "anthropic-engineering",
+      "authoritative": true,
+      "updateBehavior": "fetch-once",
+      "note": "Dated posts. Fetch once, then only track status. Rank: official docs > these > fan-made. `discoveredVia` records how the URL was established, not what it says.",
+      "entries": [
+        {"url": "https://www.anthropic.com/engineering/claude-code-auto-mode", "date": "2026-03-25", "status": "pending", "ingestedAt": null, "targetFiles": ["40-config-safety.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/engineering/building-c-compiler", "date": "2026-02-05", "status": "pending", "ingestedAt": null, "targetFiles": ["20-parallelism.md", "PLAYBOOK-agent-design.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/engineering/harness-design-long-running-apps", "date": "2026-03-24", "status": "pending", "ingestedAt": null, "targetFiles": ["30-workflows.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/engineering/how-we-contain-claude", "date": null, "status": "pending", "ingestedAt": null, "targetFiles": ["40-config-safety.md"], "discoveredVia": "href read from the engineering index (featured, no date shown)"},
+        {"url": "https://www.anthropic.com/engineering/managed-agents", "date": "2026-04-08", "status": "pending", "ingestedAt": null, "targetFiles": ["PLAYBOOK-agent-design.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents", "date": "2026-01-09", "status": "pending", "ingestedAt": null, "targetFiles": ["50-verification.md"], "discoveredVia": "href read from the engineering index"},
+        {"url": "https://www.anthropic.com/research/claude-code-expertise", "date": "2026-06-16", "status": "pending", "ingestedAt": null, "targetFiles": ["00-principles.md"], "discoveredVia": "search result (title + URL, repeated); date from the result"}
+      ]
+    },
+    "living": {
+      "type": "official-docs-and-repos",
+      "authoritative": true,
+      "updateBehavior": "check-every-run",
+      "note": "Re-check each run. Change detection uses a stable `changeMarker`, never a content hash: WebFetch returns processed text that is not byte-stable, so a hash would fire on every run (same reason the primary source stores no raw hashes).",
+      "entries": [
+        {"url": "https://code.claude.com/docs/en/best-practices", "status": "pending", "lastChecked": null, "changeMarker": {"type": "headings", "value": null}},
+        {"url": "https://code.claude.com/docs/en/agent-sdk/subagents", "status": "pending", "lastChecked": null, "changeMarker": {"type": "headings", "value": null}},
+        {"url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices", "status": "pending", "lastChecked": null, "changeMarker": {"type": "headings", "value": null}},
+        {"url": "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md", "status": "pending", "lastChecked": null, "urlVerified": false, "note": "URL not yet confirmed — the repo is search-confirmed, this raw path is inferred. The first fetch must confirm it; on 404 record `incomplete` and report.", "changeMarker": {"type": "topVersion", "value": null}},
+        {"url": "https://github.com/anthropics/skills", "status": "pending", "lastChecked": null, "note": "Fetch the raw README (raw.githubusercontent.com/anthropics/skills/main/README.md) rather than the HTML page.", "changeMarker": {"type": "headings", "value": null}}
+      ]
+    },
+    "secondaryFanMade": {
+      "type": "fan-made",
+      "authoritative": false,
+      "updateBehavior": "chapter-tracking",
+      "note": "Grows chapter by chapter, like the primary source. Mark anything taken from it as \"(fan-made, Willison)\"; never adopt a safety-/API-relevant claim without doc verification.",
+      "url": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
+      "date": "2026-02-23",
+      "discoveredVia": "search result (title + URL + announcement; \"first two chapters\")",
+      "changeMarker": {"type": "chapterCount", "value": null},
+      "parts": []
+    },
+    "contextOnly": {
+      "type": "context",
+      "authoritative": false,
+      "updateBehavior": "on-demand",
+      "note": "Framing and orientation only — NOT part of the verification canon. Never adopt a claim from these without independent doc verification. Cite by source name when used.",
+      "entries": [
+        {"url": "https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf", "status": "pending", "format": "pdf", "note": "PDF — WebFetch often cannot read these. On failure record `incomplete` and fetch in the main run via the browser tool (see MAINTENANCE, known environment pitfalls).", "discoveredVia": "search result (2×)"},
+        {"url": "https://www.infoq.com/news/2026/05/code-with-claude/", "status": "pending", "discoveredVia": "search result (title + URL)"}
       ]
     }
   },
@@ -49,7 +98,9 @@
     {"n": 21, "title": "Automation Is the Meta-Skill", "date": "2026-07-15", "tabs": 3, "status": "full"}
   ],
   "openItems": [
-    "Fan-made source fully captured (parts 1-21). Next run: only check for new parts."
+    "Fan-made source fully captured (parts 1-21). Next run: only check for new parts.",
+    "2026 sources declared but NOT yet ingested: 7 datedPosts, 5 living, 1 secondaryFanMade, 2 contextOnly — all `status: pending`. The source model is in place; the first ingestion run still has to happen.",
+    "The claude-code CHANGELOG raw URL is `urlVerified: false` — the first fetch must confirm or correct it."
   ],
   "verified": {
     "date": "2026-07-17",
