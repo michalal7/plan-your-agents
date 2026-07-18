@@ -9,7 +9,7 @@ claude
 ```
 - On first start, **confirm the workspace-trust dialog** — needed so `.claude/settings.json` and the skill's `allowed-tools` take effect.
 - Optionally version it: `git init && git add . && git commit -m "KB + agent infrastructure"` (the `.gitignore` keeps `_DELETE_ME_*`, `_kb_stage*`, `.claude/worktrees/`, and the generated `agent-*-plan.md` out).
-- **Contributors — enable the drift guard once:** `git config core.hooksPath .githooks`. The pre-commit hook then blocks a commit whose skill KB mirrors or semantic index have drifted from the canonical KB. CI (`.github/workflows/ci.yml`) enforces the mirror check + typecheck + tests on push/PR.
+- **Contributors — enable the drift guard once:** `git config core.hooksPath .githooks`. The pre-commit hook then blocks a commit whose skill KB mirrors, semantic index, or plugin bundle have drifted from their sources. CI (`.github/workflows/ci.yml`) enforces the mirror check + typecheck + tests + the bundle checks (`check:bundle`, `smoke:bundle`) on push/PR.
 
 ## 1. Test the curator — `/kb-update`
 ```text

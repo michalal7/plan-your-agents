@@ -1,39 +1,58 @@
-// The MCP surface: resources (the KB files, read live from disk), a semantic
-// search tool, and a setup-agents prompt that mirrors the PLAYBOOK flow. The
-// server only retrieves knowledge — all reasoning/planning stays in the client
-// model.
+// The MCP surface: resources (the KB files, read live from disk), a search tool
+// (semantic or lexical — see search.ts), and a setup-agents prompt that mirrors
+// the PLAYBOOK flow. The server only retrieves knowledge — all reasoning and
+// planning stays in the client model.
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { listKnowledgeFiles, readKnowledgeFile } from "./kb.js";
-import { searchVec, type IndexData } from "./store.js";
-import type { Embedder } from "./embed.js";
+import type { Searcher, SearchVariant } from "./search.js";
 
 const RESOURCE_PREFIX = "kb://claude-agents/";
 
-const INSTRUCTIONS = [
-  "Knowledge base about setting up Claude Code agent systems.",
-  "Resources expose the KB files (INDEX, PLAYBOOK, numbered topic files).",
-  "Use search_knowledge for semantic lookup; it retrieves sections, it does not plan.",
-  "Use the setup-agents prompt for a guided setup flow — the reasoning stays with you.",
-].join(" ");
+// Both retrieval variants expose the identical MCP surface — same resources,
+// same tool name, same output shape, same prompt. Only the server name and the
+// retrieval-specific wording differ, so a client can tell which path is running.
+const SERVER_NAME: Record<SearchVariant, string> = {
+  semantic: "claude-agents-kb",
+  lexical: "claude-agents-kb-lexical",
+};
+
+function instructions(variant: SearchVariant): string {
+  const lookup =
+    variant === "lexical"
+      ? "Use search_knowledge for keyword lookup (English queries); it retrieves sections, it does not plan."
+      : "Use search_knowledge for semantic lookup; it retrieves sections, it does not plan.";
+  return [
+    "Knowledge base about setting up Claude Code agent systems.",
+    "Resources expose the KB files (INDEX, PLAYBOOK, numbered topic files).",
+    lookup,
+    "Use the setup-agents prompt for a guided setup flow — the reasoning stays with you.",
+  ].join(" ");
+}
+
+function searchDescription(variant: SearchVariant): string {
+  const how =
+    variant === "lexical"
+      ? "Keyword (BM25) search over the knowledge base about Claude Code agent setups. " +
+        "Phrase the query in English — the knowledge base is English and matching is " +
+        "lexical, not cross-lingual. Exact tokens (flag names, /commands, env vars) match well. "
+      : "Semantic search over the knowledge base about Claude Code agent setups. ";
+  return (
+    how +
+    "Returns the most relevant sections with their source file and heading. " +
+    "Retrieval only — the reasoning stays with you."
+  );
+}
 
 export interface ServerDeps {
   kbDir: string;
-  index: IndexData;
-  embedder: Embedder;
+  searcher: Searcher;
 }
 
-export function createServer({ kbDir, index, embedder }: ServerDeps): McpServer {
-  if (embedder.dims !== index.dims) {
-    throw new Error(
-      `Runtime embedder "${embedder.name}" (${embedder.dims}d) does not match the ` +
-        `index model "${index.model}" (${index.dims}d). Rebuild with the same EMBEDDER.`,
-    );
-  }
-
+export function createServer({ kbDir, searcher }: ServerDeps): McpServer {
   const server = new McpServer(
-    { name: "claude-agents-kb", version: "0.1.0" },
-    { instructions: INSTRUCTIONS },
+    { name: SERVER_NAME[searcher.variant], version: "0.1.0" },
+    { instructions: instructions(searcher.variant) },
   );
 
   // (a) Resources — one per knowledge file, read live from disk so the server
@@ -59,23 +78,26 @@ export function createServer({ kbDir, index, embedder }: ServerDeps): McpServer 
     );
   }
 
-  // (b) Tool — semantic search over the KB.
+  // (b) Tool — search over the KB (semantic or lexical, same contract).
   server.registerTool(
     "search_knowledge",
     {
       title: "Search the claude-agents knowledge base",
-      description:
-        "Semantic search over the knowledge base about Claude Code agent setups. " +
-        "Returns the most relevant sections with their source file and heading. " +
-        "Retrieval only — the reasoning stays with you.",
+      description: searchDescription(searcher.variant),
       inputSchema: {
-        query: z.string().min(1).describe("Natural-language question"),
+        query: z
+          .string()
+          .min(1)
+          .describe(
+            searcher.variant === "lexical"
+              ? "Question or keywords, in English"
+              : "Natural-language question",
+          ),
         topK: z.number().int().min(1).max(20).optional().describe("How many sections to return (default 5)"),
       },
     },
     async ({ query, topK }) => {
-      const qv = await embedder.embedQuery(query);
-      const hits = searchVec(index, qv, topK ?? 5);
+      const hits = await searcher.search(query, topK ?? 5);
       if (hits.length === 0) {
         return { content: [{ type: "text", text: "No results." }] };
       }

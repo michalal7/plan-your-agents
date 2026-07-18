@@ -1,6 +1,7 @@
 #!/bin/sh
-# Pre-commit guard against the drift class this repo has hit before: the generated
-# skill KB mirrors and the semantic index must match the canonical KB.
+# Pre-commit guard against the drift class this repo has hit before. Three generated
+# artifacts must match their sources: the skill KB mirrors and the semantic index
+# (both from the canonical KB), and the plugin bundle (from mcp-server/src/).
 #
 # Activate once (per clone):   git config core.hooksPath .githooks
 #
@@ -19,6 +20,8 @@ node scripts/sync-plugin-kb.mjs --check
 if [ -d mcp-server/node_modules ]; then
   echo "[pre-commit] semantic index freshness (check:fresh)"
   ( cd mcp-server && npm run --silent check:fresh )
+  echo "[pre-commit] plugin bundle matches sources (check:bundle)"
+  ( cd mcp-server && npm run --silent check:bundle )
 else
-  echo "[pre-commit] skip check:fresh (mcp-server deps not installed)"
+  echo "[pre-commit] skip check:fresh/check:bundle (mcp-server deps not installed)"
 fi

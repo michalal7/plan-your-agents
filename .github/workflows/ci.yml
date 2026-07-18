@@ -36,3 +36,13 @@ jobs:
       - name: Test
         working-directory: mcp-server
         run: npm test
+
+      # The plugin bundle is a COMMITTED generated artifact (the plugin runs it),
+      # so it can drift from src/ exactly like the KB mirrors could.
+      - name: Plugin bundle matches sources
+        working-directory: mcp-server
+        run: npm run check:bundle
+
+      - name: Plugin bundle runs standalone
+        working-directory: mcp-server
+        run: npm run smoke:bundle

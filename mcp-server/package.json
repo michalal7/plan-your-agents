@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "MCP server that exposes the claude-agents knowledge base as resources + semantic search + a setup-agents prompt. The KB markdown files remain the single source of truth.",
+  "description": "MCP server that exposes the claude-agents knowledge base as resources + search (semantic standalone, lexical/BM25 in the plugin bundle) + a setup-agents prompt. The KB markdown files remain the single source of truth.",
   "license": "MIT",
   "bin": {
     "claude-agents-kb": "dist/stdio.js"
@@ -16,12 +16,15 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:index": "tsx scripts/build-index.ts",
+    "build:bundle": "tsx scripts/build-bundle.ts",
     "check:fresh": "tsx scripts/check-fresh.ts",
+    "check:bundle": "tsx scripts/check-bundle.ts",
     "start:stdio": "tsx src/stdio.ts",
     "start:http": "tsx src/http.ts",
     "smoke": "tsx scripts/smoke.ts",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "smoke:bundle": "tsx scripts/smoke-bundle.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.3.3",
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "esbuild": "^0.28.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

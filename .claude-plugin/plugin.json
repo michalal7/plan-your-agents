@@ -1,11 +1,20 @@
 {
   "name": "plan-your-agents",
-  "description": "Recommends and scaffolds a Claude Code agent setup for any repo, from a curated knowledge base. Two skills: setup-dev-agents (optimize developing the repo) and setup-task-agents (design an agent system for the repo's own workload). Each writes a markdown plan.",
-  "version": "0.2.0",
-  "author": { "name": "michalal7" },
+  "description": "Recommends and scaffolds a Claude Code agent setup for any repo, from a curated knowledge base. Two skills: setup-dev-agents (optimize developing the repo) and setup-task-agents (design an agent system for the repo's own workload), each writing a markdown plan. Also ships an MCP server exposing the knowledge base as resources plus keyword search.",
+  "version": "0.3.0",
+  "author": {
+    "name": "michalal7"
+  },
   "homepage": "https://github.com/michalal7/plan-your-agents",
   "repository": "https://github.com/michalal7/plan-your-agents",
   "license": "MIT",
-  "keywords": ["claude-code", "agents", "agent-setup", "knowledge-base", "skill"],
+  "keywords": [
+    "claude-code",
+    "agents",
+    "agent-setup",
+    "knowledge-base",
+    "skill",
+    "mcp"
+  ],
   "skills": "./.claude/skills/"
 }

@@ -15,7 +15,8 @@ The curator no longer works as a single agent doing everything sequentially in t
 
 **Generated artifacts from the canonical KB** (never hand-edited — one source, generated mirrors, like a build step):
 - `.claude/skills/setup-dev-agents/knowledge/claude-agents/` and `.claude/skills/setup-task-agents/knowledge/claude-agents/` — the KB bundled into each skill so it works when installed as a plugin. Regenerate both with `node scripts/sync-plugin-kb.mjs`; verify with `--check`.
-- `mcp-server/data/index.json` — the semantic index. Regenerate with `npm run build:index` in `mcp-server/`.
+- `mcp-server/data/index.json` — the semantic index (standalone path). Regenerate with `npm run build:index` in `mcp-server/`; verify with `npm run check:fresh`.
+- `mcp-server/bundle/plugin-server.mjs` — the committed, self-contained MCP server the plugin runs (lexical/BM25, no model). Regenerate with `npm run build:bundle`; verify with `npm run check:bundle`.
 
 Invocation: slash command `/kb-update` (see `.claude/commands/kb-update.md`); subagents in `.claude/agents/kb-fetcher.md` and `.claude/agents/kb-verifier.md`.
 - `/kb-update` — incremental per `_state.json`

@@ -7,13 +7,14 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { resolveKbDir } from "../src/kb.js";
 import { buildIndex } from "../src/store.js";
 import { HashEmbedder } from "../src/embed.js";
+import { createVectorSearcher } from "../src/search-vector.js";
 import { createServer } from "../src/server.js";
 
 async function main(): Promise<void> {
   const kbDir = resolveKbDir();
   const embedder = new HashEmbedder();
   const index = await buildIndex(kbDir, embedder);
-  const server = createServer({ kbDir, index, embedder });
+  const server = createServer({ kbDir, searcher: createVectorSearcher(index, embedder) });
 
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   const client = new Client({ name: "smoke-client", version: "0.0.0" });

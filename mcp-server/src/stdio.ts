@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { resolveKbDir } from "./kb.js";
 import { defaultIndexPath, loadIndex, warnIfStale } from "./store.js";
 import { createEmbedder } from "./embed.js";
+import { createVectorSearcher } from "./search-vector.js";
 import { createServer } from "./server.js";
 
 async function main(): Promise<void> {
@@ -11,7 +12,7 @@ async function main(): Promise<void> {
   const index = loadIndex(defaultIndexPath());
   warnIfStale(index, kbDir);
   const embedder = createEmbedder();
-  const server = createServer({ kbDir, index, embedder });
+  const server = createServer({ kbDir, searcher: createVectorSearcher(index, embedder) });
   const transport = new StdioServerTransport();
   await server.connect(transport);
   process.stderr.write(

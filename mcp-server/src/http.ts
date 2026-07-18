@@ -7,6 +7,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { resolveKbDir } from "./kb.js";
 import { defaultIndexPath, loadIndex, warnIfStale } from "./store.js";
 import { createEmbedder } from "./embed.js";
+import { createVectorSearcher } from "./search-vector.js";
 import { createServer } from "./server.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
@@ -54,7 +55,7 @@ async function main(): Promise<void> {
     }
     try {
       const body = await readBody(req);
-      const server = createServer({ kbDir, index, embedder });
+      const server = createServer({ kbDir, searcher: createVectorSearcher(index, embedder) });
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       res.on("close", () => {
         transport.close();

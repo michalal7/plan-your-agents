@@ -62,6 +62,11 @@ The knowledge base travels with the plugin (bundled into each skill as a generat
 `.claude/knowledge/claude-agents/`), so there's nothing else to install. Updates ship when the
 `version` in `.claude-plugin/plugin.json` is bumped.
 
+The plugin also ships the **MCP server** (config key `claude-agents-kb`; it reports itself as
+`claude-agents-kb-lexical` at runtime): the KB as resources plus a `search_knowledge` tool. It's
+a single self-contained ~720 KB file using keyword (BM25) search — no dependency install, no
+model download. Phrase queries in English on this path; BM25 is not cross-lingual.
+
 ## Use
 
 In the project you want to set up:
@@ -89,6 +94,12 @@ markdown files stay the single source of truth — with:
 - **Resources** — the KB files as `kb://claude-agents/<file>.md`, read live from disk.
 - **Tool `search_knowledge(query)`** — semantic search (local multilingual embeddings, no API key).
 - **Prompt `setup-agents`** — mirrors the PLAYBOOK flow for prompt-capable clients.
+
+> **This is the same server as the one in the plugin, built two ways.** Identical resources, tool
+> name, output shape and prompt — only retrieval differs: the standalone build searches
+> *semantically* (needs `npm install` + a ~1.4 GB model, queries in any language), the
+> plugin build searches *lexically* with BM25 (one file, nothing to install, English queries).
+> Side-by-side comparison: [Two deployment paths, one MCP contract](mcp-server/README.md#two-deployment-paths-one-mcp-contract).
 
 Transports: **stdio** (local) and **streamable HTTP** (hosting). Quick start:
 

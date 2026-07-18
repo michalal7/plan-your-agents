@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { chunkAll, type Chunk } from "./chunk.js";
 import { loadKb, kbHash } from "./kb.js";
 import type { Embedder } from "./embed.js";
+import type { SearchHit } from "./search.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -66,10 +67,7 @@ export function warnIfStale(data: IndexData, kbDir: string): boolean {
   return false;
 }
 
-export interface SearchHit {
-  score: number;
-  chunk: Chunk;
-}
+export type { SearchHit };
 
 function dot(a: number[], b: number[]): number {
   let s = 0;

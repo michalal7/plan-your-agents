@@ -13,12 +13,48 @@ and this server stay in sync.
 
 - **Resources** — every KB file (`INDEX`, `PLAYBOOK`, `00`–`90`) as `kb://claude-agents/<file>.md`,
   read live from disk. (Maintenance meta — `CHANGELOG`, `MAINTENANCE`, `_state.json` — is excluded.)
-- **Tool `search_knowledge(query, topK?)`** — semantic search over the KB (chunked per
-  `##` section, embedded locally). Returns the most relevant sections with their source
-  file + heading. Retrieval only — the reasoning stays in your client model.
+- **Tool `search_knowledge(query, topK?)`** — search over the KB (chunked per `##` section).
+  Returns the most relevant sections with their source file + heading. Retrieval only —
+  the reasoning stays in your client model.
 - **Prompt `setup-agents(repo?, mode?)`** — mirrors the PLAYBOOK flow (decision tree →
   verification-loop-first → minimal setup) so prompt-capable clients get the same guided
   flow. The server supplies knowledge; it does not plan.
+
+## Two deployment paths, one MCP contract
+
+Same resources, same tool name, same output shape, same prompt — only the retrieval
+strategy and the server name differ, so a client can always tell which is running.
+
+| | **Standalone** | **Shipped in the plugin** |
+|---|---|---|
+| Server name | `claude-agents-kb` | `claude-agents-kb-lexical` |
+| Retrieval | semantic (multilingual embeddings) | lexical BM25 |
+| Entry | `src/stdio.ts` / `src/http.ts` | `bundle/plugin-server.mjs` |
+| Needs | `npm install` + model (~1.4 GB), prebuilt index | nothing — one 719 KB file |
+| Queries | any language | **English** (BM25 is not cross-lingual) |
+
+Why the plugin path is lexical: embeddings would drag ~925 MB of dependencies plus a
+~465 MB model into a plugin whose knowledge base is ~200 KB. This KB is also token-heavy
+(flag names, `/commands`, env vars), where exact-token matching is a strength. The BM25
+index is built in memory from the live KB at startup, so there is **no index artifact that
+can go stale**.
+
+The bundle is a committed generated artifact — rebuild with `npm run build:bundle`, verify
+with `npm run check:bundle`, and smoke-test the real subprocess with `npm run smoke:bundle`.
+Never edit `bundle/plugin-server.mjs` by hand.
+
+### How the plugin wires it up
+Via **`.mcp.json` in the plugin root** (repo root), pointing at
+`${CLAUDE_PLUGIN_ROOT}/mcp-server/bundle/plugin-server.mjs`.
+
+> Verified the hard way: declaring `mcpServers` in `.claude-plugin/plugin.json` — both as an
+> inline object and as a `"./mcp-config.json"` path, as the manifest field table suggests —
+> left `claude plugin details` reporting `MCP servers (0)`. Only the auto-discovered
+> `.mcp.json` at the plugin root registered the server. If you move this config, re-check the
+> inventory rather than trusting the manifest field.
+
+The output is `.mjs`, not `.js`, on purpose: Node only treats `.js` as ESM when a neighbouring
+package.json says `"type": "module"`, and a self-contained bundle must not depend on that.
 
 ## How it works
 
