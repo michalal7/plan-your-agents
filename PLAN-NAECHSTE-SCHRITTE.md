@@ -32,9 +32,20 @@ Blockiert alles Weitere. 18 modifizierte Dateien liegen im Working Tree.
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
 **Abbruchbedingung, aktualisiert:** Ein Fixture-Lauf, dessen Skill-Basispfad nicht
-`…\0.4.3\…` meldet, wird verworfen. Dieselbe Falle wie zuletzt, neue Nummer. Ein
-Plugin-Update allein genügt nachweislich nicht — die Bindung passiert beim
-Session-Start.
+`…\0.4.3\…` meldet, wird verworfen.
+
+**Die Session-Bindung ist jetzt kontrolliert nachgewiesen** (2026-07-18). Ablauf:
+`claude plugin update` meldete „updated from 0.4.2 to 0.4.3 … Restart to apply
+changes", `installed_plugins.json` zeigte den 0.4.3-Pfad, der Cache-Ordner enthielt
+die korrigierten Inhalte — und eine Probe **in derselben Session** löste weiter auf
+`…\0.4.2\…` auf. Der Beleg ist inhaltlich, nicht nur der Pfadname: In 0.4.2 endet
+`40-config-safety.md` mit „Hook events verified against code.claude.com/docs/en/hooks."
+**ohne** Datum, in 0.4.3 mit „(2026-07-18)". Die Probe las die datumslose Fassung.
+
+Folge: **Ein Plugin-Update genügt nie. Die Fixture-Läufe brauchen eine nach dem
+Update neu gestartete Session** — zusätzlich zur Verwurzelung außerhalb dieses Repos.
+Beide Bedingungen zusammen sind der Grund, warum Phase 2 nicht aus einer laufenden
+Repo-Session heraus erledigt werden kann.
 
 ## Phase 2 — Die Fixture-Kampagne
 
