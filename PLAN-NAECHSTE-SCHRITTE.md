@@ -1,7 +1,7 @@
 # Plan: nächste Schritte
 
-_Stand 2026-07-18, nach kb-update Lauf 4. Plugin 0.4.3 ist ausgeliefert und
-installiert; **0.4.5 (Läufe 4+5) ist committet, aber noch nicht gemerged, gepusht oder
+_Stand 2026-07-18, nach kb-update Lauf 6. Plugin 0.4.3 ist ausgeliefert und
+installiert; **0.4.6 (Läufe 4-6) ist committet, aber noch nicht gemerged, gepusht oder
 installiert** — siehe Phase 1a. Sprache Deutsch wie
 `REPO-ANALYSE.md` — Koordinationsdokument, keine KB-Inhalte._
 
@@ -35,8 +35,8 @@ aktualisiert, Versionsprobe gefahren. Der Ablauf zur Nachvollziehbarkeit:
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
 **Abbruchbedingung, aktualisiert:** Ein Fixture-Lauf, dessen Skill-Basispfad nicht
-`…\0.4.5\…` meldet, wird verworfen. (War `0.4.3`; Läufe 4 und 5 haben die KB-Mirrors
-geändert, also ist 0.4.5 der Stand, gegen den die Kampagne laufen muss.)
+`…\0.4.6\…` meldet, wird verworfen. (War `0.4.3`; Läufe 4-6 haben die KB-Mirrors
+geändert, also ist 0.4.6 der Stand, gegen den die Kampagne laufen muss.)
 
 **Die Session-Bindung ist jetzt kontrolliert nachgewiesen** (2026-07-18). Ablauf:
 `claude plugin update` meldete „updated from 0.4.2 to 0.4.3 … Restart to apply
@@ -109,11 +109,20 @@ Fixtures bestätigt oder verworfen werden muss:
   das Etikett nicht. Kandidat für eine Ergänzung der Präzisionsregel.
 - **Zeilendeckel gerissen.** 127 bzw. 134 Prosazeilen gegen ~120.
 
-## Phase 4 — Quellenaufnahme
+## Phase 4 — Quellenaufnahme — ✅ VOLLSTÄNDIG (2026-07-18, Läufe 4–6)
 
-Nach der Freeze-Entscheidung, damit die KB während der Kampagne stillsteht.
-**Drei** Quellen, unterschiedlicher Typ. Reihenfolge nach Ertrag, nicht nach
-Entdeckungsdatum.
+Alle drei Quellen aufgenommen, jede mit unabhängigem Review. **Damit ist die KB
+für die Kampagne eingefroren** — ab hier kein `/kb-update` mehr, bis die vier
+Fixture-Läufe vorliegen.
+
+**Die Bilanz über alle drei ist ernüchternd und gehört so protokolliert:** Die
+Reihenfolge war „nach Ertrag" geschätzt — sie war fast exakt verkehrt. 4a stand
+vorn und brachte am wenigsten; 4b stand in der Mitte und brachte am meisten; 4c
+brachte einen einzigen tragfähigen Satz. Und in **jedem** der drei Läufe fand der
+Review einen Fehler von mir, den ich selbst nicht gesehen hatte — zweimal davon
+eine erfundene Begründung zu einer korrekten Beobachtung. Für die nächste
+Quellenaufnahme heißt das: die Ertragsschätzung vorab ist wertlos, der Review
+danach ist es nicht.
 
 ### 4a — Willison-Guide, 16 Kapitel — ✅ ERLEDIGT (2026-07-18, Lauf 4, Plugin 0.4.4)
 
@@ -169,14 +178,30 @@ nicht „Max/Team/Enterprise".
 
 ### 4c — Paper „Dive into Claude Code" (arXiv 2604.14228v1)
 
-Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI. 14 Seiten, ~31.700 Wörter.
+— ✅ **ERLEDIGT (2026-07-18, Lauf 6, Plugin 0.4.6).** PDF vom Eigentümer erneut
+angehängt, damit entblockt.
 
-⛔ **BLOCKIERT beim Eigentümer (Stand 2026-07-18).** Das PDF war eine Anlage im
-Chat, die konvertierte Fassung lag im Scratchpad — der ist inzwischen leer. Ohne
-erneutes Anhängen des PDFs ist 4c nicht durchführbar. (Mit weg ist auch das
-Protokoll-Artefakt `already-good_agent-dev-plan_0.4.0-INVALID.md`; unschädlich,
-der Lauf war ohnehin ungültig, aber der Beleg existiert nur noch als Beschreibung
-hier.)
+Liu, Zhao, Shang, Shen — VILA Lab, MBZUAI. 14 Seiten, 31.694 Wörter, neue
+Quellgruppe `literature`. Kein einziges konkretes Detail aufgenommen — bei ~126
+Versionen Drift ist jede Flag, jede Zahl, jeder Pfad als veraltet anzunehmen.
+
+**Der Ertrag ist der kleinste aller drei Quellen, und das ist die ehrliche
+Bilanz.** Was blieb: Prinzip 10 (Harness statt Planer, nur die Richtung). Der
+angebliche Hauptfund — die Kostenordnung der Erweiterungsmechanismen — war
+**falsch**: das Paper stellt MCP ans teure Ende, tatsächlich verschiebt Tool
+Search die Schemas standardmäßig, und das dauerhaft Teuerste ist `CLAUDE.md`,
+das in der Kurve des Papers gar nicht vorkam. `PLAYBOOK` §1b steht jetzt aus
+`/en/features-overview` — einer Doc-Seite, die das Thema besser erklärt.
+
+**Zwei Lehren, beide in `_state.json`:** Mein Filter siebte *Oberfläche* (Flags,
+Zahlen, Pfade) und hatte keine Regel für **Mechanismus-Claims** — genau dort
+schlägt Versionsdrift am härtesten zu. Und „die Docs erklären das nicht", womit
+ich den Griff zur unautoritativen Quelle überhaupt begründet hatte, war selbst
+eine ungeprüfte Behauptung. Ein Fetch hätte gereicht.
+
+Das Protokoll-Artefakt `already-good_agent-dev-plan_0.4.0-INVALID.md` ist mit dem
+Scratchpad verloren; unschädlich, der Lauf war ohnehin ungültig, aber der Beleg
+existiert nur noch als Beschreibung hier.
 
 **Quellentyp und Rang.** Third-party *Quellcode-Analyse*, kein Blogpost und keine
 offizielle Doku. Das ist ein neuer Typ für `_state.json`: unterhalb der offiziellen
@@ -238,29 +263,30 @@ nicht handlungsleitend — und bei 126 Versionen Drift vermutlich ohnehin überh
 - **Part 12 Tab-Count** ungelöst in `_state.json` (2 gelesen gegen 4 gespeichert,
   zweimal). Braucht das Browser-Tool, nicht den Fetcher.
 - **`managed-agents`-Docs-Seite** weiterhin ungefetcht.
-- **Protokoll-Artefakt in Gefahr:** der 0.4.0-Plan liegt unter
+- ~~**Protokoll-Artefakt in Gefahr**~~ — **eingetreten, verloren.** Der 0.4.0-Plan lag unter
   `…\scratchpad\artifacts\already-good_agent-dev-plan_0.4.0-INVALID.md`. Der
-  Scratchpad ist sessiongebunden. Wenn er Bestand haben soll, muss er woandershin.
+  Scratchpad wurde geleert. Unschädlich (der Lauf war ungültig), aber der Beleg
+  existiert nur noch als Beschreibung in 4c.
 
 ## Was auf dem Eigentümer liegt
 
 1. ~~Willison demoten~~ — hinfällig, war ein Fehlschluss (siehe Phase 4a).
 2. ~~Commit + Release 0.4.3 freigeben~~ — erledigt 2026-07-18.
 3. ~~`blakecrosley.com` in die Allowlist~~ — erledigt 2026-07-18.
-4. **0.4.5 nach `main` mergen und installieren.** **Voraussetzung für Punkt 5** — im
+4. **0.4.6 nach `main` mergen und installieren.** **Voraussetzung für Punkt 5** — im
    Review von Lauf 4 aufgefallen, weil die Abbruchbedingung verschärft wurde, ohne
    dass das Ausliefern je als Aufgabe dastand. So wie es dastand, hätte der
    Eigentümer Läufe gestartet, die die eigene Abbruchbedingung verwirft. Branch
-   `kb-run4-willison-guide` ist **gepusht** (4 Commits, Läufe 4+5), Suite grün;
+   `kb-run4-willison-guide` ist **gepusht** (6 Commits, Läufe 4–6), Suite grün;
    der Merge steht aus. Danach `claude plugin update` **plus** `/reload-plugins`
    oder eine neue Session — und in jedem Fall die Versionsprobe.
 5. **Die vier Fixture-Läufe starten.** Liegt zwingend beim Eigentümer: nur er kann
-   eine Session außerhalb dieses Repos verwurzeln. Die Session muss 0.4.5 auflösen —
+   eine Session außerhalb dieses Repos verwurzeln. Die Session muss 0.4.6 auflösen —
    entweder frisch gestartet oder per `/reload-plugins` nachgezogen.
-6. **Das arXiv-PDF erneut anhängen**, falls 4c noch gewollt ist. Ohne das kommt
-   diese Phase nicht weiter; siehe 4c.
+6. ~~Das arXiv-PDF erneut anhängen~~ — erledigt 2026-07-18, 4c ist durch.
 
-Phase 3 (Urteil) und 4c hängen an den Punkten 5 bzw. 6.
+
+Phase 3 (Urteil) hängt an Punkt 5. Phase 4 ist damit vollständig: 4a, 4b und 4c sind alle aufgenommen.
 
 ## Nicht behoben, bewusst
 
