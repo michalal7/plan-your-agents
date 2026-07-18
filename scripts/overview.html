@@ -1,0 +1,293 @@
+<!doctype html>
+<!--
+  Source for ../overview.png (the README architecture diagram).
+
+  The PNG used to drift out of date because it had no source and no reference.
+  Edit this file, then re-render at exactly 3200x2080 (1600x1040 @2x):
+
+    chrome --headless=new --disable-gpu --hide-scrollbars \
+           --force-device-scale-factor=2 --window-size=1600,1040 \
+           --screenshot=overview.png scripts/overview.html
+
+  Keep it truthful about the current setup: two skills, one MCP server in two
+  builds (semantic standalone / lexical BM25 in the plugin), and the three
+  generated artifacts drawn dashed.
+-->
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px; height: 1040px; background: #fff;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: #1a1a1f; overflow: hidden;
+  }
+  code, .mono { font-family: "Cascadia Mono", Consolas, "SF Mono", monospace; }
+
+  /* ---------- header ---------- */
+  header {
+    background: linear-gradient(100deg, #5b2fd6 0%, #7c3aed 60%, #8b5cf6 100%);
+    color: #fff; padding: 26px 40px 30px; display: flex; align-items: flex-start;
+    justify-content: space-between;
+  }
+  h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.6px; }
+  .sub { font-size: 16px; margin-top: 6px; color: #e9e2ff; }
+  .meta { text-align: right; font-size: 14px; color: #e9e2ff; line-height: 1.6; }
+  .meta b { color: #fff; font-weight: 600; font-size: 15px; }
+
+  /* ---------- layout ---------- */
+  main { padding: 26px 40px 0; display: grid;
+         grid-template-columns: 1fr 1fr 1.42fr; gap: 0 40px; }
+  .colhead {
+    display: inline-block; color: #fff; font-size: 13.5px; font-weight: 700;
+    letter-spacing: 1.1px; padding: 7px 18px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .c1 .colhead { background: #b45309; }
+  .c2 .colhead { background: #047857; }
+  .c3 .colhead { background: #1d4ed8; }
+  .panel { border: 2.5px solid; border-radius: 14px; padding: 16px 16px 14px; height: 726px; }
+  .c1 .panel { border-color: #f59e0b; }
+  .c2 .panel { border-color: #10b981; }
+  .c3 .panel { border-color: #3b82f6; }
+  .ptitle { font-size: 21px; font-weight: 700; margin-bottom: 2px; }
+  .c1 .ptitle { color: #b45309; } .c2 .ptitle { color: #047857; } .c3 .ptitle { color: #1d4ed8; }
+  .plead { font-size: 13px; color: #565663; margin-bottom: 12px; }
+
+  .col { position: relative; }
+  /* Label runs vertically inside the 40px column gap, so it can never collide
+     with the panel borders the way a horizontal label did. */
+  .arrow { position: absolute; top: 300px; right: -40px; width: 40px; text-align: center;
+           font-size: 26px; color: #94a3b8; z-index: 2; }
+  .arrow span { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%) rotate(-90deg);
+                transform-origin: center; white-space: nowrap; font-size: 10.5px;
+                font-weight: 700; letter-spacing: 1.2px; color: #64748b; }
+
+  /* ---------- cards ---------- */
+  .card { border: 1.5px solid #e2e2ea; border-radius: 9px; padding: 9px 11px; margin-bottom: 8px; }
+  .card.accent { border-left: 4px solid #f59e0b; }
+  .card.hi { background: #fffbeb; border-color: #fcd34d; }
+  .cname { font-size: 14.5px; font-weight: 700; }
+  .cdesc { font-size: 11.8px; color: #565663; margin-top: 2px; line-height: 1.42; }
+
+  .sot { background: #047857; color: #fff; font-size: 11.5px; font-weight: 700;
+         letter-spacing: 1px; text-align: center; padding: 6px; border-radius: 7px;
+         margin-bottom: 11px; }
+  .kbfile { border: 1.5px solid #a7f3d0; border-radius: 8px; padding: 8px 10px; margin-bottom: 7px;
+            background: #f0fdf9; }
+  .kbfile .cname { font-size: 13.5px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .topic { border: 1.5px solid #e2e2ea; border-left: 3px solid #10b981; border-radius: 7px;
+           padding: 6px 8px; font-size: 12.5px; font-weight: 600; }
+
+  .loop { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+  .pill { border: 1.5px solid #f59e0b; color: #b45309; border-radius: 999px;
+          padding: 4px 11px; font-size: 12px; font-weight: 700; background: #fffbeb; }
+  .lsep { color: #cbd5e1; font-size: 13px; }
+
+  .path { border: 1.5px solid #bfdbfe; background: #eff6ff; border-radius: 9px;
+          padding: 9px 11px; margin-bottom: 8px; }
+  .path.gen { border-style: dashed; border-color: #60a5fa; }
+  .ptag { display: inline-block; font-size: 9.5px; font-weight: 800; letter-spacing: 0.7px;
+          color: #1d4ed8; border: 1.2px dashed #60a5fa; border-radius: 4px;
+          padding: 1px 5px; margin-left: 6px; vertical-align: 1.5px; background: #fff; }
+  .foot { font-size: 11px; color: #7a7a8a; margin-top: 7px; }
+  .subhead { font-size: 12px; font-weight: 800; letter-spacing: 0.9px; color: #1d4ed8;
+             margin: 12px 0 7px; }
+  .subhead:first-child { margin-top: 0; }
+
+  /* ---------- bottom ---------- */
+  footer { padding: 16px 40px 0; }
+  .legend { display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+            border-top: 1.5px solid #e8e8ef; padding-top: 13px; }
+  .lg { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #3f3f4a; }
+  .swatch { width: 26px; height: 15px; border-radius: 4px; border: 1.6px dashed #60a5fa;
+            background: #eff6ff; }
+  .swatch.solid { border-style: solid; border-color: #cbd5e1; background: #fff; }
+  .chip { border: 1.5px solid #e2e2ea; border-radius: 999px; padding: 5px 14px;
+          font-size: 12px; font-weight: 600; color: #3f3f4a; }
+  .url { text-align: center; font-size: 12.5px; color: #7a7a8a; margin-top: 13px; }
+</style></head><body>
+
+<header>
+  <div>
+    <h1>plan-your-agents</h1>
+    <div class="sub">Plan &amp; scaffold Claude Code agent setups — a curated knowledge base, offered as two skills and an MCP server.</div>
+  </div>
+  <div class="meta">
+    <b>Claude Code · agent-setup toolkit</b><br>
+    English · MIT · not affiliated with Anthropic
+  </div>
+</header>
+
+<main>
+  <!-- ============ 1 PRODUCER ============ -->
+  <div class="col c1">
+    <div class="colhead">1 · PRODUCER</div>
+    <div class="panel">
+      <div class="ptitle">Curator</div>
+      <div class="plead">an agentic workflow that keeps the KB current</div>
+
+      <div class="card hi">
+        <div class="cname mono">/kb-update</div>
+        <div class="cdesc">slash command · incremental / full / targeted</div>
+      </div>
+      <div class="card accent">
+        <div class="cname mono">kb-fetcher</div>
+        <div class="cdesc">parallel fetch of each source → structured JSON (raw HTML stays out of context)</div>
+      </div>
+      <div class="card accent">
+        <div class="cname mono">kb-verifier</div>
+        <div class="cdesc">adversarial check of claims against the official docs — producer ≠ checker</div>
+      </div>
+
+      <div class="subhead" style="color:#b45309">THE LOOP IT RUNS</div>
+      <div class="loop">
+        <div class="pill">fetch</div><div class="lsep">→</div>
+        <div class="pill">verify</div><div class="lsep">→</div>
+        <div class="pill">write</div><div class="lsep">→</div>
+        <div class="pill">review</div>
+      </div>
+
+      <div class="subhead" style="color:#b45309">THEN REGENERATES</div>
+      <div class="card">
+        <div class="cdesc" style="margin:0">
+          <b>sync-plugin-kb.mjs</b> → the 2 skill mirrors<br>
+          <b>build:index</b> → the semantic index
+        </div>
+      </div>
+
+      <div class="subhead" style="color:#b45309">ORCHESTRATION CHOICE</div>
+      <div class="card">
+        <div class="cdesc" style="margin:0">Subagents in one session — deliberately <b>no</b> agent
+          team (workers never need to talk) and <b>no</b> dynamic workflow for routine updates.
+          The KB's own decision tree, applied to the KB.</div>
+      </div>
+
+      <div class="subhead" style="color:#b45309">SOURCES</div>
+      <div class="card">
+        <div class="cdesc" style="margin:0">
+          <b>fan-made</b> timeline — practical tips, not authoritative<br>
+          <b>official docs</b> — authoritative for flags, settings, hooks, modes<br>
+          on conflict the docs win; the loser is recorded in <span class="mono">90-deprecated.md</span>
+        </div>
+      </div>
+
+      <div class="foot mono">.claude/commands/ · .claude/agents/</div>
+    </div>
+    <div class="arrow">❯<span>MAINTAINS</span></div>
+  </div>
+
+  <!-- ============ 2 KNOWLEDGE BASE ============ -->
+  <div class="col c2">
+    <div class="colhead">2 · KNOWLEDGE BASE</div>
+    <div class="panel">
+      <div class="sot">SINGLE SOURCE OF TRUTH</div>
+      <div class="ptitle">Knowledge base</div>
+      <div class="plead">English · Markdown · read live, never forked</div>
+
+      <div class="kbfile">
+        <div class="cname mono">INDEX.md</div>
+        <div class="cdesc">the map of the KB</div>
+      </div>
+      <div class="kbfile">
+        <div class="cname mono">PLAYBOOK-agent-design.md</div>
+        <div class="cdesc">the decision tree — the product's core</div>
+      </div>
+
+      <div class="grid2" style="margin-top:9px">
+        <div class="topic mono">00 principles</div>
+        <div class="topic mono">10 context</div>
+        <div class="topic mono">20 parallelism</div>
+        <div class="topic mono">30 workflows</div>
+        <div class="topic mono">40 config &amp; safety</div>
+        <div class="topic mono">50 verification</div>
+        <div class="topic mono">60 models</div>
+        <div class="topic mono">90 deprecated</div>
+      </div>
+
+      <div class="foot mono" style="margin-top:11px">.claude/knowledge/claude-agents/</div>
+
+      <div class="subhead" style="color:#047857; margin-top:16px">PROVENANCE MARKERS</div>
+      <div class="card" style="border-color:#a7f3d0">
+        <div class="cdesc" style="margin:0">
+          <b>(verified)</b> checked against the official docs<br>
+          <b>(fan-made)</b> non-official source<br>
+          <b>⚠️</b> uncertain — do not treat as settled
+        </div>
+      </div>
+
+      <div class="subhead" style="color:#047857">COMPACTNESS CONVENTION</div>
+      <div class="card" style="border-color:#a7f3d0">
+        <div class="cdesc" style="margin:0">~200 lines per file, organized by topic, never
+          chronologically. Every line must be able to influence a decision — the curator
+          condenses instead of appending.</div>
+      </div>
+
+      <div class="foot" style="margin-top:12px">distilled from public tips, cross-checked vs official docs</div>
+    </div>
+    <div class="arrow">❯<span>READ BY</span></div>
+  </div>
+
+  <!-- ============ 3 CONSUMERS ============ -->
+  <div class="col c3">
+    <div class="colhead">3 · CONSUMERS</div>
+    <div class="panel">
+      <div class="ptitle">Two ways to consume</div>
+      <div class="plead">the same knowledge, one source — nothing is forked</div>
+
+      <div class="subhead">TWO SKILLS · Claude-native</div>
+      <div class="path">
+        <div class="cname mono">/setup-dev-agents [repo] [apply]</div>
+        <div class="cdesc">optimize <b>developing</b> the repo: verification loop, subagent roles,
+          CLAUDE.md, settings.json → writes <span class="mono">agent-dev-plan.md</span></div>
+      </div>
+      <div class="path">
+        <div class="cname mono">/setup-task-agents [repo] [apply]</div>
+        <div class="cdesc">design an agent system for the repo's <b>own workload</b>: orchestration
+          level, pattern, output verification → writes <span class="mono">agent-task-plan.md</span></div>
+      </div>
+      <div class="path gen">
+        <div class="cname">each ships a bundled KB mirror<span class="ptag">GENERATED</span></div>
+        <div class="cdesc mono">.claude/skills/*/knowledge/claude-agents/ — so a plugin install needs nothing else</div>
+      </div>
+
+      <div class="subhead">ONE MCP SERVER · TWO BUILDS</div>
+      <div class="cdesc" style="margin:-3px 0 7px">
+        identical surface — same resources, tool name, output shape, prompt;
+        only retrieval and the server name differ
+      </div>
+      <div class="path gen">
+        <div class="cname">Plugin build — lexical (BM25)<span class="ptag">GENERATED</span></div>
+        <div class="cdesc"><span class="mono">bundle/plugin-server.mjs</span> — one ~720 KB file, no
+          dependencies, no model; index built in memory at startup. Wired via
+          <span class="mono">.mcp.json</span>. English queries.</div>
+      </div>
+      <div class="path">
+        <div class="cname">Standalone build — semantic</div>
+        <div class="cdesc"><span class="mono">src/stdio.ts</span> / <span class="mono">src/http.ts</span>
+          for Cursor, Windsurf, other agents — local multilingual embeddings, any language.
+          Needs <span class="mono">npm install</span> + model.</div>
+      </div>
+      <div class="path gen">
+        <div class="cname">the prebuilt semantic index<span class="ptag">GENERATED</span></div>
+        <div class="cdesc mono">mcp-server/data/index.json</div>
+      </div>
+
+      <div class="foot">exposed by both: KB files as resources ·
+        <span class="mono">search_knowledge</span> · <span class="mono">setup-agents</span> prompt</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="legend">
+    <div class="lg"><div class="swatch"></div>
+      <span><b>dashed = generated artifact</b> — never hand-edited</span></div>
+    <div class="lg"><div class="swatch solid"></div><span>authored by hand</span></div>
+    <div class="chip">guarded by CI + pre-commit hook</div>
+    <div class="chip">single source of truth</div>
+    <div class="chip">producer ≠ checker</div>
+    <div class="chip">offline · no API key</div>
+  </div>
+  <div class="url mono">github.com/michalal7/plan-your-agents</div>
+</footer>
+
+</body></html>

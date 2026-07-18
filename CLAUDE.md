@@ -18,3 +18,7 @@ Read the content when needed; don't pull it into context up front.
 ## Conventions
 - The KB is the single source of truth; the skill mirror and MCP index are generated from it.
 - The KB is English-only — content, `CHANGELOG.md`, `_state.json` notes.
+- `overview.png` is rendered from `scripts/overview.html` — edit the source, re-render, never patch the image alone.
+
+## Guardrails
+- If a guardrail blocks an edit — especially to permission/config files like `.claude/settings.json` — stop and ask. Never route the same change through another channel (shell append, rename, temp file, etc.), even when the change looks trivial. The block is a signal about the file's sensitivity, not an obstacle to work around. Disclosing the workaround afterwards does not make it acceptable.

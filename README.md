@@ -8,12 +8,21 @@ Two skills, two intents:
 - **`/setup-dev-agents`** — optimize *developing* the repo: the Claude Code config (verification loop for the dev cycle, subagent roles, `CLAUDE.md`, `.claude/settings.json`). Plan → `agent-dev-plan.md`.
 - **`/setup-task-agents`** — design an agent *system that performs the repo's own workload* (migrations, data/doc processing, research, triage, batch jobs): orchestration level, orchestrator pattern, output verification, and workflow/command/agent stubs. Plan → `agent-task-plan.md`.
 
+## Architecture
+
+![How plan-your-agents fits together: the curator maintains the knowledge base, which is read by the two skills and the MCP server](overview.png)
+
+One knowledge base, three roles: a **curator** keeps it current from source, the KB itself is the
+**single source of truth**, and the **consumers** (two skills, one MCP server in two builds) read it.
+Everything drawn dashed is generated from the KB or from `mcp-server/src/` and is never hand-edited —
+CI and a pre-commit hook enforce that. Regenerate the diagram from [`scripts/overview.html`](scripts/overview.html).
+
 ## What's inside
 
 - **`.claude/skills/setup-dev-agents/`, `.claude/skills/setup-task-agents/`** — the two skills (each invocable as `/<name>`, also auto-trigger on intent); shared analysis machinery in `.claude/skills/_shared/`.
 - **`.claude/knowledge/claude-agents/`** — the knowledge base it reads: `INDEX.md`, the decision-oriented `PLAYBOOK-agent-design.md`, and topic files `00`–`90` (principles, context/memory, parallelism, workflows, config/safety, verification, models, deprecated).
 - **`.claude/commands/kb-update.md`** + **`.claude/agents/kb-fetcher.md`, `kb-verifier.md`** — the *curator* that keeps the knowledge base current from source.
-- **`mcp-server/`** — an *additive* MCP server that exposes the same knowledge base to any MCP client (Cursor, Windsurf, other agents) with semantic search. See below.
+- **`mcp-server/`** — an *additive* MCP server that exposes the same knowledge base to any MCP client (Cursor, Windsurf, other agents). Two builds: semantic standalone, lexical/BM25 inside the plugin. See below.
 - **`RUNBOOK.md`** — step-by-step for running everything locally.
 
 The knowledge is distilled from Boris Cherny's public Claude Code tips and cross-checked against the official docs (see Credits).
