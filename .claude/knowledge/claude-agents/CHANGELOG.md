@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-07-18 — Plan template: verdict first, less redundancy (plugin 0.4.1)
+Both skills were run against this repo and the two resulting plans were reviewed. They were factually sound (88 tracked files, the test-coverage gap, and a sharp catch: `github.com` is not in the WebFetch allowlist, so the note redirecting the fetcher to `raw.githubusercontent.com` is load-bearing). The weaknesses were in the **template**, not the execution — the skills filled it correctly.
+
+- **Verdict block up front**, with an effort class (minutes/hours/days). The plans buried their actual answer ("nothing needs changing, except one gap") about thirty lines deep, and never said how much any recommendation costs.
+- **7 → 5 sections.** The old skeleton asked for stack and existing config twice (§1 Context *and* §2 Repo scan), and asked for "what should not go in" twice (§5 Setup *and* §6 Anti-patterns). Both plans dutifully answered twice. §1+§2 merged into "What's there"; §6 dissolved into §4, where each exclusion now sits with the item it belongs to.
+- **A plain-language line per recommendation.** The plans were unreadable for anyone outside the team — "fan-out-and-synthesize", "producer ≠ checker", "PLAYBOOK §1 row 2", none unpacked. A plan is also read by people who decide about the work, not only by those who do it.
+- **Precision rule widened.** One plan asserted that `INDEX.md` records a ledger of "(4 entries)" — `INDEX.md` states no count at all, and the ledger holds 18. The old rule only covered *safety-relevant* claims, so a fabricated count fell outside it. Now every number and every attribution must be read during the run, not recalled.
+- **~80-line cap plus a re-run rule.** The template was written for a first run; on a repeat the skills produced a plan/changelog hybrid ("Delta since the last plan", "this has paid for itself measurably"). Changes since the last plan now get exactly one line in the Verdict.
+
+⚠️ Validated against one repo only — our own, the single repo whose history these plans can narrate. Whether the plain-language requirement holds up elsewhere, or degrades into filler, is untested. That is what the three skill fixtures in `agent-dev-plan.md` are for.
+
 ## 2026-07-18 — First ingestion of the 2026 sources (run 2, plugin 0.4.0)
 The source model added earlier today was actually exercised: all 7 `datedPosts` and all 5 `living` entries fetched, verified and ingested; `runCount` 1 → 2. Plugin bumped to **0.4.0** because the KB mirrors are shipped content — without the bump `claude plugin update` compares only the manifest version and this never reaches an installed user (`MAINTENANCE.md` → "Releasing the plugin").
 
