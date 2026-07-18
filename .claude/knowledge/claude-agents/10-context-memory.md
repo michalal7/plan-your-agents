@@ -25,6 +25,7 @@ Caching matches on the **prefix**, exactly: a change anywhere in the prefix reco
 - `/recap` appends; `/compact` replaces. `/rewind` truncates back to an already-cached prefix.
 - **`CLAUDE.md` edits do not take effect mid-session** — the prefix was fixed when the session started. Restart the session after changing it.
 Design rule: prefer appending over mutating history, and expect anything loaded at session start to stay put until the next one.
+Knobs (verified, all on the prompt-caching page — *not* on the env-vars page): `DISABLE_PROMPT_CACHING` for everything, or per model `_HAIKU` / `_SONNET` / `_OPUS` / `_FABLE`. TTL: `ENABLE_PROMPT_CACHING_1H=1` opts into the one-hour lifetime, `FORCE_PROMPT_CACHING_5M=1` forces five minutes regardless of authentication. Reach for these when debugging cache behaviour, not as a default — disabling the cache makes every turn pay full price.
 Source: code.claude.com/docs/en/prompt-caching + platform.claude.com prompt-caching (verified 2026-07-18).
 
 ## Plugin changes mid-session — a different mechanism, and `/reload-plugins`

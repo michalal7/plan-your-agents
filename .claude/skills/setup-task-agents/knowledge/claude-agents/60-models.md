@@ -27,6 +27,13 @@ Verified model aliases: `default`, `best`, `fable`, `sonnet`, `opus`, `haiku`, `
 - ⚠️ The safety classifier is currently "trigger-happy" (flags normal debugging as cyber/bio); on the affected benchmarks Fable falls closer to Opus 4.8. Fable-specific effort/best practices are still undocumented.
 - Consequence: the new default for coding; "less prompts and steers" → minimalism (#2) + delegation (#4); the autonomy stack (Auto Mode, `/goal`, nested subagents, workflows) pays off more.
 
+## Fallback chains — what runs when the primary is overloaded (verified)
+`fallbackModel` takes an **array**, tried in order: `{"fallbackModel": ["claude-sonnet-5", "claude-haiku-4-5"]}`. CLI `--fallback-model sonnet,haiku` wins over the setting.
+- **Capped at three models** after duplicate removal; extras are silently ignored. The cap is the chain length, not three *spares*.
+- The switch **lasts the current turn only** — it is overload relief, not a downgrade that sticks.
+- `/status` does not show the chain, so a run can be on a fallback without it being visible. Worth knowing before attributing a quality drop to the prompt.
+Source: /en/model-config#fallback-model-chains (verified 2026-07-18).
+
 ## Practical consequences for the setup agent
 - Higher effort ⇒ less steering needed, but more tokens/time. For routine `high`, for hard one-off problems `xhigh`/`max`.
 - Newer models plan implicitly and spawn subagents more selectively → explicit Plan Mode/subagent enforcement from older advice is often unnecessary (`90-deprecated.md`).

@@ -64,6 +64,12 @@ Three from the Willison guide; the fourth is a *fetcher's* error against it, kep
 - **Claude Opus 4.6** — a valid model ID (`claude-opus-4-6`) but **legacy**. Current: Fable 5, Opus 4.8, Sonnet 5, Haiku 4.5. Guide examples naming it are dated, not wrong.
 - **"Explore is not a built-in subagent"** — this one was a *fetcher's* claim against the guide, and the fetcher was wrong: `Explore`, `Plan` and `general-purpose` are documented built-ins. Recorded because it shows why the producer never rules on its own extraction.
 
+## Divergences found in the blakecrosley guides (run 5, 2026-07-18)
+- **`CLAUDE_CODE_WORKFLOWS=1` "enables the Workflow tool, off by default" — inverted.** Workflows are **on** by default on paid plans (Pro opts in via `/config`); the real variable is the opposite one, `CLAUDE_CODE_DISABLE_WORKFLOWS=1` / `"disableWorkflows": true`, which the KB already carried. The version is wrong too: v2.1.154, not v2.1.147. A setup plan following the guide would have set a nonexistent variable and concluded workflows were unavailable. → `30-workflows.md`.
+- **Permission mode `delegate` — does not exist.** The permission-modes page enumerates exactly six: `default` (label/alias Manual), `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`. This is a refutation, not a gap — the list is exhaustive.
+- **`SLASH_COMMAND_TOOL_CHAR_BUDGET` — not documented.** Not findable on the settings, env-var or skills pages. Note the honest distinction: the env-var table came back truncated, so this is *unverified*, not *refuted*. Do not present it as a supported knob.
+- **"v2.1.166" for the cross-session authority rule — unverified attribution.** The *behaviour* is documented (`/en/agent-teams#permissions`) and is in `20-parallelism.md`; no doc ties it to that version. A correct claim with an invented version number is still a defect — the same shape as run 4's own plugin-caching error.
+
 ## Still uncertain (don't present as best practice)
 - **Memory/auto-dream** (Part 8), **routines** (Part 10), **dynamic workflows** (Part 13/14): research preview — surfaces may change.
 - **Parts 17–21** of the fan-made source: only topic-level extracted (JS-rendered), detailed tips unverified.

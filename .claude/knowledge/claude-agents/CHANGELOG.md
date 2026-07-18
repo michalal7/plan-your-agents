@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-07-18 — Run 5: the blakecrosley guides, and four claims that did not survive (plugin 0.4.5)
+Two long-form fan-made guides, new source group `secondaryGuides` tracked by `wordCount`. Much better yield than run 4 — and the first source this KB records as **half-read on purpose**.
+
+**Added, all doc-verified before entry:**
+- **Auto Mode is steered in prose, not patterns** (`40`): `autoMode` holds `environment` / `allow` / `soft_deny` / `hard_deny` as arrays of plain-language rules, with `$defaults` to extend the built-in set. This is the actual lever for "autonomous except for these few things", and it is a different mechanism from `permissions.allow/deny`. Plus `autoMode.classifyAllShell`, which suspends every shell allow rule when an allowlist has stopped being trustworthy.
+- **`--safe-mode`** (`40`, new section, v2.1.169+): all customizations off, auth and permissions still working — the first move when a setup misbehaves, because it separates model-native behaviour from your own config. With the caveat the guide omits: **managed settings policy still applies, including policy-configured hooks**, so on a managed machine it is not a clean room.
+- **`fallbackModel` is an array** (`60`, new section): tried in order, capped at three, lasting the current turn only — and `/status` does not show it, so a run can be on a fallback invisibly. Worth knowing before blaming a prompt for a quality drop.
+- **Prompt-caching knobs** (`10`): `DISABLE_PROMPT_CACHING` plus per-model variants, `ENABLE_PROMPT_CACHING_1H`, `FORCE_PROMPT_CACHING_5M`. They live on the prompt-caching page, *not* the env-vars page — the same "the settings page is not exhaustive" trap run 3 hit.
+- **`disableBundledSkills`** (`40`) with the `/doctor` exception since v2.1.205.
+- **Authority does not travel over the mailbox** (`20`): a `SendMessage` relay is labelled as coming from another Claude session, and a teammate **denied** an action cannot relay it to a second teammate to get it through.
+
+**Four claims refuted or unverified** (`90`) — the reason a fan-made source never enters unchecked:
+- **`CLAUDE_CODE_WORKFLOWS=1` is inverted.** Workflows are *on* by default on paid plans; the real variable is `CLAUDE_CODE_DISABLE_WORKFLOWS=1`, which this KB already carried. Version wrong too (v2.1.154, not v2.1.147). A plan following the guide would have set a nonexistent variable and concluded workflows were unavailable.
+- **Permission mode `delegate` does not exist** — the documented set of six is exhaustive.
+- **`SLASH_COMMAND_TOOL_CHAR_BUDGET`** — not found. Recorded as *unverified*, not *refuted*: the env-var table came back truncated, and that distinction is the point.
+- **"v2.1.166"** on the cross-session authority rule — behaviour documented, version not. Same defect shape as run 4's own plugin-caching error: a correct claim carrying an invented number.
+
+⚠️ **The claude-code guide is `partial`, not done.** ~66,700 words; roughly a third was read. The unfetched sections are listed in `_state.json` so the next run continues rather than re-reads. Marking it `ingested` would have permanently excluded two thirds of it — the exact trap run 4 hit with a chapter promoted on summary evidence.
+
+Deliberately **not** ingested: the architecture guide is mostly the author's own setup (deliberation patterns, dissent-forcing, spawn budgets, two-gate validation). Those are patterns, not product facts, and the KB already carries producer≠checker and fan-out guidance from doc-backed sources. Logged as an open question rather than absorbed.
+
 ## 2026-07-18 — Incremental run 4: the Willison guide, actually read (plugin 0.4.4)
 Run 3's correction established that the guide had 16 chapters, not 2. This run read 14 of them (the two annotated-prompt walkthroughs were deliberately skipped and say so in `_state.json`). The honest accounting matters more than the additions:
 

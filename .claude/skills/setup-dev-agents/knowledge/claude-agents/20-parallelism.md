@@ -72,7 +72,7 @@ Token cost scales with the number of parallel contexts — the more parallelism,
 - Tasks: the lead assigns or teammates claim them (file lock against races); dependencies unlock automatically.
 - Quality gates via hooks: `TeammateIdle`, `TaskCreated`, `TaskCompleted` — exit code 2 sends feedback / blocks.
 - Storage: `~/.claude/teams/{team}/config.json` (removed at session end), `~/.claude/tasks/{team}/` (persists, never uploaded). One team per session; no nested teams; the lead is fixed.
-- Permissions: teammates start in the lead's mode; a teammate can't approve a prompt on your behalf; in Auto Mode a forwarded approval counts as *untrusted*.
+- Permissions: teammates start in the lead's mode; a teammate can't approve a prompt on your behalf; in Auto Mode a forwarded approval counts as *untrusted*. A message arriving over `SendMessage` is labelled as coming from **another Claude session, not from you** — and a teammate that was **denied** an action cannot relay it to a second teammate to get it through. Design multi-agent setups on that assumption: authority does not travel over the mailbox.
 - ⚠️ Limits: `/resume`+`/rewind` don't restore in-process teammates; task status can get stuck.
 - Best practice: 3–5 teammates, ~5–6 tasks per teammate, each owning different files (avoid conflicts), start with research/review tasks, have it wait on teammates.
 
