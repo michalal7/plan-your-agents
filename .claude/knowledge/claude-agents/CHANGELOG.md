@@ -1,6 +1,6 @@
 # Changelog
 
-## 2026-07-19 — Incremental run 3: the `secondary` docs, read properly for the first time (plugin 0.4.3)
+## 2026-07-18 — Incremental run 3: the `secondary` docs, read properly for the first time (plugin 0.4.3)
 Runs 1–2 had never given the eight `secondary` doc URLs a real extraction pass — they were listed as "check every run" but the KB's subagent and hooks material still rested largely on the fan-made source. This run fetched all eight. Everything else was quiet: CHANGELOG still at 2.1.214, both best-practices pages unchanged, no part 22, no third Willison chapter, all 7 `datedPosts` already done.
 
 **Two things in the KB were simply wrong:**

@@ -67,7 +67,7 @@ Source: anthropic.com/engineering/how-we-contain-claude (2026-05-25).
 - Suppression: `disableAllHooks: true` (there is no per-hook disable). Managed hooks can only be disabled at the managed level; `allowManagedHooksOnly` blocks user/project/plugin hooks, `allowedHttpHookUrls` allowlists HTTP hook targets (empty array = block all).
 - Patterns: `Stop`/`SubagentStop` → deterministic done-check (build/test); `PostToolUse` → auto-format/lint; `PostCompact` → re-inject critical instructions; `PermissionRequest` → route to Slack/Opus; `SessionStart` → load context.
 - Quick start: ask Claude to add a hook.
-Hook events verified against code.claude.com/docs/en/hooks (2026-07-19).
+Hook events verified against code.claude.com/docs/en/hooks (2026-07-18).
 
 ## MCP & tool integrations
 - `.mcp.json` configures MCP servers (Slack, BigQuery, Sentry …). `enableAllProjectMcpServers: true` auto-approves project MCPs.

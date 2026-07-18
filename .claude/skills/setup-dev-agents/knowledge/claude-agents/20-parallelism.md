@@ -42,7 +42,7 @@ Token cost scales with the number of parallel contexts — the more parallelism,
 - Non-git (SVN/P4/hg/jj): `WorktreeCreate`/`WorktreeRemove` hooks replace the git logic (then `.worktreeinclude` doesn't apply).
 - The desktop app creates a worktree automatically per new session.
 - Sweep: worktrees made for subagents and background sessions are removed once older than `cleanupPeriodDays`, skipping any with changes or unpushed commits; `--worktree`-created ones are never swept. A running agent holds a `git worktree lock`.
-- **No `--tmux` flag exists on the worktree** (re-verified 2026-07-19; the string doesn't appear on the page). Split panes are an Agent Teams concern → `90-deprecated.md`.
+- **No `--tmux` flag exists on the worktree** (re-verified 2026-07-18; the string doesn't appear on the page). Split panes are an Agent Teams concern → `90-deprecated.md`.
 
 ## Agent View — managing background sessions
 - Open: `claude agents` (optionally `--cwd <path>`). Needs v2.1.139+.

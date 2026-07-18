@@ -21,8 +21,11 @@ carrying 130 items through every `full` run. Revisit as a curated subset later.
 originals (de guide: 55,238 words / 2026-07-10 vs. en: 66,748 / 2026-07-17).
 Ingesting them would mean EN → DE → EN for technical claims, from a stale snapshot.
 
-Numbers above come from page metadata read through WebFetch. Re-measure at intake;
-do not carry them into the KB from this file.
+Numbers above come from page metadata read through WebFetch during a one-off
+reconnaissance pass, run under interactive session permission — **not** through the
+allowlist, which is still missing (see the blocker below). They are therefore
+unverified from this repo's side. Re-measure at intake; do not carry them into the
+KB from this file.
 
 ## Blocker — needs a human decision first
 
