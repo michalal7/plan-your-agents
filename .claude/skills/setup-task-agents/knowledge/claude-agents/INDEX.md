@@ -25,6 +25,8 @@ Sources: (1) the fan-made timeline howborisusesclaudecode.com (Boris Cherny et a
 | Choose a parallelism mechanism | choice table | `20` |
 | Start a worktree | `claude -w <name>` / `isolation: worktree` | `20` |
 | Background sessions | `claude agents`, `claude --bg` | `20` |
+| Fork the conversation | `/subtask` (≠ `/fork`); skill `context: fork` | `20` |
+| Resume a subagent | `SendMessage` (not Explore/Plan) | `20` |
 | Enable Agent Teams | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | `20` |
 | Trigger a workflow | `ultracode` / "use a workflow" | `30` |
 | Deep research | `/deep-research <question>` | `30` |

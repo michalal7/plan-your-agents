@@ -18,6 +18,7 @@ In short: use a workflow when a task needs more agents than a conversation can c
 - Keyword **`ultracode`** anywhere in the prompt → Claude writes a workflow script instead of going turn by turn. Natural language ("use a workflow"/"run a workflow") works the same. Before v2.1.160 the literal keyword was `workflow` (too many false positives → changed).
 - `/effort ultracode`: combines `xhigh` effort with *automatic* workflow orchestration for *every* substantial task in the session (more tokens, slower). Lasts until session end; revert with `/effort high`.
 - Discard a mis-trigger: `Option/Alt+W`. Turn the trigger off entirely in `/config`.
+- **Since v2.1.210 the keyword only fires from genuine human input** — the interactive prompt, an IDE panel, Remote Control, or an SDK app that stamps `origin: { kind: "human" }`. It no longer triggers from `-p`, scheduled-task prompts, or a webhook/PR-comment relay. Relevant if you automate Claude Code: untrusted text in an issue or PR comment can no longer escalate a run into a hundreds-of-agents workflow.
 
 ## Bundled: /deep-research
 - `/deep-research <question>`: fans out web searches across multiple angles, fetches sources, cross-checks them, votes per claim, delivers a cited report (unconfirmed claims filtered out). Needs the WebSearch tool.
@@ -31,8 +32,10 @@ In short: use a workflow when a task needs more agents than a conversation can c
 ## Runtime behavior & limits
 - No user input during the run (only agent permission prompts can interrupt). For mid-run approval: run each phase as its own workflow.
 - No direct FS/shell access from the script — the *agents* read/write/execute, the script only coordinates.
-- Max **16 concurrent** agents (fewer with few CPU cores), **1000 agents total** per run.
-- Model: each agent uses the session model unless the script routes a phase to a different one. Check `/model` before a big run.
+- Max **16 concurrent** agents (fewer with few CPU cores), **1000 agents total** per run. These are hard caps.
+- Advisory (not caps): "Dynamic workflow size" in `/config` sends Claude an agent-count target — unrestricted (default) / small `<5` / medium `<15` / large `<50`, v2.1.202+. A "Large workflow" warning appears above 25 agents or 1.5 M projected tokens (v2.1.203+), suppressed under Ultracode.
+- Model: each agent uses the session model unless the script routes a phase to a different one, or `CLAUDE_CODE_SUBAGENT_MODEL` is set — that env var overrides **both**. Check `/model` before a big run.
+- Resume replays cached results for completed agents; an agent still running when stopped is not saved and restarts from scratch.
 
 ## Primitives (fan-made; JS API)
 - `parallel([fns])` — barrier, waits for all. `pipeline(items, ...stages)` — no barrier, items flow independently through the stages. `agent(prompt, {schema})` — subagent; `schema` forces validated JSON back.

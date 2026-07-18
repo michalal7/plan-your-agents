@@ -4,17 +4,21 @@
 Structures below checked against the official docs (code.claude.com/docs/en/{settings,hooks,permission-modes}) — as of that check.
 
 ## settings.json — core keys (verified)
-`permissions` (allow/deny/ask) · `hooks` · `additionalDirectories` · `defaultMode` · `env` · `model` · `enableAllProjectMcpServers` · `disableWorkflows` · `teammateMode` · `worktree.baseRef` · `cleanupPeriodDays`.
-Scopes & precedence (high→low): managed (org) → command-line → `.claude/settings.local.json` (private) → `.claude/settings.json` (project) → `~/.claude/settings.json` (user).
+`permissions` (`allow`/`deny`/`ask`/**`defaultMode`** — the mode key is *nested under* `permissions`, not top-level) · `hooks` · `disableAllHooks` · `additionalDirectories` · `env` · `model` · `availableModels` · `agent` · `enableAllProjectMcpServers` · `disableWorkflows` · `disableAgentView` · `teammateMode` · `worktree.baseRef` · `worktree.bgIsolation` · `cleanupPeriodDays` · `includeGitInstructions`.
+Scopes & precedence (high→low): managed (org) → command-line → `.claude/settings.local.json` (private) → `.claude/settings.json` (project) → `~/.claude/settings.json` (user). **Permission rules merge across scopes** rather than the higher scope replacing the lower — managed settings can forbid that via `allowManagedPermissionRulesOnly`.
 Check into the repo what the team should share; keep private things in `settings.local.json` or the user level.
+- `availableModels` restricts selectable models for session, subagents and skills (v2.1.175+); it does **not** constrain the Default option unless `enforceAvailableModels` is also set in managed settings.
+- Settings that take a filesystem path are honored from project/local scope only after the workspace-trust dialog — otherwise a cloned repo could point them anywhere.
 
 ## Permissions
 - `/permissions` edits allow/deny/ask. Wildcard syntax: `Bash(bun run *)`, `Bash(bq query:*)`, `Edit(/docs/**)`, `Read(~/.zshrc)`, `Read(./.env)` (deny).
+- Rules are evaluated **deny → ask → allow**; first match wins, specificity does not reorder them.
+- **`ask` rules are the one human checkpoint that survives every mode**: they still prompt under `bypassPermissions`, and under `dontAsk` they are denied rather than prompted. That makes `permissions.ask` the right tool for "let it run unattended, except for these few actions" — far better than trying to pick a mode that happens to prompt.
 - Pre-allowing safe, frequent commands saves prompts (and is a prerequisite for uninterrupted workflows/teams).
 - `/fewer-permission-prompts` scans history and suggests allowlist additions for safe, repeatedly-prompting commands.
 
 ## Permission modes (verified)
-`default` (CLI alias `manual`) · `acceptEdits` · `plan` · `auto` · `dontAsk` · `bypassPermissions`. Set in `defaultMode` or cycle with shift+tab.
+`default` (CLI alias `manual`, v2.1.200+) · `acceptEdits` · `plan` · `auto` · `dontAsk` · `bypassPermissions`. Set in `permissions.defaultMode` or cycle with shift+tab.
 Note: `dontAsk` is a **valid** mode (permission-modes doc) — the fan-made mention `--permission-mode=dontAsk` was correct. `auto` uses the classifier, `bypassPermissions` skips everything.
 
 ## Auto Mode — safely skip prompts
@@ -54,10 +58,16 @@ Source: anthropic.com/engineering/how-we-contain-claude (2026-05-25).
   { "hooks": { "PostToolUse": [ { "matcher": "Write|Edit",
     "hooks": [ { "type": "command", "command": "bun run format || true" } ] } ] } }
   ```
-- Key events (a selection of 30+): `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`, `PermissionDenied`, `Stop`, `SubagentStart`/`SubagentStop`, `PreCompact`/`PostCompact`, `InstructionsLoaded`, `WorktreeCreate`/`WorktreeRemove`, `TeammateIdle`/`TaskCreated`/`TaskCompleted`, `SessionEnd`.
+- Key events (30 total): `SessionStart`, `Setup`, `UserPromptSubmit`, `UserPromptExpansion`, `PreToolUse`, `PermissionRequest`, `PermissionDenied`, `PostToolUse`, `PostToolUseFailure`, `PostToolBatch`, `Notification`, `MessageDisplay`, `SubagentStart`/`SubagentStop`, `TaskCreated`/`TaskCompleted`, `Stop`/`StopFailure`, `TeammateIdle`, `InstructionsLoaded`, `ConfigChange`, `CwdChanged`, `FileChanged`, `WorktreeCreate`/`WorktreeRemove`, `PreCompact`/`PostCompact`, `Elicitation`/`ElicitationResult`, `SessionEnd`.
+- **Exit-code contract — only `2` blocks.** Exit `1` does *not* block, contrary to Unix convention; it's a non-blocking error notice. On exit 2 stdout/JSON is ignored and **stderr** is what reaches Claude, so write the feedback message to stderr. Exit 0 stdout is parsed as JSON (and injected as context for `UserPromptSubmit`/`UserPromptExpansion`/`SessionStart`).
+- **Not every event can block.** Blocking-capable: `PreToolUse`, `PermissionRequest`, `UserPromptSubmit`, `UserPromptExpansion`, `Stop`, `SubagentStop`, `TeammateIdle`, `TaskCreated`, `TaskCompleted`, `ConfigChange`, `PreCompact`, `Elicitation`, `ElicitationResult`, `WorktreeCreate`, `PostToolBatch`. Advisory only — a gate here is decorative: `PostToolUse`, `PostToolUseFailure`, `PermissionDenied`, `SubagentStart`, `SessionStart`, `Setup`, `SessionEnd`, `FileChanged`, `PostCompact`, `InstructionsLoaded`, `MessageDisplay`, `StopFailure`. (`PostToolUse` can still object after the fact via `decision: "block"`.)
+- Matchers: only letters/digits/`_`/`-`/spaces/`,`/`|` means exact match; any other character makes it an **unanchored regex**. Hyphens are exact-matched only since v2.1.195, commas since v2.1.191. `UserPromptSubmit`, `Stop`, `PostToolBatch`, `TeammateIdle`, `Task*`, `Worktree*`, `MessageDisplay`, `CwdChanged` ignore the matcher entirely.
+- `additionalContext` is wrapped in a system reminder at the point the hook fired and capped at **10,000 chars**. Default timeout 600 s (prompt hooks 30 s, agent hooks 60 s; `UserPromptSubmit` caps at 30 s, `MessageDisplay` at 10 s).
+- In a subagent, frontmatter `Stop` hooks are auto-converted to `SubagentStop` (which blocks only that subagent, not the session). `SubagentStart` cannot block.
+- Suppression: `disableAllHooks: true` (there is no per-hook disable). Managed hooks can only be disabled at the managed level; `allowManagedHooksOnly` blocks user/project/plugin hooks, `allowedHttpHookUrls` allowlists HTTP hook targets (empty array = block all).
 - Patterns: `Stop`/`SubagentStop` → deterministic done-check (build/test); `PostToolUse` → auto-format/lint; `PostCompact` → re-inject critical instructions; `PermissionRequest` → route to Slack/Opus; `SessionStart` → load context.
 - Quick start: ask Claude to add a hook.
-Hook events verified against code.claude.com/docs/en/hooks.
+Hook events verified against code.claude.com/docs/en/hooks (2026-07-19).
 
 ## MCP & tool integrations
 - `.mcp.json` configures MCP servers (Slack, BigQuery, Sentry …). `enableAllProjectMcpServers: true` auto-approves project MCPs.

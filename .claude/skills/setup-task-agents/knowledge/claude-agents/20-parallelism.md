@@ -15,8 +15,16 @@ Token cost scales with the number of parallel contexts — the more parallelism,
 
 ## Subagents
 - Own context, own system prompt, restricted tool access, independent permissions. Delegates automatically when a task matches the `description`. Appending "use subagents" forces delegation.
-- Definition: a `.md` under `.claude/agents/` (scopes: project/user/plugin/CLI). Frontmatter includes: `name`, `description`, `tools`, `model`, `isolation: worktree`, `background: true`.
-- `/agents` = management panel. Default agent in `settings.json` or `--agent=<name>`.
+- Definition: a `.md` under `.claude/agents/`. Frontmatter (only `name`+`description` required): `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `effort`, `isolation`, `color`, `initialPrompt`.
+- **`/agents` is no longer a management panel** (changed v2.1.198) — it prints a reminder to edit `.claude/agents/` directly. Create agents by asking Claude or editing files. Not to be confused with `claude agents` (Agent View). Default agent: `agent` in `settings.json` or `--agent <name>`.
+- Precedence (high→low): managed → `--agents` (session JSON) → project → user → plugin. Project dirs are walked up from cwd; on a duplicate `name` the definition closest to cwd wins (v2.1.178+). Identity comes from `name` only, not the file path. Plugin agents ignore `hooks`/`mcpServers`/`permissionMode` for security.
+- Model resolution order: `CLAUDE_CODE_SUBAGENT_MODEL` → per-invocation `model` → frontmatter `model` → main conversation model. Default `inherit`. An org `availableModels` allowlist filters all three.
+- **Cost trap:** since v2.1.198 the built-in `Explore` inherits the main model instead of always Haiku (capped at Opus on the Claude API). To keep exploration cheap, override it with a project agent named `Explore` carrying `model: haiku`.
+- `Explore`/`Plan` skip CLAUDE.md and the git-status snapshot to stay fast; every other subagent loads both. Suppress the snapshot elsewhere with `includeGitInstructions: false`.
+- Tool restriction: `tools` is an allowlist, `disallowedTools` a denylist applied first. Common sets — read-only `Read, Grep, Glob`; tests `Bash, Read, Grep`; edits `Read, Edit, Write, Grep, Glob`. If nothing in `tools` resolves, the subagent refuses to launch (v2.1.208+). `AskUserQuestion`, `EnterPlanMode`, `ScheduleWakeup` are never available to a subagent.
+- `skills: [...]` preloads full skill content at startup (can't preload `disable-model-invocation: true` skills). `memory: user|project|local` gives a persistent `MEMORY.md` dir with Read/Write auto-enabled.
+- **Permission modes don't nest downward:** a parent in `bypassPermissions`/`acceptEdits`/`auto` overrides the subagent's own `permissionMode`. A restrictive subagent mode cannot tighten a permissive parent.
+- **Resume:** `SendMessage` continues a named/ID'd subagent with its context intact (no agent teams needed). `Explore`/`Plan` are one-shot and return no agent ID. Transcripts survive main-conversation compaction; retention follows `cleanupPeriodDays` (default 30).
 - Foreground/background controllable (`run_in_background` / `background: true`). **Since v2.1.198 subagents run in the background by default** — pass `run_in_background: false` when you need the result before continuing (verified).
 - Nested subagents: agents spawn agents (context management), **max depth 5, fixed and not configurable** — a subagent at depth five simply doesn't receive the `Agent` tool (v2.1.172+, verified). To forbid spawning earlier, omit `Agent` from `tools` or list it in `disallowedTools`.
 - **Since v2.1.198 subagents inherit the main session's extended thinking config**; there is no per-subagent thinking setting. (This corrects the earlier fan-made claim that thinking weights don't propagate.)
@@ -33,22 +41,33 @@ Token cost scales with the number of parallel contexts — the more parallelism,
 - Add `.claude/worktrees/` to `.gitignore`. First use requires running `claude` in the directory once (trust dialog).
 - Non-git (SVN/P4/hg/jj): `WorktreeCreate`/`WorktreeRemove` hooks replace the git logic (then `.worktreeinclude` doesn't apply).
 - The desktop app creates a worktree automatically per new session.
-- ⚠️ The `--tmux` flag on the worktree (fan-made Part 4) is not confirmed in the docs — likely confused with Agent Teams split panes. Don't treat as certain.
+- Sweep: worktrees made for subagents and background sessions are removed once older than `cleanupPeriodDays`, skipping any with changes or unpushed commits; `--worktree`-created ones are never swept. A running agent holds a `git worktree lock`.
+- **No `--tmux` flag exists on the worktree** (re-verified 2026-07-19; the string doesn't appear on the page). Split panes are an Agent Teams concern → `90-deprecated.md`.
 
 ## Agent View — managing background sessions
 - Open: `claude agents` (optionally `--cwd <path>`). Needs v2.1.139+.
 - Status groups: Pinned · Ready for review (open PRs) · Needs input · Working · Completed. `Ctrl+S` switches between status/directory grouping.
 - New background session: `claude --bg "task"`, named `claude --bg --name "x" "task"`; from a running session `/bg <instructions>`.
 - Navigation: ↑/↓ select, Space = preview, Enter/→ attach, ← detach, `Ctrl+R` rename, `Ctrl+T` pin, `Ctrl+X` stop (2× delete).
-- From the shell: `claude attach|logs|stop|rm|respawn <id>`, `claude daemon status`.
-- File isolation of background sessions runs via automatic worktrees.
+- From the shell: `claude attach|logs|stop|rm|respawn <id>`, `claude daemon status`. `claude agents --json [--all]` gives scriptable session state.
+- File isolation of background sessions runs via automatic worktrees under `.claude/worktrees/`; set `worktree.bgIsolation: "none"` where worktrees are impractical and they edit the working copy directly.
+- An idle, unpinned session is stopped after ~1 h (`Ctrl+T` pins). Background sessions consume quota like interactive ones — 10 in parallel ≈ 10× the burn.
+- Turn off entirely: `disableAgentView: true` or `CLAUDE_CODE_DISABLE_AGENT_VIEW` (also kills `--bg` and `/background`).
+
+## Forks — a subagent that inherits the conversation
+- A **fork** inherits the entire conversation so far (same system prompt, tools, model, history); only its final result returns to the main thread. A named subagent starts fresh from its own definition. Use a fork when the task depends on everything already discussed, a named subagent when it doesn't.
+- User-invoked as **`/subtask`** (v2.1.212+). `/fork` now means something different — copy the whole session into a *new background session*. Before v2.1.212 `/fork` was the forked-subagent command.
+- A fork can't spawn another fork (it can spawn other subagent types, which count toward depth 5). Forks share the main prompt cache; named subagents don't.
+- Skill-side equivalent: `context: fork` in SKILL frontmatter (with optional `agent:`) runs that skill in a forked context. **There is no `fork: true` field** → `90-deprecated.md`.
 
 ## Agent Teams — cooperating peer sessions (experimental)
 - ⚠️ **Off** by default. Enable: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: "1"` under `env` in `settings.json` (or shell env). Documented since v2.1.178.
 - A **lead** (main session) coordinates; **teammates** are standalone sessions with their own context, sharing a **task list** + **mailbox** and messaging each other directly — unlike subagents, which only report to the parent.
 - Start: describe it in plain language ("spawn three teammates: UX, architecture, devil's advocate"). Claude creates/coordinates; never spawns teammates without confirmation.
 - Display: `in-process` (default, any terminal) or `split-panes` (needs tmux/iTerm2; not in the VS Code terminal/Windows Terminal/Ghostty). Set via `teammateMode` in `settings.json` or `--teammate-mode <auto|tmux|iterm2|in-process>`.
-- Model: teammates do **not** inherit the lead's `/model` choice — set the default in `/config`. Effort is inherited (v2.1.186+).
+- Model: teammates do **not** inherit the lead's `/model` choice — set the default in `/config`. Effort is inherited (v2.1.186+). `/model` and `/fast` are fixed at spawn; typing them while viewing a teammate only changes the lead (notice shown since v2.1.199).
+- A teammate can reuse a subagent definition by name — it honors that definition's `tools` and `model`, and the body is *appended* to the system prompt rather than replacing it. But `skills` and `mcpServers` frontmatter is ignored for teammates; they load those from project/user settings like a normal session. `SendMessage` and the task tools stay available regardless of the `tools` allowlist.
+- An in-process teammate's own subagents run **foreground only** — requesting `background: true` errors, since its background work can't outlive the lead's process.
 - Plan enforcement: "require plan approval" → the teammate plans read-only, the lead approves/rejects.
 - Tasks: the lead assigns or teammates claim them (file lock against races); dependencies unlock automatically.
 - Quality gates via hooks: `TeammateIdle`, `TaskCreated`, `TaskCompleted` — exit code 2 sends feedback / blocks.

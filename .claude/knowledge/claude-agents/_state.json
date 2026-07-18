@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "lastRun": "2026-07-18",
-  "runCount": 2,
+  "lastRun": "2026-07-19",
+  "runCount": 3,
   "sources": {
     "primary": {
       "url": "https://howborisusesclaudecode.com/",
@@ -13,15 +13,18 @@
     "secondary": {
       "type": "official-docs",
       "authoritative": true,
-      "urls": [
-        "https://code.claude.com/docs/en/sub-agents",
-        "https://code.claude.com/docs/en/agents",
-        "https://code.claude.com/docs/en/agent-view",
-        "https://code.claude.com/docs/en/agent-teams",
-        "https://code.claude.com/docs/en/workflows",
-        "https://code.claude.com/docs/en/worktrees",
-        "https://code.claude.com/docs/en/hooks",
-        "https://code.claude.com/docs/en/settings"
+      "updateBehavior": "check-every-run",
+      "lastChecked": "2026-07-19",
+      "note": "All 8 fetched and extracted on 2026-07-19 (run 3) — the first run to give them a real extraction pass rather than treating them as a reference list. Heading markers recorded below so the next run can diff instead of re-extracting. Caveat learned this run: /en/settings renders truncated and does NOT list every key it owns — defaultMode, teammateMode, worktree.bgIsolation and includeGitInstructions are all real but documented on permission-modes, agent-teams, agent-view and sub-agents respectively. Never conclude a setting is nonexistent from that page alone.",
+      "entries": [
+        {"url": "https://code.claude.com/docs/en/sub-agents", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Built-in subagents", "Quickstart: create your first subagent", "Configure subagents", "Work with subagents", "Fork the current conversation", "Example subagents", "Next steps"]}},
+        {"url": "https://code.claude.com/docs/en/agents", "lastChecked": "2026-07-19", "note": "Short comparison page titled 'Run agents in parallel'; carries no config detail — that lives on sub-agents.", "changeMarker": {"type": "headings", "value": ["Choose an approach", "Check on running work", "Learn more"]}},
+        {"url": "https://code.claude.com/docs/en/agent-view", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Quick start", "Monitor sessions with agent view", "Dispatch new agents", "Manage sessions from the shell", "How background sessions are hosted", "Troubleshooting", "Limitations", "Related resources", "Version history"]}},
+        {"url": "https://code.claude.com/docs/en/agent-teams", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["When to use agent teams", "Compare with subagents", "Enable agent teams", "Start your first agent team", "Control your agent team", "How agent teams work", "Use case examples", "Best practices", "Troubleshooting", "Limitations", "Next steps"]}},
+        {"url": "https://code.claude.com/docs/en/workflows", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["When to use a workflow", "Run a bundled workflow", "Have Claude write a workflow", "Example workflow prompts", "How a workflow runs", "Manage runs", "Related resources"]}},
+        {"url": "https://code.claude.com/docs/en/worktrees", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Start Claude in a worktree", "Clean up worktrees", "Resume a worktree session", "Isolate subagents with worktrees", "Customize worktree creation", "What worktrees share with the main checkout", "Manage worktrees manually", "Non-git version control", "Troubleshooting", "See also"]}},
+        {"url": "https://code.claude.com/docs/en/hooks", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Hook lifecycle", "Configuration", "Hook locations", "Matcher patterns", "Hook handler fields", "Hooks in skills and agents", "The /hooks menu", "Disable or remove hooks", "Hook input and output", "Exit code output", "Exit code 2 behavior per event", "HTTP response handling", "JSON output", "Decision control", "Hook events"]}},
+        {"url": "https://code.claude.com/docs/en/settings", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Configuration scopes", "Available scopes", "When to use each scope", "How scopes interact", "What uses scopes", "Settings files", "When edits take effect", "Invalid entries in managed settings", "Available settings"]}}
       ]
     },
     "datedPosts": {
@@ -45,11 +48,11 @@
       "updateBehavior": "check-every-run",
       "note": "Re-check each run. Change detection uses a stable `changeMarker`, never a content hash: WebFetch returns processed text that is not byte-stable, so a hash would fire on every run (same reason the primary source stores no raw hashes).",
       "entries": [
-        {"url": "https://code.claude.com/docs/en/best-practices", "status": "done", "lastChecked": "2026-07-18", "changeMarker": {"type": "headings", "value": ["Give Claude a way to verify its work", "Explore first, then plan, then code", "Provide specific context in your prompts", "Configure your environment", "Communicate effectively", "Manage your session", "Automate and scale", "Avoid common failure patterns", "Develop your intuition", "Related resources"]}},
-        {"url": "https://code.claude.com/docs/en/agent-sdk/subagents", "status": "done", "lastChecked": "2026-07-18", "changeMarker": {"type": "headings", "value": ["Overview", "Benefits of using subagents", "Create subagents", "What subagents inherit", "Invoke subagents", "Scale up with dynamic workflows", "Troubleshooting", "Related documentation"]}},
-        {"url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices", "status": "done", "lastChecked": "2026-07-18", "changeMarker": {"type": "headings", "value": ["Core principles", "Skill structure", "Workflows and feedback loops", "Content guidelines", "Common patterns", "Evaluation and iteration", "Anti-patterns to avoid", "Advanced: Skills with executable code", "Technical notes", "Checklist for effective Skills", "Next steps"]}},
-        {"url": "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md", "status": "done", "lastChecked": "2026-07-18", "urlVerified": true, "note": "URL confirmed by the 2026-07-18 fetch (resolved, 51 bullet entries under the top version). Authoritative for WHEN something shipped, never for HOW it is used — entries not found in the docs go to 90-deprecated.md as changelog-only.", "changeMarker": {"type": "topVersion", "value": "2.1.214"}},
-        {"url": "https://github.com/anthropics/skills", "status": "done", "lastChecked": "2026-07-18", "note": "Fetch the raw README (raw.githubusercontent.com/anthropics/skills/main/README.md) rather than the HTML page. Content is a skill catalogue (docx/pdf/pptx/xlsx plus spec/template), not guidance — nothing ingested this run beyond confirming what it is.", "changeMarker": {"type": "headings", "value": ["Skills", "About This Repository", "Disclaimer", "Skill Sets", "Try in Claude Code, Claude.ai, and the API", "Claude Code", "Claude.ai", "Claude API", "Creating a Basic Skill", "Partner Skills"]}}
+        {"url": "https://code.claude.com/docs/en/best-practices", "status": "done", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Give Claude a way to verify its work", "Explore first, then plan, then code", "Provide specific context in your prompts", "Configure your environment", "Communicate effectively", "Manage your session", "Automate and scale", "Avoid common failure patterns", "Develop your intuition", "Related resources"]}},
+        {"url": "https://code.claude.com/docs/en/agent-sdk/subagents", "status": "done", "lastChecked": "2026-07-19", "note": "CHANGED on 2026-07-19: gained 'Detect subagent invocation', 'Resume subagents' and 'Tool restrictions'. Those sections are what promoted the residual-\"Task\" and Windows-8191 claims from observation to documented contract.", "changeMarker": {"type": "headings", "value": ["Overview", "Benefits of using subagents", "Create subagents", "What subagents inherit", "Invoke subagents", "Detect subagent invocation", "Resume subagents", "Tool restrictions", "Scale up with dynamic workflows", "Troubleshooting", "Related documentation"]}},
+        {"url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices", "status": "done", "lastChecked": "2026-07-19", "changeMarker": {"type": "headings", "value": ["Core principles", "Skill structure", "Workflows and feedback loops", "Content guidelines", "Common patterns", "Evaluation and iteration", "Anti-patterns to avoid", "Advanced: Skills with executable code", "Technical notes", "Checklist for effective Skills", "Next steps"]}},
+        {"url": "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md", "status": "done", "lastChecked": "2026-07-19", "urlVerified": true, "note": "Re-checked 2026-07-19: still 2.1.214, no newer entries. URL confirmed by the 2026-07-18 fetch (resolved, 51 bullet entries under the top version). Authoritative for WHEN something shipped, never for HOW it is used — entries not found in the docs go to 90-deprecated.md as changelog-only.", "changeMarker": {"type": "topVersion", "value": "2.1.214"}},
+        {"url": "https://github.com/anthropics/skills", "status": "done", "lastChecked": "2026-07-19", "note": "Fetch the raw README (raw.githubusercontent.com/anthropics/skills/main/README.md) rather than the HTML page. Content is a skill catalogue (docx/pdf/pptx/xlsx plus spec/template), not guidance — nothing ingested this run beyond confirming what it is.", "changeMarker": {"type": "headings", "value": ["Skills", "About This Repository", "Disclaimer", "Skill Sets", "Try in Claude Code, Claude.ai, and the API", "Claude Code", "Claude.ai", "Claude API", "Creating a Basic Skill", "Partner Skills"]}}
       ]
     },
     "secondaryFanMade": {
@@ -61,7 +64,7 @@
       "date": "2026-02-23",
       "discoveredVia": "search result (title + URL + announcement; \"first two chapters\")",
       "changeMarker": {"type": "chapterCount", "value": 2},
-      "lastChecked": "2026-07-18",
+      "lastChecked": "2026-07-19",
       "parts": [
         {"n": 1, "title": "Writing code is cheap now", "status": "summary-only"},
         {"n": 2, "title": "Red/green TDD", "status": "summary-only"}
@@ -104,14 +107,29 @@
   ],
   "openItems": [
     "Fan-made source fully captured (parts 1-21). Next run: only check for new parts.",
+    "UNRESOLVED (run 3): part 12's tab count read as 2 across two WebFetch passes against the stored 4. The page is JS-rendered and the same fetch was inconsistent on part numbering, so this is probably fetch noise, not a content change. Settle it with the browser tool in the main run rather than trusting WebFetch; nothing was written to the KB on the strength of it.",
+    "Willison guide still at 2 chapters after ~5 months despite the author's stated 1-2/week cadence. If it is still 2 on the next run, consider demoting it from check-every-run to on-demand — it is costing a fetch per run for no delta.",
     "`contextOnly` (Trends Report PDF, InfoQ) still `pending` — deliberately, not an omission: its `updateBehavior` is `on-demand` and it may never serve as evidence for a claim. Fetch it only when framing is actually needed; the PDF will likely require the browser fallback.",
     "The `managed-agents` docs page (platform.claude.com/docs/en/managed-agents/overview) was NOT fetched. The blog post carries no decision criteria, limits or pricing — if a managed-vs-local recommendation is ever needed, that page is the gap to close.",
-    "Two claims rest on observation, not documentation, and were parked in 90-deprecated.md rather than dropped: the residual `\"Task\"` tool name after the v2.1.63 rename, and the Windows 8191-character command-line limit."
+    "RESOLVED (run 3): the two observation-only claims parked in 90-deprecated.md — the residual `\"Task\"` name and the Windows 8191-character limit — are now documented verbatim in agent-sdk/subagents and have been promoted to contract. Worth remembering as a pattern: a claim that looks unsourced may simply be documented on a page the run did not fetch, so park rather than drop."
   ],
   "verified": {
-    "date": "2026-07-18",
+    "date": "2026-07-19",
     "note": "Not an inventory of every verified line — only the contested claims a run had to settle. See INDEX.md.",
     "confirmed": [
+      "permissions.defaultMode is NESTED under permissions, not a top-level settings key; the project/local ignore rule applies only to the value `auto`, not to the key (run 3 correction).",
+      "permissions.ask exists alongside allow/deny; rules evaluate deny -> ask -> allow; ask rules still prompt under bypassPermissions and are denied under dontAsk.",
+      "teammateMode, worktree.bgIsolation and includeGitInstructions all exist — documented on agent-teams, agent-view and sub-agents respectively, NOT on the settings page.",
+      "Hook exit codes: only 2 blocks; exit 1 is non-blocking (contrary to Unix convention); on exit 2 stderr is what reaches Claude, stdout/JSON is ignored.",
+      "SubagentStart cannot block; SubagentStop can. Frontmatter Stop hooks auto-convert to SubagentStop in a subagent.",
+      "/agents stopped being a management panel in v2.1.198 (prints a pointer to .claude/agents/); distinct from `claude agents` (Agent View).",
+      "Explore inherits the main model since v2.1.198 (was always Haiku), capped at Opus on the Claude API; override with a project agent named Explore carrying model: haiku.",
+      "A parent's bypassPermissions/acceptEdits/auto overrides a subagent's own permissionMode — a subagent cannot be tightened below its parent.",
+      "Subagents are resumable via SendMessage without agent teams; Explore/Plan are one-shot and return no agent ID.",
+      "Windows 8191-character command-line limit on subagent prompts (documented, agent-sdk/subagents troubleshooting).",
+      "Residual `\"Task\"` in the system:init tools list and result.permission_denials[].tool_name after the v2.1.63 rename (documented; note the colon, not a slash).",
+      "Ultracode keyword fires only from genuine human input since v2.1.210 — not from -p, scheduled prompts, or webhook/PR-comment relays.",
+      "Workflow hard caps 16 concurrent / 1000 total per run; the /config 'Dynamic workflow size' guideline is advisory only.",
       "CLAUDE_CODE_AUTO_COMPACT_WINDOW exists (default ~967k).",
       "dontAsk is a valid permission mode (previously mismarked as invalid).",
       "fable is an official alias = Claude Fable 5 (not speculative).",
@@ -131,7 +149,10 @@
       "No documented '8 consecutive Stop-hook blocks' override — the 3-consecutive/20-total counters belong to Auto Mode's classifier fallback.",
       "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION: changelog-only, not documented.",
       "CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH: changelog-only; the 60 KB OTEL truncation is documented as fixed, with OTEL_LOG_RAW_API_BODIES as the escape hatch.",
-      "EndConversation: absent from the tools reference, so unusable in permission rules, tool lists or hook matchers."
+      "EndConversation: absent from the tools reference, so unusable in permission rules, tool lists or hook matchers.",
+      "`fork: true` does not exist on a skill or a subagent (fan-made Part 16 fragment). Real: SKILL frontmatter `context: fork` (+ optional `agent:`), and a separate `fork` subagent type invoked via /subtask (v2.1.212+, formerly /fork).",
+      "`disallowHooks` does not exist — the real key is `disableAllHooks`; enterprise-side control is allowManagedHooksOnly.",
+      "--tmux on the worktree: re-confirmed nonexistent on 2026-07-19; the string does not appear on the worktrees page at all."
     ]
   },
   "note": "tabs = observed tab count per part; the next run compares title/count to detect new/changed content. No raw-content hashes stored (the source only partially delivers content via WebFetch)."

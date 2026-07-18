@@ -46,10 +46,16 @@ The `anthropics/claude-code` CHANGELOG is authoritative for *when* something shi
 - **`CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH`** — not documented. The 60 KB truncation of OTEL content attributes is real but presented as a **fixed** limit; the documented escape hatch is `OTEL_LOG_RAW_API_BODIES=file:<dir>`.
 - **`EndConversation`** — absent from the tools reference table, so it cannot be used in permission rules, subagent `tools` lists or hook matchers.
 
-## Other divergences found on doc-check (2026-07-18)
-- **"Stop hooks are overridden after 8 consecutive blocks"** — no such threshold is documented. Stop-hook blocking exists; the override limit does not appear on `/hooks`. The only documented block counters (3 consecutive / 20 total) belong to **Auto Mode's classifier fallback**, a different mechanism. Likely a conflation.
-- **Task → Agent rename (v2.1.63)** — the rename and the `Task(...)` alias are documented. The further claim that `system/init` (spelled with a slash, not a colon) and `result.permission_denials[].tool_name` still emit `"Task"` is **not** documented — treat as observed behaviour, not contract.
-- **Windows 8191-character command-line limit on subagent prompts** — not findable in the docs. Plausible as an OS limit, but unsourced; the documented Windows specifics are the PowerShell tool, `shell: powershell` hooks, and the absence of sandboxing.
+## Other divergences found on doc-check (2026-07-18, re-checked 2026-07-19)
+- **"Stop hooks are overridden after 8 consecutive blocks"** — no such threshold is documented. Re-checked 2026-07-19: no `stop_hook_active` field, no numeric cap, no loop-protection anywhere on `/hooks`. The only documented block counters (3 consecutive / 20 total) belong to **Auto Mode's classifier fallback**, a different mechanism — do not let that number migrate into the Stop-hook entry.
+- **`fork: true` on a skill or subagent — does not exist.** A fragment of the fan-made Part 16 suggested it. The real mechanisms are two and distinct: `context: fork` in **SKILL** frontmatter (plus optional `agent:`) runs a skill in a forked context; separately a `fork` **subagent type** inherits the whole conversation, started by the user via `/subtask` (v2.1.212+, formerly `/fork`). The subagent frontmatter table contains no `fork` field. → `20-parallelism.md`.
+- **`disallowHooks` — does not exist.** The real key is `disableAllHooks` (boolean); the enterprise-side control is `allowManagedHooksOnly`. Likely conflated with the subagent field `disallowedTools`.
+- **`defaultMode` is nested, not top-level:** it is `permissions.defaultMode`. Also, the project/local ignore rule applies *only* to the value `auto` (so a repo can't grant itself auto mode) — every other value is honored from project and local scope. The KB previously implied the whole key was scope-restricted.
+
+## Promoted from observation to documented (2026-07-19)
+Both were parked as "observed, unsourced". Both are now documented verbatim on `code.claude.com/docs/en/agent-sdk/subagents`, so they may be stated as contract:
+- **Residual `"Task"` after the v2.1.63 rename** — "Current SDK releases emit `"Agent"` in `tool_use` blocks but still use `"Task"` in the `system:init` tools list and in `result.permission_denials[].tool_name`." Note the spelling is `system:init` with a **colon**; an earlier KB entry had it with a slash. Check both values in `block.name` for cross-version compatibility.
+- **Windows 8191-character command-line limit** — documented under Troubleshooting → "Long prompt failures on Windows": subagents with very long prompts may fail at that limit; keep prompts concise or use filesystem-based agents. Directly relevant on this platform.
 
 ## Still uncertain (don't present as best practice)
 - **Memory/auto-dream** (Part 8), **routines** (Part 10), **dynamic workflows** (Part 13/14): research preview — surfaces may change.

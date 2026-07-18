@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-07-19 — Incremental run 3: the `secondary` docs, read properly for the first time (plugin 0.4.3)
+Runs 1–2 had never given the eight `secondary` doc URLs a real extraction pass — they were listed as "check every run" but the KB's subagent and hooks material still rested largely on the fan-made source. This run fetched all eight. Everything else was quiet: CHANGELOG still at 2.1.214, both best-practices pages unchanged, no part 22, no third Willison chapter, all 7 `datedPosts` already done.
+
+**Two things in the KB were simply wrong:**
+- **`/agents` was described as a management panel.** It stopped opening a wizard in v2.1.198; it now prints a pointer to `.claude/agents/`. This one mattered — a setup recommendation telling someone to "run `/agents` to manage them" would have wasted their time on a UI that no longer exists.
+- **`defaultMode` was listed as a top-level `settings.json` key.** It is nested: `permissions.defaultMode`. Related correction: the project/local ignore rule applies only to the *value* `auto`, not to the key — every other mode is honored from project scope. The KB implied the whole key was scope-restricted.
+
+**Two parked observations became documented contract** (`90-deprecated.md`): the residual `"Task"` name in the `system:init` tools list and `result.permission_denials[].tool_name`, and the Windows 8191-character command-line limit on subagent prompts. Both are now stated verbatim in `agent-sdk/subagents`. The old entry had `system/init` with a slash; the docs use a colon.
+
+**Two invented names settled and recorded as nonexistent:** `fork: true` (a fan-made fragment from Part 16 — the real mechanisms are the SKILL field `context: fork` and the separate `fork` subagent type behind `/subtask`), and `disallowHooks` (the real key is `disableAllHooks`). Both re-confirmations went through `kb-verifier` rather than being accepted from the fetch.
+
+**Added, ranked by whether it changes a recommendation:**
+- **The hook exit-code contract** (`40`): only exit `2` blocks — exit `1` does *not*, contrary to Unix convention — and on exit 2 the feedback must go to **stderr**, because stdout is ignored. Plus the split between blocking-capable and advisory-only events: a `PostToolUse` or `SubagentStart` "gate" is decorative. A verification loop built on the wrong event silently doesn't gate anything.
+- **`permissions.ask` survives every mode** (`40`): still prompts under `bypassPermissions`, denied under `dontAsk`. That makes it the correct tool for "run unattended except for these few actions", instead of hunting for a permission mode that happens to prompt.
+- **Subagent cost trap** (`20`): since v2.1.198 the built-in `Explore` inherits the main model rather than always being Haiku. Exploration-heavy setups got quietly more expensive; the fix is a project agent named `Explore` with `model: haiku`.
+- **Permission modes don't nest downward** (`20`): a permissive parent overrides a subagent's stricter `permissionMode`. Sandboxing a subagent by giving it a tighter mode does not work.
+- **Forks as a distinct mechanism** (`20`, new section): fork vs named subagent, and the `/subtask` ↔ `/fork` rename in v2.1.212 — `/fork` now means "copy the session to a new background session", so the old advice points at the wrong command.
+- **Subagent resume via `SendMessage`** (`20`), which does not require agent teams — relevant to orchestrator patterns that currently assume a subagent is one-shot.
+- **Ultracode's human-input gate** (`30`): since v2.1.210 the keyword only fires from genuine human input, not from `-p`, scheduled prompts or webhook/PR-comment relays. Directly relevant to anyone automating Claude Code — untrusted issue text can no longer escalate a run into a hundreds-of-agents workflow.
+- Smaller: agent definition precedence and the full frontmatter table, model resolution order, tool-restriction sets, `worktree.bgIsolation`, Agent View idle-stop and quota multiplier, workflow size guideline vs. the hard 16/1000 caps, `availableModels`/`enforceAvailableModels`, hook matcher regex-vs-exact semantics, the 10k `additionalContext` cap, managed hook controls.
+
+⚠️ One unresolved discrepancy, deliberately not written into the KB: the fan-made part 12 read as 2 tabs against a stored 4 across two passes. The page is JS-rendered and the fetcher was inconsistent on part numbering in the same run, so this is more likely fetch noise than a real change. Left in `_state.json` open items for the next run to settle with the browser tool rather than guessed at.
+
 ## 2026-07-18 — Align the MCP advisory surface + freeze the template (plugin 0.4.2)
 The `setup-agents` prompt in `mcp-server/src/server.ts` is a second advisory surface, and 0.4.1 left it behind. Ported the **substance**, not the formatting:
 - **Verdict first** — step 5 now opens with the one-sentence answer plus an effort class, before the reasoning.
