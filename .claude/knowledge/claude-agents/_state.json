@@ -7,8 +7,10 @@
       "url": "https://howborisusesclaudecode.com/",
       "type": "fan-made",
       "authoritative": false,
+      "updateBehavior": "part-tracking",
       "partsTotal": 21,
-      "note": "All 21 parts fully captured; 17-21 fetched on 2026-07-17 via the Chrome extension (URL hash #part-N/M + get_page_text)."
+      "note": "All 21 parts fully captured; 17-21 fetched on 2026-07-17 via the Chrome extension (URL hash #part-N/M + get_page_text).",
+      "note2": "updateBehavior was implicit until 2026-07-18 — the command's scope table described it, this file did not. A finite numbered series with no feed, so part-tracking is the only option; the check is whether a part 22 exists, not a re-read of 1-21."
     },
     "secondary": {
       "type": "official-docs",
@@ -58,18 +60,23 @@
     "secondaryFanMade": {
       "type": "fan-made",
       "authoritative": false,
-      "updateBehavior": "chapter-tracking",
-      "note": "Grows chapter by chapter, like the primary source. Mark anything taken from it as \"(fan-made, Willison)\"; never adopt a safety-/API-relevant claim without doc verification.",
-      "url": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
-      "date": "2026-02-23",
-      "discoveredVia": "search result (title + URL + announcement; \"first two chapters\")",
-      "changeMarker": {"type": "chapterCount", "value": 2},
+      "updateBehavior": "feed-scan",
+      "note": "Mark anything taken from it as \"(fan-made, Willison)\"; never adopt a safety-/API-relevant claim without doc verification.",
+      "feedUrl": "https://simonwillison.net/atom/everything/",
+      "watermark": "2026-07-18",
+      "seenIds": [
+        "https://simonwillison.net/2026/Jul/18/claude-make-fable-5-permanent/",
+        "https://simonwillison.net/2026/Jul/18/quixote/"
+      ],
+      "relevance": "Claude Code, agent orchestration, subagents, hooks, skills, permissions, context management. NOT general model releases, benchmarks, or unrelated tooling — those are the bulk of this feed.",
       "lastChecked": "2026-07-18",
-      "parts": [
+      "guideUrl": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
+      "guideParts": [
         {"n": 1, "title": "Writing code is cheap now", "status": "summary-only"},
         {"n": 2, "title": "Red/green TDD", "status": "summary-only"}
       ],
-      "note2": "Published as a living 'Guide' (chapters, not posts) with ~1-2 new chapters weekly — so the chapter count really will move. Only the red/green-TDD pattern was ingested (50-verification.md, marked fan-made)."
+      "note2": "Repointed 2026-07-18. Until then this entry tracked ONE article ('Agentic Engineering Patterns', announced as a living guide with ~1-2 chapters weekly). It never moved past 2 chapters in ~5 months, so every run paid a fetch for a frozen URL while the author kept publishing 3-4 posts a week elsewhere on the same site. The guide URL and the one ingested pattern (red/green TDD, 50-verification.md) are kept as history; the live surface is now the feed.",
+      "note3": "Yield is expected to be low: of the 12 newest entries on 2026-07-18, zero were about Claude Code or agent configuration. That is why `relevance` is stored here rather than left to the fetcher's judgement. A quiet run still costs exactly one fetch — the feed — which is what it cost before, but with a real chance of a hit."
     },
     "contextOnly": {
       "type": "context",
