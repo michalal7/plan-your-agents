@@ -1,7 +1,9 @@
 # Changelog
 
 ## 2026-07-18 — Incremental run 3: the `secondary` docs, read properly for the first time (plugin 0.4.3)
-Runs 1–2 had never given the eight `secondary` doc URLs a real extraction pass — they were listed as "check every run" but the KB's subagent and hooks material still rested largely on the fan-made source. This run fetched all eight. Everything else was quiet: CHANGELOG still at 2.1.214, both best-practices pages unchanged, no part 22, no third Willison chapter, all 7 `datedPosts` already done.
+Runs 1–2 had never given the eight `secondary` doc URLs a real extraction pass — they were listed as "check every run" but the KB's subagent and hooks material still rested largely on the fan-made source. This run fetched all eight. Everything else was quiet: CHANGELOG still at 2.1.214, both best-practices pages unchanged, no part 22, ~~no third Willison chapter~~, all 7 `datedPosts` already done.
+
+> **Correction (2026-07-18, same day, after review):** the struck-through clause is wrong. The Willison entry was polling the guide's *announcement post* — dated, therefore frozen at "the first two chapters". The guide itself was at 16 chapters the whole time, several of them on-topic (Subagents, Anti-patterns, How coding agents work). Runs 1–3 each read "no delta" off a URL that could not have shown one. Fixed in `_state.json` and the curator; the original wording stays so the failure is traceable.
 
 **Two things in the KB were simply wrong:**
 - **`/agents` was described as a management panel.** It stopped opening a wizard in v2.1.198; it now prints a pointer to `.claude/agents/`. This one mattered — a setup recommendation telling someone to "run `/agents` to manage them" would have wasted their time on a UI that no longer exists.

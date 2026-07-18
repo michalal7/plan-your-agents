@@ -64,8 +64,9 @@
       "note": "Mark anything taken from it as \"(fan-made, Willison)\"; never adopt a safety-/API-relevant claim without doc verification.",
       "url": "https://simonwillison.net/guides/agentic-engineering-patterns/",
       "announcementUrl": "https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/",
-      "date": "2026-02-23",
+      "announcementDate": "2026-02-23",
       "discoveredVia": "search result (title + URL + announcement; \"first two chapters\")",
+      "dateNote": "The guide page itself shows no date and no per-chapter dates. `announcementDate` belongs to `announcementUrl`, not to the guide — it was called `date` until 2026-07-18, which is why the citation in 50-verification.md reads (fan-made, Willison, 2026-02-23) although the chapter carries no such date.",
       "changeMarker": {"type": "chapterCount", "value": 16},
       "lastChecked": "2026-07-18",
       "chapters": [
@@ -77,7 +78,7 @@
         {"section": "Working with coding agents", "title": "How coding agents work", "status": "not-read"},
         {"section": "Working with coding agents", "title": "Using Git with coding agents", "status": "not-read"},
         {"section": "Working with coding agents", "title": "Subagents", "status": "not-read"},
-        {"section": "Testing and QA", "title": "Red/green TDD", "status": "ingested", "targetFiles": ["50-verification.md"]},
+        {"section": "Testing and QA", "title": "Red/green TDD", "status": "summary-only", "targetFiles": ["50-verification.md"], "note": "50-verification.md carries a line from this chapter, but it was written from the announcement post's one-sentence summary — the chapter itself was never fetched. Marked `ingested` in error on 2026-07-18 and reverted: `ingested` permanently excludes a chapter from future runs, and announcement-summary evidence must not buy that."},
         {"section": "Testing and QA", "title": "First run the tests", "status": "not-read"},
         {"section": "Testing and QA", "title": "Agentic manual testing", "status": "not-read"},
         {"section": "Understanding code", "title": "Linear walkthroughs", "status": "not-read"},
@@ -87,7 +88,7 @@
         {"section": "Appendix", "title": "Prompts I use", "status": "not-read"}
       ],
       "note2": "CORRECTED 2026-07-18. Until this run the entry pointed at `announcementUrl` — the dated blog post that ANNOUNCES the guide, not the guide. A dated post is frozen by construction, so it reported \"the first two chapters\" forever and three runs concluded the guide had stalled. It had not: the guide is at 16 chapters. The earlier conclusion 'still at 2 chapters after ~5 months, consider demoting' was an artifact of polling the wrong URL, and a first repair that repointed this entry at the site's blog feed made it worse by abandoning the on-topic surface entirely. The guide has no feed and changes in place, so `check-every-run` + `chapterCount` is the right shape; the general blog feed is tracked separately under `feeds`.",
-      "note3": "14 of 16 chapters are unread. 'Subagents', 'Anti-patterns: things to avoid', 'How coding agents work', 'First run the tests' and 'Agentic manual testing' are directly on-topic. Ingesting them is a KB content change (bump + mirrors) and is deliberately queued behind the fixture campaign, not done here."
+      "note3": "None of the 16 chapters has been read in full: 14 are `not-read` and 2 are `summary-only` (both covered only by the announcement post's one-line descriptions). The review that caught the `ingested` error put the backlog at 15/16; it is 16/16 — 'Writing code is cheap now' is `summary-only` on exactly the same evidence as Red/green TDD. 'Subagents', 'Anti-patterns: things to avoid', 'How coding agents work', 'First run the tests' and 'Agentic manual testing' are directly on-topic. Ingesting them is a KB content change (bump + mirrors) and is deliberately queued behind the fixture campaign, not done here."
     },
     "feeds": {
       "type": "fan-made",
@@ -98,11 +99,12 @@
         {
           "feedUrl": "https://simonwillison.net/atom/everything/",
           "siteUrl": "https://simonwillison.net/",
-          "watermark": "2026-07-18",
+          "watermark": "2026-07-15",
           "seenIds": [
             "https://simonwillison.net/2026/Jul/18/claude-make-fable-5-permanent/",
             "https://simonwillison.net/2026/Jul/18/quixote/"
           ],
+          "watermarkNote": "Deliberate one-off backfill window, set 2026-07-18. The obvious seed was 2026-07-18, but that would have made https://simonwillison.net/2026/Jul/15/claude-web-fetch-exfiltration/ — a prompt-injection/exfiltration writeup, and the very item that justified widening `relevance` to agent security — unreachable forever, because candidates are `>= watermark`. Backing the watermark to the 15th makes it a candidate. `seenIds` therefore holds two entries from a later day than the watermark, which is outside the normal invariant; the first successful run restores it (watermark = newest entry's date, seenIds = that date's permalinks).",
           "relevance": "Claude Code, agent orchestration, subagents, hooks, skills, permissions, context management, prompt-injection/agent security. NOT general model releases, benchmarks, or unrelated tooling — those are the bulk of this feed.",
           "lastChecked": "2026-07-18",
           "note": "Same author as `secondaryFanMade`, different surface: ~20 posts/week, mostly off-topic for this KB. Low yield, not zero — an exfiltration/lethal-trifecta writeup sat just outside the window inspected on 2026-07-18, which is why `relevance` explicitly includes agent security. Mark anything taken from it as \"(fan-made, Willison)\"."
