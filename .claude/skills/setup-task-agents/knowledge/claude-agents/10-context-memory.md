@@ -15,8 +15,17 @@ Source: Part 1 (2026-01-02), Part 2 (2026-01-31), Part 15.
 - Rule of thumb: if something is used >1×/day → pour it into a skill or slash command.
 - Check skills into git (reusable across repos/projects). `SKILL.md` + folder.
 - Slash commands under `.claude/commands/`; may contain inline bash to precompute.
-- Experimental: `fork: true` in the skill frontmatter → the skill runs in an isolated, forked session. Marked experimental.
+- Isolation: `context: fork` in the SKILL frontmatter (optionally with `agent:`) runs the skill in a forked context. **There is no `fork: true` field** — that fan-made fragment was refuted, see `90-deprecated.md`.
 Source: Part 1, Part 2, Part 16.
+
+## Prompt caching — why the transcript is append-only (verified)
+Caching matches on the **prefix**, exactly: a change anywhere in the prefix recomputes everything after it. There is no per-file or per-segment caching. That single constraint explains a family of behaviours you would otherwise have to memorize separately:
+- Editing a file Claude already read does **not** rewrite the earlier read. A `<system-reminder>` is appended instead.
+- Skills and commands inject their instructions **at the point of invocation**; nothing earlier changes.
+- `/recap` appends; `/compact` replaces. `/rewind` truncates back to an already-cached prefix.
+- **`CLAUDE.md` edits do not take effect mid-session** — the prefix was fixed when the session started. Restart the session after changing it. (Same mechanism binds a plugin's skill path at session start: `claude plugin update` alone does not move a running session.)
+Design rule: prefer appending over mutating history, and expect anything loaded at session start to stay put until the next one.
+Source: code.claude.com/docs/en/prompt-caching + platform.claude.com prompt-caching (verified 2026-07-18).
 
 ## Memory (`/memory`) — newer, partly preview
 - Auto-memory stores preferences/patterns between sessions.
@@ -30,7 +39,7 @@ Source: Part 8 (2026-03).
 - Choose `/clear` when precision matters; `/compact` to keep going on the same thread.
 
 ## Auto-compact threshold — compact early
-- Context rot sets in around ~300–400k tokens (on a 1M model); compacting earlier keeps performance sharp.
+- Context rot sets in around ~300–400k tokens (on a 1M model); compacting earlier keeps performance sharp. ⚠️ The *effect* is documented ("as token count grows, accuracy and recall degrade — context rot"); the **numeric threshold is fan-made**, no Anthropic benchmark curve is published. Treat any specific cliff figure as framing, not fact — the recommendation below stands on the effect, not on the number.
 - `CLAUDE_CODE_AUTO_COMPACT_WINDOW` controls the threshold (verified, model-config doc). Default ~967k tokens (Sonnet 5, 1M window). **Recommendation: ~40% of the window** — so `=400000` on a 1M window — to stay well below the context-rot zone. Toggle via `autoCompactEnabled` or `DISABLE_AUTO_COMPACT`.
 - Use the `PostCompact` hook to re-inject critical instructions after compaction.
 Source: Part 10 (2026-04-14).

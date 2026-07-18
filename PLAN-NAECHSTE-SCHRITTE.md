@@ -34,7 +34,8 @@ aktualisiert, Versionsprobe gefahren. Der Ablauf zur Nachvollziehbarkeit:
 4. `claude plugin update` — und danach **die Versionsprobe wiederholen**.
 
 **Abbruchbedingung, aktualisiert:** Ein Fixture-Lauf, dessen Skill-Basispfad nicht
-`…\0.4.3\…` meldet, wird verworfen.
+`…\0.4.4\…` meldet, wird verworfen. (War `0.4.3`; Lauf 4 hat die KB-Mirrors
+geändert, also ist 0.4.4 der Stand, gegen den die Kampagne laufen muss.)
 
 **Die Session-Bindung ist jetzt kontrolliert nachgewiesen** (2026-07-18). Ablauf:
 `claude plugin update` meldete „updated from 0.4.2 to 0.4.3 … Restart to apply
@@ -99,16 +100,28 @@ Nach der Freeze-Entscheidung, damit die KB während der Kampagne stillsteht.
 **Drei** Quellen, unterschiedlicher Typ. Reihenfolge nach Ertrag, nicht nach
 Entdeckungsdatum.
 
-### 4a — Willison-Guide, 16 Kapitel (neu, höchste Priorität)
+### 4a — Willison-Guide, 16 Kapitel — ✅ ERLEDIGT (2026-07-18, Lauf 4, Plugin 0.4.4)
 
-Kein Zugriffsblocker, Quelle korrekt getrackt seit 2026-07-18. **Kein einziges der
-16 Kapitel wurde je vollständig gelesen** — 14 `not-read`, 2 `summary-only` aus dem
-Ankündigungs-Post. Direkt im Thema: „Subagents", „Anti-patterns: things to avoid",
-„How coding agents work", „First run the tests", „Agentic manual testing".
+14 von 16 Kapiteln gelesen; die zwei Annotated-Prompt-Walkthroughs bewusst
+übersprungen, dokumentiert in `_state.json`.
 
-Steht vorn, weil die Quelle näher am Zweck dieser KB liegt als die beiden anderen
-und weil sie drei Läufe lang fälschlich als tot galt. Details und Kapitelstatus:
-`_state.json` → `sources.secondaryFanMade.chapters`.
+**Der Ertrag lag weit unter der Erwartung dieses Plans.** Oben standen fünf Kapitel
+als „direkt im Thema". Vier davon brachten nichts — „Subagents" waren 350 Wörter,
+die `20-parallelism.md` bereits ausführlicher und mit Doc-Beleg trägt. Bilanz:
+**eine echte Ergänzung** (Agentic manual testing → `50-verification.md`), **eine
+Korrektur** (die Red/green-TDD-Zeile war aus der Ankündigungs-Zusammenfassung
+geschrieben und ausgeschmückt), elf Kapitel ohne Ertrag. Das ist der belegte
+Preis eines gekapitelten Fan-Guides und gehört in die Kalkulation des nächsten.
+
+Nebenbefunde: ein Widerspruch **innerhalb** der KB überlebte einen ganzen Lauf
+(`fork: true` in `10-` gegen die Widerlegung in `90-`), drei Divergenzen in `90-`,
+und `chapterCount` allein ist der falsche Marker — er sieht neue Kapitel, nie
+Änderungen an bestehenden. Ab jetzt `lastModified` pro Kapitel.
+
+Das Risiko, das ich vor dem Lauf gemeldet hatte — das Subagents-Kapitel könnte
+die Skills bereitwilliger Subagenten empfehlen lassen und damit `already-good`
+beeinflussen — **ist nicht eingetreten**: das Kapitel brachte nichts, kein Satz
+daraus steht in der KB.
 
 ### 4b — blakecrosley.com, zwei Guides
 

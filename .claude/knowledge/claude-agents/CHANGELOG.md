@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-07-18 — Incremental run 4: the Willison guide, actually read (plugin 0.4.4)
+Run 3's correction established that the guide had 16 chapters, not 2. This run read 14 of them (the two annotated-prompt walkthroughs were deliberately skipped and say so in `_state.json`). The honest accounting matters more than the additions:
+
+**Yield: 1 addition, 1 correction, 11 chapters that gave nothing.** The pre-run expectation named five "directly on-topic" chapters. Four of those five yielded nothing — including *Subagents*, which turned out to be 350 words restating what `20-parallelism.md` already carries with doc backing. A chaptered fan-made guide should be priced accordingly next time.
+
+- **Added — the loop for work with no test surface** (`50`, new section): start the thing → drive it programmatically → capture observable output → have the agent inspect *that output*. Plus: record commands and their real output, not the agent's account of them. The KB had nothing on this, and it is the case most setup plans hand-wave.
+- **Corrected — the red/green TDD line** (`50`): the existing line was written from the announcement post's one-sentence summary and had embellished it. "Cheap to prompt" and "fixes the acceptance criterion before any code exists" appear nowhere in the chapter. Rewritten to what it does say.
+
+**A contradiction inside the KB survived a whole run.** `10-context-memory.md` still carried `fork: true` as an experimental skill field while `90-deprecated.md` had refuted it in run 3. Corrected to `context: fork`, and logged as an open item: a claim refuted in one file can stay asserted in another, so refutations need a consistency sweep, not just a `90-` entry.
+
+**Verified separately, and worth having** (`10`, new section): prompt caching matches the prefix *exactly*, so a change anywhere in the prefix recomputes everything after it. That single constraint explains why the transcript is append-only — file re-reads append a `<system-reminder>`, `/recap` appends where `/compact` replaces, and **`CLAUDE.md` edits do not take effect mid-session**. Same mechanism binds a plugin's skill path at session start, which this repo had already proven the hard way.
+
+**Three divergences recorded** (`90`): the fan-made "~200,000 tokens" quality cliff (the *effect* is documented, the number is not — 200k is a context-*window* size in the docs), "Claude Code for web" (documented name: **on** the web), and Opus 4.6 as current (valid ID, but legacy). The ~300–400k context-rot figure already in `10` is now marked fan-made too; the ~40% compaction recommendation rests on the effect, not the figure.
+
+⚠️ **`chapterCount` is the wrong marker alone.** It detects new chapters but never an edit to an existing one, and this guide revises chapters. Per-chapter `lastModified` is now captured on read; the next run must diff those, not just the count.
+
 ## 2026-07-18 — Incremental run 3: the `secondary` docs, read properly for the first time (plugin 0.4.3)
 Runs 1–2 had never given the eight `secondary` doc URLs a real extraction pass — they were listed as "check every run" but the KB's subagent and hooks material still rested largely on the fan-made source. This run fetched all eight. Everything else was quiet: CHANGELOG still at 2.1.214, both best-practices pages unchanged, no part 22, ~~no third Willison chapter~~, all 7 `datedPosts` already done.
 
